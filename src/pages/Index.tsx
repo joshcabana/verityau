@@ -74,6 +74,7 @@ const emailSchema = z.string().email("Please enter a valid email address");
 const WaitlistForm = () => {
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -142,9 +143,15 @@ const WaitlistForm = () => {
           type="submit"
           size="lg"
           disabled={isSubmitting}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
           className="h-14 md:h-16 px-8 md:px-12 text-base md:text-lg whitespace-nowrap font-bold shadow-lg"
         >
-          {isSubmitting ? "Joining..." : "Get Early Access"}
+          {isSubmitting ? "Joining..." : (isHovered && email.length > 0 ? (
+            <>
+              Hell yes <ArrowRight className="ml-2 h-5 w-5" />
+            </>
+          ) : "Get Early Access")}
         </Button>
       </div>
     </form>
