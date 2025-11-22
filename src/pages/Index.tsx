@@ -4,12 +4,19 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { z } from "zod";
+import { Heart, Video, CheckCircle2, MessageCircle } from "lucide-react";
+import { useCountAnimation } from "@/hooks/useCountAnimation";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import phoneMockupLeft from "@/assets/phone-mockup-left.png";
 import phoneMockupRight from "@/assets/phone-mockup-right.png";
+import step1Profile from "@/assets/step-1-profile.png";
+import step2Video from "@/assets/step-2-video.png";
+import step3Decision from "@/assets/step-3-decision.png";
+import step4Chat from "@/assets/step-4-chat.png";
 
 const emailSchema = z.string().email("Please enter a valid email address");
 
-const Index = () => {
+const WaitlistForm = () => {
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
@@ -66,6 +73,43 @@ const Index = () => {
   };
 
   return (
+    <form onSubmit={handleSubmit} className="max-w-2xl mx-auto">
+      <div className="flex flex-col md:flex-row gap-4">
+        <Input
+          type="email"
+          placeholder="your@email.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          disabled={isSubmitting}
+          className="flex-1 h-14 md:h-16 text-base md:text-lg px-6 bg-white border-2 border-border rounded-[20px] shadow-md focus-visible:ring-primary focus-visible:ring-4 focus-visible:border-primary transition-all placeholder:text-foreground/40"
+        />
+        <Button
+          type="submit"
+          size="lg"
+          disabled={isSubmitting}
+          className="h-14 md:h-16 px-8 md:px-12 text-base md:text-lg font-bold shadow-xl hover:shadow-primary/50 transition-all"
+        >
+          {isSubmitting ? "Joining..." : "Get Early Access"}
+        </Button>
+      </div>
+    </form>
+  );
+};
+
+const AnimatedCounter = ({ target }: { target: number }) => {
+  const { ref, isVisible } = useScrollAnimation();
+  const count = useCountAnimation(target, 2000, isVisible);
+
+  return (
+    <span ref={ref}>
+      {count.toLocaleString()}
+    </span>
+  );
+};
+
+const Index = () => {
+  return (
     <div className="min-h-screen bg-background">
       {/* Full-bleed Hero Section */}
       <section className="relative h-screen w-full overflow-hidden">
@@ -121,32 +165,54 @@ const Index = () => {
             </p>
 
             {/* Email Input Form */}
-            <form onSubmit={handleSubmit} className="max-w-2xl mx-auto mb-6">
-              <div className="flex flex-col md:flex-row gap-4">
-                <Input
-                  type="email"
-                  placeholder="your@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  disabled={isSubmitting}
-                  className="flex-1 h-16 md:h-[72px] text-lg md:text-xl px-6 md:px-8 bg-white/95 backdrop-blur-sm border-2 border-white/40 rounded-[20px] shadow-xl focus-visible:ring-primary focus-visible:ring-4 focus-visible:border-primary transition-all placeholder:text-foreground/40"
-                />
-                <Button
-                  type="submit"
-                  size="lg"
-                  disabled={isSubmitting}
-                  className="h-16 md:h-[72px] px-8 md:px-12 text-base md:text-xl font-bold shadow-2xl hover:shadow-primary/50 transition-all"
-                >
-                  <span className="hidden md:inline">
-                    {isSubmitting ? "Joining..." : "Join the Waitlist — Canberra launching January 2026"}
-                  </span>
-                  <span className="md:hidden">
-                    {isSubmitting ? "Joining..." : "Join Waitlist"}
-                  </span>
-                </Button>
-              </div>
-            </form>
+            <div className="mb-6">
+              <form onSubmit={async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.currentTarget);
+                const email = formData.get('email') as string;
+                
+                const validation = emailSchema.safeParse(email);
+                if (!validation.success) {
+                  return;
+                }
+
+                try {
+                  const { error } = await supabase.from('waitlist').insert([{ 
+                    email: email.toLowerCase().trim(),
+                    city: 'Canberra',
+                    referral_code: null
+                  }]);
+                  
+                  if (error && error.code !== '23505') {
+                    throw error;
+                  }
+                } catch (error) {
+                  console.error(error);
+                }
+              }} className="max-w-2xl mx-auto">
+                <div className="flex flex-col md:flex-row gap-4">
+                  <Input
+                    type="email"
+                    name="email"
+                    placeholder="your@email.com"
+                    required
+                    className="flex-1 h-16 md:h-[72px] text-lg md:text-xl px-6 md:px-8 bg-white/95 backdrop-blur-sm border-2 border-white/40 rounded-[20px] shadow-xl focus-visible:ring-primary focus-visible:ring-4 focus-visible:border-primary transition-all placeholder:text-foreground/40"
+                  />
+                  <Button
+                    type="submit"
+                    size="lg"
+                    className="h-16 md:h-[72px] px-8 md:px-12 text-base md:text-xl font-bold shadow-2xl hover:shadow-primary/50 transition-all"
+                  >
+                    <span className="hidden md:inline">
+                      Join the Waitlist — Canberra launching January 2026
+                    </span>
+                    <span className="md:hidden">
+                      Join Waitlist
+                    </span>
+                  </Button>
+                </div>
+              </form>
+            </div>
 
             {/* Small text under button */}
             <p className="text-white/80 text-base md:text-lg font-medium">
@@ -192,6 +258,132 @@ const Index = () => {
           <p className="text-center text-2xl md:text-3xl font-bold text-primary leading-relaxed">
             Verity forces a 10-minute video date first. Spark or move on. Simple.
           </p>
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+      <section className="py-20 md:py-32 px-4 bg-secondary/30">
+        <div className="max-w-6xl mx-auto">
+          {/* Headline */}
+          <h2 
+            className="text-4xl md:text-[64px] font-bold text-center mb-20 md:mb-32 leading-tight"
+            style={{ fontFamily: 'Obviously, Recoleta, Satchel, sans-serif' }}
+          >
+            One video date changes everything
+          </h2>
+
+          {/* Steps */}
+          <div className="space-y-24 md:space-y-32">
+            {/* Step 1 */}
+            <div className="grid md:grid-cols-2 gap-8 md:gap-16 items-center">
+              <div className="order-2 md:order-1">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center">
+                    <Heart className="w-8 h-8 text-white" fill="white" />
+                  </div>
+                  <span className="text-6xl md:text-7xl font-black text-primary">1</span>
+                </div>
+                <h3 className="text-3xl md:text-4xl font-bold mb-4">
+                  See someone's profile → both say Interested
+                </h3>
+                <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed">
+                  Browse profiles with photos and videos. If you both swipe right, it's time for a date.
+                </p>
+              </div>
+              <div className="order-1 md:order-2">
+                <img 
+                  src={step1Profile}
+                  alt="Profile screen"
+                  className="w-full max-w-[320px] mx-auto drop-shadow-2xl rounded-[40px]"
+                />
+              </div>
+            </div>
+
+            {/* Step 2 */}
+            <div className="grid md:grid-cols-2 gap-8 md:gap-16 items-center">
+              <div className="order-1">
+                <img 
+                  src={step2Video}
+                  alt="Video date screen"
+                  className="w-full max-w-[320px] mx-auto drop-shadow-2xl rounded-[40px]"
+                />
+              </div>
+              <div className="order-2">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center">
+                    <Video className="w-8 h-8 text-white" />
+                  </div>
+                  <span className="text-6xl md:text-7xl font-black text-primary">2</span>
+                </div>
+                <h3 className="text-3xl md:text-4xl font-bold mb-4">
+                  Jump on a 10-minute Verity Date
+                </h3>
+                <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed">
+                  Live video call with a timer and icebreaker prompts. See the real person, not a curated profile.
+                </p>
+              </div>
+            </div>
+
+            {/* Step 3 */}
+            <div className="grid md:grid-cols-2 gap-8 md:gap-16 items-center">
+              <div className="order-2 md:order-1">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center">
+                    <CheckCircle2 className="w-8 h-8 text-white" />
+                  </div>
+                  <span className="text-6xl md:text-7xl font-black text-primary">3</span>
+                </div>
+                <h3 className="text-3xl md:text-4xl font-bold mb-4">
+                  Both say "Yes" → unlock chat
+                </h3>
+                <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed">
+                  Mutual interest? Start chatting and plan to meet IRL. One or both say "No"? Part ways respectfully.
+                </p>
+              </div>
+              <div className="order-1 md:order-2">
+                <img 
+                  src={step3Decision}
+                  alt="Decision screen"
+                  className="w-full max-w-[320px] mx-auto drop-shadow-2xl rounded-[40px]"
+                />
+              </div>
+            </div>
+
+            {/* Step 4 */}
+            <div className="grid md:grid-cols-2 gap-8 md:gap-16 items-center">
+              <div className="order-1">
+                <img 
+                  src={step4Chat}
+                  alt="Chat screen"
+                  className="w-full max-w-[320px] mx-auto drop-shadow-2xl rounded-[40px]"
+                />
+              </div>
+              <div className="order-2">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center">
+                    <MessageCircle className="w-8 h-8 text-white" />
+                  </div>
+                  <span className="text-6xl md:text-7xl font-black text-primary">4</span>
+                </div>
+                <h3 className="text-3xl md:text-4xl font-bold mb-4">
+                  Chat unlocked — real connection begins
+                </h3>
+                <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed">
+                  Now that you've met face-to-face, your conversations have context. No more awkward first messages.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Animated Counter */}
+          <div className="mt-24 md:mt-32 text-center">
+            <p className="text-2xl md:text-4xl font-bold mb-8">
+              Join <AnimatedCounter target={9312} /> Canberrans already waiting
+            </p>
+
+            {/* Email Form */}
+            <WaitlistForm />
+          </div>
         </div>
       </section>
     </div>
