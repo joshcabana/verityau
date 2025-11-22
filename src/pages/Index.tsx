@@ -337,7 +337,7 @@ const Index = () => {
                   Ghosting & endless texting
                 </h3>
                 <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
-                  Weeks of chatting → date shows up looking nothing like photos → instant disappointment.
+                  Weeks of chatting then they look nothing like their photos.
                 </p>
               </div>
             </AnimatedSection>
@@ -351,7 +351,7 @@ const Index = () => {
                   Catfishing & fake profiles
                 </h3>
                 <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
-                  54% of people lie on dating apps. You waste hours on someone who doesn't exist.
+                  54% of people lie on dating apps. You already knew that.
                 </p>
               </div>
             </AnimatedSection>
@@ -365,7 +365,7 @@ const Index = () => {
                   Dead conversations
                 </h3>
                 <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
-                  "Hey" → "Hey" → "How's your week?" → dies. Zero personality in text.
+                  'Hey' → 'Hey' → dies. Zero soul.
                 </p>
               </div>
             </AnimatedSection>
@@ -373,7 +373,7 @@ const Index = () => {
 
           <AnimatedSection delay={300}>
             <p className="text-center text-xl sm:text-2xl md:text-3xl font-bold text-primary">
-              Verity fixes all three in one move.
+              Verity fixes all three at once.
             </p>
           </AnimatedSection>
         </div>
