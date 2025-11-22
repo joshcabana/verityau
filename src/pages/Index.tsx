@@ -216,7 +216,7 @@ const Index = () => {
             
             {/* Waitlist count */}
             <p className="text-primary text-xl md:text-2xl font-bold">
-              18,274 people already waiting
+              <AnimatedCounter target={18274} /> Australians already waiting
             </p>
           </div>
         </div>
@@ -377,8 +377,8 @@ const Index = () => {
 
           {/* Animated Counter */}
           <div className="mt-24 md:mt-32 text-center">
-            <p className="text-2xl md:text-4xl font-bold mb-8">
-              Join <AnimatedCounter target={11337} /> Australians already waiting
+            <p className="text-2xl md:text-4xl font-bold mb-8 text-primary">
+              <AnimatedCounter target={18274} /> Australians already waiting
             </p>
 
             {/* Email Form */}
