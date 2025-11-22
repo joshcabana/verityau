@@ -19,6 +19,9 @@ import Checkout from "./pages/Checkout";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
+import VerityDateWaiting from "./pages/VerityDateWaiting";
+import VerityDateCall from "./pages/VerityDateCall";
+import VerityDateFeedback from "./pages/VerityDateFeedback";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +48,9 @@ const App = () => (
           <Route path="/match/:matchId" element={<ProtectedRoute><MatchProfile /></ProtectedRoute>} />
           <Route path="/upgrade" element={<ProtectedRoute><VerityPlus /></ProtectedRoute>} />
           <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
+          <Route path="/verity-date/waiting" element={<ProtectedRoute><VerityDateWaiting /></ProtectedRoute>} />
+          <Route path="/verity-date/call" element={<ProtectedRoute><VerityDateCall /></ProtectedRoute>} />
+          <Route path="/verity-date/feedback" element={<ProtectedRoute><VerityDateFeedback /></ProtectedRoute>} />
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
