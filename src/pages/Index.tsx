@@ -56,8 +56,8 @@ const WaitlistForm = () => {
         }
       } else {
         toast({
-          title: "You're on the list! 🎉",
-          description: "We'll notify you when Verity launches in Canberra.",
+          title: "Hell yes → you're in!",
+          description: "Tell your friends.",
         });
         setEmail("");
       }
@@ -77,7 +77,7 @@ const WaitlistForm = () => {
       <div className="flex flex-col md:flex-row gap-4">
         <Input
           type="email"
-          placeholder="your@email.com"
+          placeholder="your@email.com →"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
@@ -90,7 +90,7 @@ const WaitlistForm = () => {
           disabled={isSubmitting}
           className="h-14 md:h-16 px-8 md:px-12 text-base md:text-lg font-bold shadow-xl hover:shadow-primary/50 transition-all"
         >
-          {isSubmitting ? "Joining..." : "Get Early Access"}
+          {isSubmitting ? "Joining..." : "Join Waitlist — Lifetime Unlimited"}
         </Button>
       </div>
     </form>
@@ -194,7 +194,7 @@ const Index = () => {
                   <Input
                     type="email"
                     name="email"
-                    placeholder="your@email.com"
+                    placeholder="your@email.com →"
                     required
                     className="flex-1 h-16 md:h-[72px] text-lg md:text-xl px-6 md:px-8 bg-white/95 backdrop-blur-sm border-2 border-white/40 rounded-[20px] shadow-xl focus-visible:ring-primary focus-visible:ring-4 focus-visible:border-primary transition-all placeholder:text-foreground/40"
                   />
@@ -203,12 +203,7 @@ const Index = () => {
                     size="lg"
                     className="h-16 md:h-[72px] px-8 md:px-12 text-base md:text-xl font-bold shadow-2xl hover:shadow-primary/50 transition-all"
                   >
-                    <span className="hidden md:inline">
-                      Join the Waitlist — Canberra launching January 2026
-                    </span>
-                    <span className="md:hidden">
-                      Join Waitlist
-                    </span>
+                    Join Waitlist — Lifetime Unlimited
                   </Button>
                 </div>
               </form>
@@ -430,7 +425,7 @@ const Index = () => {
               <Input
                 type="email"
                 name="email"
-                placeholder="your@email.com"
+                placeholder="your@email.com →"
                 required
                 className="flex-1 h-16 md:h-20 text-lg md:text-xl px-6 md:px-8 bg-white text-foreground border-2 border-white rounded-[20px] shadow-xl focus-visible:ring-white focus-visible:ring-4 transition-all placeholder:text-foreground/40"
               />
@@ -440,12 +435,7 @@ const Index = () => {
                 variant="outline"
                 className="h-16 md:h-20 px-8 md:px-12 text-base md:text-xl font-bold bg-white text-primary border-2 border-white hover:bg-white/90 hover:scale-105 shadow-2xl transition-all"
               >
-                <span className="hidden md:inline">
-                  Join Waitlist — Lifetime Unlimited for First 1,000
-                </span>
-                <span className="md:hidden">
-                  Join Waitlist
-                </span>
+                Join Waitlist — Lifetime Unlimited
               </Button>
             </div>
           </form>
