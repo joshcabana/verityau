@@ -17,10 +17,11 @@ import {
 } from "@/components/ui/dialog";
 import phoneMockupLeft from "@/assets/phone-mockup-left.png";
 import phoneMockupRight from "@/assets/phone-mockup-right.png";
-import step1Profile from "@/assets/step-1-profile.png";
-import step2Video from "@/assets/step-2-video.png";
-import step3Decision from "@/assets/step-3-decision.png";
-import step4Chat from "@/assets/step-4-chat.png";
+import heroIllustration from "@/assets/hero-illustration.png";
+import stepIllustration1 from "@/assets/step-illustration-1.png";
+import stepIllustration2 from "@/assets/step-illustration-2.png";
+import stepIllustration3 from "@/assets/step-illustration-3.png";
+import stepIllustration4 from "@/assets/step-illustration-4.png";
 
 
 const SocialShareButtons = ({ variant = "default" }: { variant?: "default" | "success" }) => {
@@ -157,7 +158,7 @@ const WaitlistForm = () => {
       <Dialog open={showSuccess} onOpenChange={setShowSuccess}>
         <DialogContent className="max-w-3xl text-center border-none bg-black/95 backdrop-blur-xl">
           <DialogHeader className="space-y-6">
-            <DialogTitle className="text-3xl md:text-6xl font-bold text-white mb-4 leading-tight" style={{ fontFamily: 'Obviously, Recoleta, Satchel, sans-serif' }}>
+            <DialogTitle className="text-3xl md:text-6xl font-bold text-white mb-4 leading-tight" style={{ fontFamily: 'Obviously Wide, Obviously, Recoleta, sans-serif' }}>
               You're in! Lifetime unlimited Verity Dates locked for you.
             </DialogTitle>
             <DialogDescription className="text-xl md:text-2xl text-white/90 font-medium leading-relaxed">
@@ -181,14 +182,14 @@ const WaitlistForm = () => {
             disabled={isSubmitting}
             className="flex-1 h-14 md:h-16 text-base md:text-lg px-6 bg-white border-2 border-border rounded-[20px] shadow-md focus-visible:ring-primary focus-visible:ring-4 focus-visible:border-primary transition-all placeholder:text-foreground/40"
           />
-          <Button
-            type="submit"
-            size="lg"
-            disabled={isSubmitting}
-            className="h-14 md:h-16 px-8 md:px-12 text-base md:text-lg font-bold shadow-xl hover:shadow-primary/50 transition-all"
-          >
-            {isSubmitting ? "Joining..." : "Join Waitlist — Lifetime Unlimited"}
-          </Button>
+            <Button
+              type="submit"
+              size="lg"
+              disabled={isSubmitting}
+              className="h-14 md:h-16 px-8 md:px-12 text-base md:text-lg font-bold shadow-xl hover:shadow-primary/50 transition-all coral-glow"
+            >
+              {isSubmitting ? "Joining..." : "Join Waitlist — Lifetime Unlimited"}
+            </Button>
         </div>
         <p className="text-center text-sm text-muted-foreground mt-3">
           Share with single friends → you both get +5 extra dates on launch
@@ -253,7 +254,7 @@ const Index = () => {
       <Dialog open={showSuccess} onOpenChange={setShowSuccess}>
         <DialogContent className="max-w-3xl text-center border-none bg-black/95 backdrop-blur-xl">
           <DialogHeader className="space-y-6">
-            <DialogTitle className="text-3xl md:text-6xl font-bold text-white mb-4 leading-tight" style={{ fontFamily: 'Obviously, Recoleta, Satchel, sans-serif' }}>
+            <DialogTitle className="text-3xl md:text-6xl font-bold text-white mb-4 leading-tight" style={{ fontFamily: 'Obviously Wide, Obviously, Recoleta, sans-serif' }}>
               You're in! Lifetime unlimited Verity Dates locked for you.
             </DialogTitle>
             <DialogDescription className="text-xl md:text-2xl text-white/90 font-medium leading-relaxed">
@@ -268,17 +269,17 @@ const Index = () => {
 
       {/* Full-bleed Hero Section */}
       <section className="relative h-screen w-full overflow-hidden">
-        {/* Background Image with Overlay */}
+        {/* Background Illustration with Coral Glow */}
         <div className="absolute inset-0">
           <div 
             className="absolute inset-0 bg-cover bg-center"
             style={{
-              backgroundImage: 'url(/hero-background.jpg)',
-              filter: 'brightness(0.6)'
+              backgroundImage: `url(${heroIllustration})`,
             }}
           />
-          {/* Dark overlay for text readability */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/50" />
+          {/* Coral glow overlay */}
+          <div className="absolute inset-0 gradient-coral-glow opacity-40" />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/20 via-transparent to-background/40" />
         </div>
 
         {/* Floating Phone Mockups */}
@@ -307,16 +308,16 @@ const Index = () => {
           <div className="max-w-5xl mx-auto text-center">
             {/* Headline */}
             <h1 
-              className="text-[48px] sm:text-[72px] md:text-[96px] lg:text-[120px] font-bold text-white mb-6 md:mb-8 leading-[1.15] tracking-wide max-w-5xl mx-auto"
-              style={{ fontFamily: 'Obviously, Recoleta, Satchel, sans-serif' }}
+              className="text-[48px] sm:text-[72px] md:text-[96px] lg:text-[120px] font-bold text-foreground mb-6 md:mb-8 leading-[1.15] tracking-wide max-w-5xl mx-auto drop-shadow-lg"
+              style={{ fontFamily: 'Obviously Wide, Obviously, Recoleta, sans-serif' }}
             >
               Date people, not profiles.
             </h1>
 
             {/* Subheadline */}
-            <p className="text-[22px] md:text-[32px] text-white/95 mb-10 md:mb-12 leading-relaxed max-w-4xl mx-auto font-medium">
+            <p className="text-[22px] md:text-[32px] text-foreground/90 mb-10 md:mb-12 leading-relaxed max-w-4xl mx-auto font-medium drop-shadow-md">
               The only dating app where your first conversation is a 10-minute video date.<br />
-              <span className="text-white/90">No endless chatting. No catfishing. No disappointment.</span>
+              <span className="text-foreground/80">No endless chatting. No catfishing. No disappointment.</span>
             </p>
 
             {/* Email Input Form */}
@@ -336,17 +337,17 @@ const Index = () => {
                     name="email"
                     placeholder="your@email.com →"
                     required
-                    className="flex-1 h-16 md:h-[72px] text-lg md:text-xl px-6 md:px-8 bg-white/95 backdrop-blur-sm border-2 border-white/40 rounded-[20px] shadow-xl focus-visible:ring-primary focus-visible:ring-4 focus-visible:border-primary transition-all placeholder:text-foreground/40"
+                    className="flex-1 h-16 md:h-[72px] text-lg md:text-xl px-6 md:px-8 bg-white/95 backdrop-blur-sm border-2 border-primary/30 rounded-[20px] shadow-xl focus-visible:ring-primary focus-visible:ring-4 focus-visible:border-primary transition-all placeholder:text-foreground/40"
                   />
                   <Button
                     type="submit"
                     size="lg"
-                    className="h-16 md:h-[72px] px-8 md:px-12 text-base md:text-xl font-bold shadow-2xl hover:shadow-primary/50 transition-all"
+                    className="h-16 md:h-[72px] px-8 md:px-12 text-base md:text-xl font-bold shadow-2xl hover:shadow-primary/50 transition-all coral-glow"
                   >
                     Join Waitlist — Lifetime Unlimited
                   </Button>
                 </div>
-                <p className="text-center text-sm text-white/80 mt-4">
+                <p className="text-center text-sm text-muted-foreground mt-4">
                   Share with single friends → you both get +5 extra dates on launch
                 </p>
                 <SocialShareButtons />
@@ -354,12 +355,12 @@ const Index = () => {
             </div>
 
             {/* Small text under button */}
-            <p className="text-white/80 text-base md:text-lg font-medium mb-3">
+            <p className="text-foreground/80 text-base md:text-lg font-medium mb-3">
               First 2,000 Australians get unlimited Verity Dates for life — Canberra gets priority access.
             </p>
             
             {/* Waitlist count */}
-            <p className="text-primary text-2xl md:text-4xl font-bold">
+            <p className="text-primary text-2xl md:text-4xl font-bold drop-shadow-md">
               <AnimatedCounter target={18274} /> Australians already waiting
             </p>
           </div>
@@ -371,27 +372,27 @@ const Index = () => {
         <div className="max-w-6xl mx-auto">
           {/* Headline */}
           <h2 
-            className="text-4xl md:text-[64px] font-bold text-center mb-16 md:mb-20 leading-tight"
-            style={{ fontFamily: 'Obviously, Recoleta, Satchel, sans-serif' }}
+            className="text-4xl md:text-[64px] font-bold text-center mb-16 md:mb-20 leading-tight animate-fade-up"
+            style={{ fontFamily: 'Obviously Wide, Obviously, Recoleta, sans-serif' }}
           >
             Canberra, we're done with the games.
           </h2>
 
           {/* Three Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-12 md:mb-16">
-            <div className="bg-card border-2 border-border rounded-[24px] p-8 md:p-10 shadow-glass hover:shadow-premium transition-all duration-300 hover:scale-[1.02]">
+            <div className="bg-card border-2 border-border rounded-[24px] p-8 md:p-10 shadow-glass hover:shadow-coral-glow transition-all duration-300 hover:scale-[1.02] animate-fade-up">
               <p className="text-xl md:text-2xl text-foreground leading-relaxed font-medium">
                 You spend weeks texting someone who looks nothing like their photos.
               </p>
             </div>
 
-            <div className="bg-card border-2 border-border rounded-[24px] p-8 md:p-10 shadow-glass hover:shadow-premium transition-all duration-300 hover:scale-[1.02]">
+            <div className="bg-card border-2 border-border rounded-[24px] p-8 md:p-10 shadow-glass hover:shadow-coral-glow transition-all duration-300 hover:scale-[1.02] animate-fade-up" style={{ animationDelay: '0.1s' }}>
               <p className="text-xl md:text-2xl text-foreground leading-relaxed font-medium">
                 You finally meet and there's zero chemistry.
               </p>
             </div>
 
-            <div className="bg-card border-2 border-border rounded-[24px] p-8 md:p-10 shadow-glass hover:shadow-premium transition-all duration-300 hover:scale-[1.02]">
+            <div className="bg-card border-2 border-border rounded-[24px] p-8 md:p-10 shadow-glass hover:shadow-coral-glow transition-all duration-300 hover:scale-[1.02] animate-fade-up" style={{ animationDelay: '0.2s' }}>
               <p className="text-xl md:text-2xl text-foreground leading-relaxed font-medium">
                 You waste another night on someone who ghosts after three days.
               </p>
@@ -410,8 +411,8 @@ const Index = () => {
         <div className="max-w-6xl mx-auto">
           {/* Headline */}
           <h2 
-            className="text-4xl md:text-[64px] font-bold text-center mb-20 md:mb-32 leading-tight"
-            style={{ fontFamily: 'Obviously, Recoleta, Satchel, sans-serif' }}
+            className="text-4xl md:text-[64px] font-bold text-center mb-20 md:mb-32 leading-tight animate-fade-up"
+            style={{ fontFamily: 'Obviously Wide, Obviously, Recoleta, sans-serif' }}
           >
             One video date changes everything
           </h2>
@@ -436,9 +437,9 @@ const Index = () => {
               </div>
               <div className="order-1 md:order-2">
                 <img 
-                  src={step1Profile}
-                  alt="Profile screen"
-                  className="w-full max-w-[320px] mx-auto drop-shadow-2xl rounded-[40px]"
+                  src={stepIllustration1}
+                  alt="Hands almost touching - human connection"
+                  className="w-full max-w-[400px] mx-auto drop-shadow-2xl"
                 />
               </div>
             </div>
@@ -447,9 +448,9 @@ const Index = () => {
             <div className="grid md:grid-cols-2 gap-8 md:gap-16 items-center">
               <div className="order-1">
                 <img 
-                  src={step2Video}
-                  alt="Video date screen"
-                  className="w-full max-w-[320px] mx-auto drop-shadow-2xl rounded-[40px]"
+                  src={stepIllustration2}
+                  alt="Eyes meeting - genuine emotion"
+                  className="w-full max-w-[400px] mx-auto drop-shadow-2xl"
                 />
               </div>
               <div className="order-2">
@@ -486,9 +487,9 @@ const Index = () => {
               </div>
               <div className="order-1 md:order-2">
                 <img 
-                  src={step3Decision}
-                  alt="Decision screen"
-                  className="w-full max-w-[320px] mx-auto drop-shadow-2xl rounded-[40px]"
+                  src={stepIllustration3}
+                  alt="Two people in conversation - genuine connection"
+                  className="w-full max-w-[400px] mx-auto drop-shadow-2xl"
                 />
               </div>
             </div>
@@ -511,9 +512,9 @@ const Index = () => {
               </div>
               <div className="order-1 md:order-2">
                 <img 
-                  src={step4Chat}
-                  alt="No match screen"
-                  className="w-full max-w-[320px] mx-auto drop-shadow-2xl rounded-[40px]"
+                  src={stepIllustration4}
+                  alt="Intimate moment - human warmth"
+                  className="w-full max-w-[400px] mx-auto drop-shadow-2xl"
                 />
               </div>
             </div>
@@ -539,8 +540,8 @@ const Index = () => {
         <div className="relative max-w-5xl mx-auto text-center">
           {/* Massive Headline */}
           <h2 
-            className="text-5xl md:text-[80px] font-bold text-white mb-12 md:mb-16 leading-tight"
-            style={{ fontFamily: 'Obviously, Recoleta, Satchel, sans-serif' }}
+            className="text-5xl md:text-[80px] font-bold text-white mb-12 md:mb-16 leading-tight animate-fade-up"
+            style={{ fontFamily: 'Obviously Wide, Obviously, Recoleta, sans-serif' }}
           >
             Be the first in Canberra to date like a human again.
           </h2>
@@ -567,7 +568,7 @@ const Index = () => {
                 type="submit"
                 size="lg"
                 variant="outline"
-                className="h-16 md:h-20 px-8 md:px-12 text-base md:text-xl font-bold bg-white text-primary border-2 border-white hover:bg-white/90 hover:scale-105 shadow-2xl transition-all"
+                className="h-16 md:h-20 px-8 md:px-12 text-base md:text-xl font-bold bg-white text-primary border-2 border-white hover:bg-white/90 hover:scale-105 shadow-2xl transition-all shadow-coral-intense"
               >
                 Join Waitlist — Lifetime Unlimited for First 2,000
               </Button>
@@ -593,7 +594,7 @@ const Index = () => {
             <div className="flex-shrink-0">
               <span 
                 className="text-3xl md:text-4xl font-bold text-primary"
-                style={{ fontFamily: 'Obviously, Recoleta, Satchel, sans-serif' }}
+                style={{ fontFamily: 'Obviously Wide, Obviously, Recoleta, sans-serif' }}
               >
                 Verity
               </span>
