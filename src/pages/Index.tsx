@@ -7,9 +7,12 @@ import { Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import HeroSection from "@/components/HeroSection";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import { useCountAnimation } from "@/hooks/useCountAnimation";
 import { useParallax } from "@/hooks/useParallax";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { z } from "zod";
 import { 
   Video, 
   Shield, 
@@ -63,6 +66,99 @@ const AnimatedSection = ({
     >
       {children}
     </div>
+  );
+};
+
+const emailSchema = z.string().email("Please enter a valid email address");
+
+const WaitlistForm = () => {
+  const [email, setEmail] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const validation = emailSchema.safeParse(email);
+    if (!validation.success) {
+      toast({
+        title: "Invalid email",
+        description: validation.error.errors[0].message,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    
+    try {
+      const { error } = await supabase
+        .from('waitlist')
+        .insert([{ 
+          email: email.toLowerCase().trim(),
+          referral_source: 'social_proof_section'
+        }]);
+
+      if (error) {
+        if (error.code === '23505') {
+          toast({
+            title: "Already on the list!",
+            description: "This email is already registered for the waitlist.",
+          });
+        } else {
+          throw error;
+        }
+      } else {
+        toast({
+          title: "You're on the list! 🎉",
+          description: "We'll notify you as soon as Verity launches.",
+        });
+        setEmail("");
+      }
+    } catch (error) {
+      toast({
+        title: "Something went wrong",
+        description: "Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="max-w-2xl mx-auto">
+      <div className="flex flex-col md:flex-row gap-4">
+        <Input
+          type="email"
+          placeholder="your@email.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          disabled={isSubmitting}
+          className="flex-1 h-14 md:h-16 text-base md:text-lg px-6 bg-white border-2 border-border rounded-[16px] shadow-md focus-visible:ring-primary focus-visible:ring-4"
+        />
+        <Button
+          type="submit"
+          size="lg"
+          disabled={isSubmitting}
+          className="h-14 md:h-16 px-8 md:px-12 text-base md:text-lg whitespace-nowrap font-bold shadow-lg"
+        >
+          {isSubmitting ? "Joining..." : "Get Early Access"}
+        </Button>
+      </div>
+    </form>
+  );
+};
+
+const AnimatedCounter = ({ target }: { target: number }) => {
+  const { ref, isVisible } = useScrollAnimation();
+  const count = useCountAnimation(target, 2000, isVisible);
+
+  return (
+    <span ref={ref}>
+      {count.toLocaleString()}
+    </span>
   );
 };
 
@@ -398,6 +494,90 @@ const Index = () => {
                   You already know what they sound like, how they laugh, their vibe. Dates actually feel natural.
                 </p>
               </div>
+            </div>
+          </AnimatedSection>
+        </div>
+      </section>
+
+      {/* Social Proof + Waitlist */}
+      <section className="py-16 sm:py-20 md:py-24 lg:py-32 px-4">
+        <div className="max-w-[1200px] mx-auto">
+          <AnimatedSection>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-8">
+              Join <AnimatedCounter target={14372} /> people already waiting
+            </h2>
+          </AnimatedSection>
+
+          {/* Testimonials */}
+          <div className="grid sm:grid-cols-3 gap-6 md:gap-8 mb-12 md:mb-16">
+            <AnimatedSection delay={0}>
+              <Card className="border-0 shadow-lg">
+                <CardContent className="pt-6 pb-6">
+                  <div className="flex items-start gap-4">
+                    <img 
+                      src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&q=80" 
+                      alt="Alex"
+                      className="w-16 h-16 rounded-full object-cover flex-shrink-0"
+                    />
+                    <div>
+                      <p className="text-base md:text-lg font-medium mb-2 leading-relaxed">
+                        "This is the future of dating. Finally."
+                      </p>
+                      <p className="text-sm text-muted-foreground">– Alex, 31</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </AnimatedSection>
+
+            <AnimatedSection delay={100}>
+              <Card className="border-0 shadow-lg">
+                <CardContent className="pt-6 pb-6">
+                  <div className="flex items-start gap-4">
+                    <img 
+                      src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&h=80&fit=crop&q=80" 
+                      alt="Maya"
+                      className="w-16 h-16 rounded-full object-cover flex-shrink-0"
+                    />
+                    <div>
+                      <p className="text-base md:text-lg font-medium mb-2 leading-relaxed">
+                        "I hate texting strangers. Verity is the only app that makes sense."
+                      </p>
+                      <p className="text-sm text-muted-foreground">– Maya, 27</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </AnimatedSection>
+
+            <AnimatedSection delay={200}>
+              <Card className="border-0 shadow-lg">
+                <CardContent className="pt-6 pb-6">
+                  <div className="flex items-start gap-4">
+                    <img 
+                      src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&h=80&fit=crop&q=80" 
+                      alt="Jordan"
+                      className="w-16 h-16 rounded-full object-cover flex-shrink-0"
+                    />
+                    <div>
+                      <p className="text-base md:text-lg font-medium mb-2 leading-relaxed">
+                        "Video profiles should have always been mandatory."
+                      </p>
+                      <p className="text-sm text-muted-foreground">– Jordan, 34</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </AnimatedSection>
+          </div>
+
+          {/* Email Capture */}
+          <AnimatedSection delay={300}>
+            <div className="max-w-2xl mx-auto text-center">
+              <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-6">
+                Get early access — don't miss launch day
+              </h3>
+              <WaitlistForm />
             </div>
           </AnimatedSection>
         </div>
