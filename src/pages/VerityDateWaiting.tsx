@@ -133,7 +133,7 @@ const VerityDateWaiting = () => {
 
         <div className="flex items-center justify-center gap-2 text-muted-foreground">
           <Loader2 className="w-5 h-5 animate-spin" />
-          <span>Preparing your video room...</span>
+          <span>Finding humans who are ready to be real...</span>
         </div>
 
         {roomUrl && (

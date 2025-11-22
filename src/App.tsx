@@ -47,6 +47,7 @@ const App = () => (
           <Route path="/matches" element={<ProtectedRoute><Matches /></ProtectedRoute>} />
           <Route path="/match/:matchId" element={<ProtectedRoute><MatchProfile /></ProtectedRoute>} />
           <Route path="/upgrade" element={<ProtectedRoute><VerityPlus /></ProtectedRoute>} />
+          <Route path="/verity-plus" element={<ProtectedRoute><VerityPlus /></ProtectedRoute>} />
           <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
           <Route path="/verity-date/waiting" element={<ProtectedRoute><VerityDateWaiting /></ProtectedRoute>} />
           <Route path="/verity-date/call" element={<ProtectedRoute><VerityDateCall /></ProtectedRoute>} />
