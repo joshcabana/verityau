@@ -92,8 +92,8 @@ const StepBasics = ({ data, onComplete }: StepProps) => {
               <Label htmlFor="man" className="font-normal cursor-pointer">Man</Label>
             </div>
             <div className="flex items-center space-x-2">
-              <RadioGroupItem value="nonbinary" id="nonbinary" />
-              <Label htmlFor="nonbinary" className="font-normal cursor-pointer">Non-binary</Label>
+              <RadioGroupItem value="non-binary" id="gender-non-binary" />
+              <Label htmlFor="gender-non-binary" className="font-normal cursor-pointer">Non-binary</Label>
             </div>
           </RadioGroup>
         </div>
