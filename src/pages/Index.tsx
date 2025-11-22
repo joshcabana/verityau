@@ -7,6 +7,14 @@ import { z } from "zod";
 import { Heart, Video, CheckCircle2, MessageCircle } from "lucide-react";
 import { useCountAnimation } from "@/hooks/useCountAnimation";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import confetti from "canvas-confetti";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import phoneMockupLeft from "@/assets/phone-mockup-left.png";
 import phoneMockupRight from "@/assets/phone-mockup-right.png";
 import step1Profile from "@/assets/step-1-profile.png";
@@ -19,7 +27,36 @@ const emailSchema = z.string().email("Please enter a valid email address");
 const WaitlistForm = () => {
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
   const { toast } = useToast();
+
+  const triggerConfetti = () => {
+    const duration = 3000;
+    const animationEnd = Date.now() + duration;
+    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 9999 };
+
+    const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
+
+    const interval = window.setInterval(() => {
+      const timeLeft = animationEnd - Date.now();
+
+      if (timeLeft <= 0) {
+        return clearInterval(interval);
+      }
+
+      const particleCount = 50 * (timeLeft / duration);
+      confetti({
+        ...defaults,
+        particleCount,
+        origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+      });
+      confetti({
+        ...defaults,
+        particleCount,
+        origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+      });
+    }, 250);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,10 +92,8 @@ const WaitlistForm = () => {
           throw error;
         }
       } else {
-        toast({
-          title: "Hell yes → you're in!",
-          description: "Tell your friends.",
-        });
+        setShowSuccess(true);
+        triggerConfetti();
         setEmail("");
       }
     } catch (error) {
@@ -73,27 +108,43 @@ const WaitlistForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-2xl mx-auto">
-      <div className="flex flex-col md:flex-row gap-4">
-        <Input
-          type="email"
-          placeholder="your@email.com →"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          disabled={isSubmitting}
-          className="flex-1 h-14 md:h-16 text-base md:text-lg px-6 bg-white border-2 border-border rounded-[20px] shadow-md focus-visible:ring-primary focus-visible:ring-4 focus-visible:border-primary transition-all placeholder:text-foreground/40"
-        />
-        <Button
-          type="submit"
-          size="lg"
-          disabled={isSubmitting}
-          className="h-14 md:h-16 px-8 md:px-12 text-base md:text-lg font-bold shadow-xl hover:shadow-primary/50 transition-all"
-        >
-          {isSubmitting ? "Joining..." : "Join Waitlist — Lifetime Unlimited"}
-        </Button>
-      </div>
-    </form>
+    <>
+      <Dialog open={showSuccess} onOpenChange={setShowSuccess}>
+        <DialogContent className="max-w-2xl text-center border-4 border-primary">
+          <DialogHeader>
+            <DialogTitle className="text-4xl md:text-5xl font-bold text-primary mb-4" style={{ fontFamily: 'Obviously, Recoleta, Satchel, sans-serif' }}>
+              Hell yes — you're in!
+            </DialogTitle>
+            <DialogDescription className="text-2xl md:text-3xl text-foreground font-medium leading-relaxed">
+              First 2,000 get lifetime unlimited.<br />
+              Tell your single friends before Sydney finds out.
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+      
+      <form onSubmit={handleSubmit} className="max-w-2xl mx-auto">
+        <div className="flex flex-col md:flex-row gap-4">
+          <Input
+            type="email"
+            placeholder="your@email.com →"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            disabled={isSubmitting}
+            className="flex-1 h-14 md:h-16 text-base md:text-lg px-6 bg-white border-2 border-border rounded-[20px] shadow-md focus-visible:ring-primary focus-visible:ring-4 focus-visible:border-primary transition-all placeholder:text-foreground/40"
+          />
+          <Button
+            type="submit"
+            size="lg"
+            disabled={isSubmitting}
+            className="h-14 md:h-16 px-8 md:px-12 text-base md:text-lg font-bold shadow-xl hover:shadow-primary/50 transition-all"
+          >
+            {isSubmitting ? "Joining..." : "Join Waitlist — Lifetime Unlimited"}
+          </Button>
+        </div>
+      </form>
+    </>
   );
 };
 
@@ -109,8 +160,78 @@ const AnimatedCounter = ({ target }: { target: number }) => {
 };
 
 const Index = () => {
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  const triggerConfetti = () => {
+    const duration = 3000;
+    const animationEnd = Date.now() + duration;
+    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 9999 };
+
+    const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
+
+    const interval = window.setInterval(() => {
+      const timeLeft = animationEnd - Date.now();
+
+      if (timeLeft <= 0) {
+        return clearInterval(interval);
+      }
+
+      const particleCount = 50 * (timeLeft / duration);
+      confetti({
+        ...defaults,
+        particleCount,
+        origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+      });
+      confetti({
+        ...defaults,
+        particleCount,
+        origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+      });
+    }, 250);
+  };
+
+  const handleEmailSubmit = async (email: string) => {
+    const validation = emailSchema.safeParse(email);
+    if (!validation.success) {
+      return false;
+    }
+
+    try {
+      const { error } = await supabase.from('waitlist').insert([{ 
+        email: email.toLowerCase().trim(),
+        city: 'Canberra',
+        referral_code: null
+      }]);
+      
+      if (error && error.code !== '23505') {
+        throw error;
+      }
+      
+      setShowSuccess(true);
+      triggerConfetti();
+      return true;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
+      <Dialog open={showSuccess} onOpenChange={setShowSuccess}>
+        <DialogContent className="max-w-2xl text-center border-4 border-primary">
+          <DialogHeader>
+            <DialogTitle className="text-4xl md:text-5xl font-bold text-primary mb-4" style={{ fontFamily: 'Obviously, Recoleta, Satchel, sans-serif' }}>
+              Hell yes — you're in!
+            </DialogTitle>
+            <DialogDescription className="text-2xl md:text-3xl text-foreground font-medium leading-relaxed">
+              First 2,000 get lifetime unlimited.<br />
+              Tell your single friends before Sydney finds out.
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+
       {/* Full-bleed Hero Section */}
       <section className="relative h-screen w-full overflow-hidden">
         {/* Background Image with Overlay */}
@@ -170,24 +291,9 @@ const Index = () => {
                 e.preventDefault();
                 const formData = new FormData(e.currentTarget);
                 const email = formData.get('email') as string;
-                
-                const validation = emailSchema.safeParse(email);
-                if (!validation.success) {
-                  return;
-                }
-
-                try {
-                  const { error } = await supabase.from('waitlist').insert([{ 
-                    email: email.toLowerCase().trim(),
-                    city: 'Canberra',
-                    referral_code: null
-                  }]);
-                  
-                  if (error && error.code !== '23505') {
-                    throw error;
-                  }
-                } catch (error) {
-                  console.error(error);
+                const success = await handleEmailSubmit(email);
+                if (success) {
+                  e.currentTarget.reset();
                 }
               }} className="max-w-2xl mx-auto">
                 <div className="flex flex-col md:flex-row gap-4">
@@ -406,24 +512,9 @@ const Index = () => {
             e.preventDefault();
             const formData = new FormData(e.currentTarget);
             const email = formData.get('email') as string;
-            
-            const validation = emailSchema.safeParse(email);
-            if (!validation.success) {
-              return;
-            }
-
-            try {
-              const { error } = await supabase.from('waitlist').insert([{ 
-                email: email.toLowerCase().trim(),
-                city: 'Canberra',
-                referral_code: null
-              }]);
-              
-              if (error && error.code !== '23505') {
-                throw error;
-              }
-            } catch (error) {
-              console.error(error);
+            const success = await handleEmailSubmit(email);
+            if (success) {
+              e.currentTarget.reset();
             }
           }} className="max-w-2xl mx-auto mb-8">
             <div className="flex flex-col md:flex-row gap-4">
