@@ -583,6 +583,72 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Coral CTA Section */}
+      <section className="py-20 sm:py-24 md:py-32 lg:py-40 px-4" style={{ backgroundColor: '#FF4E5B' }}>
+        <div className="max-w-[1200px] mx-auto text-center">
+          <AnimatedSection>
+            <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-6 leading-tight">
+              Stop wasting your nights<br />on fake profiles.
+            </h2>
+          </AnimatedSection>
+
+          <AnimatedSection delay={100}>
+            <p className="text-xl sm:text-2xl md:text-3xl text-white/90 mb-12 font-medium">
+              Be the first to date real humans.
+            </p>
+          </AnimatedSection>
+
+          <AnimatedSection delay={200}>
+            <form 
+              onSubmit={async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.currentTarget);
+                const email = formData.get('email') as string;
+                
+                const validation = emailSchema.safeParse(email);
+                if (!validation.success) return;
+
+                try {
+                  await supabase.from('waitlist').insert([{ 
+                    email: email.toLowerCase().trim(),
+                    referral_source: 'coral_cta_section'
+                  }]);
+                } catch (error) {
+                  // Silent fail for duplicate entries
+                }
+                
+                e.currentTarget.reset();
+              }}
+              className="max-w-3xl mx-auto mb-8"
+            >
+              <div className="flex flex-col md:flex-row gap-4 mb-6">
+                <Input
+                  type="email"
+                  name="email"
+                  placeholder="your@email.com"
+                  required
+                  className="flex-1 h-16 md:h-20 text-base md:text-xl px-8 bg-white text-foreground border-0 rounded-[16px] shadow-2xl"
+                />
+                <Button
+                  type="submit"
+                  size="lg"
+                  variant="outline"
+                  className="h-16 md:h-20 px-8 md:px-12 text-base md:text-xl whitespace-normal md:whitespace-nowrap font-bold bg-transparent border-4 border-white text-white hover:bg-white hover:text-primary rounded-[16px] shadow-2xl"
+                >
+                  Join Waitlist — Lifetime Premium Free for First 500
+                </Button>
+              </div>
+            </form>
+          </AnimatedSection>
+
+          <AnimatedSection delay={300}>
+            <p className="text-sm sm:text-base text-white/80 font-medium">
+              Launching December 2025 • Los Angeles → New York → London → everywhere
+            </p>
+          </AnimatedSection>
+        </div>
+      </section>
+
       {/* How It Works */}
       <section id="how-it-works" className="py-12 sm:py-16 md:py-20 lg:py-24 px-4 bg-secondary/30 scroll-mt-20">
         <div className="max-w-7xl mx-auto">
