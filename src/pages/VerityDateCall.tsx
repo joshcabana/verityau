@@ -40,6 +40,7 @@ const VerityDateCall = () => {
   const [icebreakerVisible, setIcebreakerVisible] = useState(true);
   const [reportOpen, setReportOpen] = useState(false);
   const [partnerName, setPartnerName] = useState<string>("this user");
+  const [partnerId, setPartnerId] = useState<string>("");
 
   useEffect(() => {
     if (!verityDateId) {
@@ -73,13 +74,15 @@ const VerityDateCall = () => {
 
       setRoomUrl(data.room_url);
 
-      // Get partner name
+      // Get partner name and ID
       const match = data.matches;
-      const partnerId = match.user1 === user.id ? match.user2 : match.user1;
+      const partnerUserId = match.user1 === user.id ? match.user2 : match.user1;
+      setPartnerId(partnerUserId);
+      
       const { data: profile } = await supabase
         .from("profiles")
         .select("name")
-        .eq("user_id", partnerId)
+        .eq("user_id", partnerUserId)
         .single();
       
       if (profile) {
@@ -209,6 +212,8 @@ const VerityDateCall = () => {
         onOpenChange={setReportOpen}
         onSubmit={handleReportSubmit}
         userName={partnerName}
+        reportedUserId={partnerId}
+        context="verity_date_call"
       />
     </div>
   );

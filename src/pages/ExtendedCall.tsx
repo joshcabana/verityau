@@ -123,6 +123,7 @@ const ExtendedCall = () => {
         open={isReportOpen}
         onOpenChange={setIsReportOpen}
         onSubmit={handleReportSubmit}
+        context="extended_call_demo"
       />
     </div>
   );
