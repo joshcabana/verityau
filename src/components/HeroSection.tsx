@@ -75,10 +75,10 @@ const HeroSection = () => {
           playsInline
           preload="metadata"
           className="absolute inset-0 w-full h-full object-cover"
-          poster="https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=1920&q=80&fm=webp"
+          poster="https://images.pexels.com/videos/9498057/pexels-photo-9498057.jpeg?auto=compress&cs=tinysrgb&w=1920"
         >
           <source 
-            src="https://cdn.pixabay.com/video/2020/06/15/41861-432271780_large.mp4" 
+            src="https://videos.pexels.com/video-files/9498057/9498057-uhd_2732_1440_25fps.mp4" 
             type="video/mp4" 
           />
         </video>
@@ -118,8 +118,7 @@ const HeroSection = () => {
 
         {/* Subheadline */}
         <p className="text-[20px] md:text-[32px] leading-relaxed font-medium text-white/95 mb-12 max-w-4xl mx-auto drop-shadow-lg animate-fade-in-slow" style={{ animationDelay: '0.2s' }}>
-          Verity is the only dating app that requires a 30-second video profile.<br className="hidden md:block" />
-          No catfishing. No endless texting. No surprise first dates.
+          Verity is the only dating app that requires a 30-second video profile. No catfishing. No endless texting. No surprise first dates.
         </p>
 
         {/* Email Form */}
@@ -157,7 +156,7 @@ const HeroSection = () => {
 
         {/* Subtext */}
         <p className="text-sm md:text-base text-white/90 font-medium animate-fade-in" style={{ animationDelay: '0.6s' }}>
-          Be the first 500 → get lifetime Premium free forever
+          First 500 get lifetime Premium free
         </p>
       </div>
 
