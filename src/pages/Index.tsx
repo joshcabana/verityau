@@ -24,21 +24,20 @@ import step4Chat from "@/assets/step-4-chat.png";
 
 
 const SocialShareButtons = () => {
-  const shareText = "Join me on Verity - the dating app where you video date first. No catfishing, no endless texting. First 2,000 get lifetime unlimited! 🎉";
-  const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
+  const shareText = "Finally a dating app that forces a video date first. Joining Verity waitlist before it blows up";
+  const shareUrl = "https://verityau.lovable.app";
+  const { toast } = useToast();
 
   const handleTwitterShare = () => {
-    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
-  };
-
-  const handleTikTokShare = () => {
-    // TikTok doesn't have a direct share URL, so we'll copy to clipboard
-    navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)} → ${encodeURIComponent(shareUrl)}`, '_blank');
   };
 
   const handleInstagramShare = () => {
-    // Instagram doesn't have a direct share URL, so we'll copy to clipboard
-    navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
+    navigator.clipboard.writeText(`${shareText} → ${shareUrl}`);
+    toast({
+      title: "Copied to clipboard!",
+      description: "Share this on Instagram",
+    });
   };
 
   return (
@@ -52,18 +51,6 @@ const SocialShareButtons = () => {
       >
         <Twitter className="w-4 h-4" />
         <span className="hidden sm:inline">Twitter</span>
-      </Button>
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        onClick={handleTikTokShare}
-        className="flex items-center gap-2 hover:bg-primary/10 hover:text-primary transition-all"
-      >
-        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
-        </svg>
-        <span className="hidden sm:inline">TikTok</span>
       </Button>
       <Button
         type="button"
@@ -88,31 +75,12 @@ const WaitlistForm = () => {
   const { toast } = useToast();
 
   const triggerConfetti = () => {
-    const duration = 3000;
-    const animationEnd = Date.now() + duration;
-    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 9999 };
-
-    const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
-
-    const interval = window.setInterval(() => {
-      const timeLeft = animationEnd - Date.now();
-
-      if (timeLeft <= 0) {
-        return clearInterval(interval);
-      }
-
-      const particleCount = 50 * (timeLeft / duration);
-      confetti({
-        ...defaults,
-        particleCount,
-        origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
-      });
-      confetti({
-        ...defaults,
-        particleCount,
-        origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
-      });
-    }, 250);
+    confetti({
+      particleCount: 50,
+      spread: 60,
+      origin: { y: 0.6 },
+      zIndex: 9999,
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -169,13 +137,9 @@ const WaitlistForm = () => {
       <Dialog open={showSuccess} onOpenChange={setShowSuccess}>
         <DialogContent className="max-w-2xl text-center border-4 border-primary">
           <DialogHeader>
-            <DialogTitle className="text-4xl md:text-5xl font-bold text-primary mb-4" style={{ fontFamily: 'Obviously, Recoleta, Satchel, sans-serif' }}>
-              Hell yes — you're in!
+            <DialogTitle className="text-3xl md:text-5xl font-bold text-foreground mb-4 leading-tight" style={{ fontFamily: 'Obviously, Recoleta, Satchel, sans-serif' }}>
+              You're in! Lifetime unlimited dates locked. Tell every single friend before Sydney steals the spots.
             </DialogTitle>
-            <DialogDescription className="text-2xl md:text-3xl text-foreground font-medium leading-relaxed">
-              First 2,000 get lifetime unlimited.<br />
-              Tell your single friends before Sydney finds out.
-            </DialogDescription>
           </DialogHeader>
         </DialogContent>
       </Dialog>
@@ -201,7 +165,7 @@ const WaitlistForm = () => {
           </Button>
         </div>
         <p className="text-center text-sm text-muted-foreground mt-3">
-          Share this with your single friends → get +5 extra dates each when they join
+          Share with single friends → you both get +5 extra dates on launch
         </p>
         <SocialShareButtons />
       </form>
@@ -224,31 +188,12 @@ const Index = () => {
   const [showSuccess, setShowSuccess] = useState(false);
 
   const triggerConfetti = () => {
-    const duration = 3000;
-    const animationEnd = Date.now() + duration;
-    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 9999 };
-
-    const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
-
-    const interval = window.setInterval(() => {
-      const timeLeft = animationEnd - Date.now();
-
-      if (timeLeft <= 0) {
-        return clearInterval(interval);
-      }
-
-      const particleCount = 50 * (timeLeft / duration);
-      confetti({
-        ...defaults,
-        particleCount,
-        origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
-      });
-      confetti({
-        ...defaults,
-        particleCount,
-        origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
-      });
-    }, 250);
+    confetti({
+      particleCount: 50,
+      spread: 60,
+      origin: { y: 0.6 },
+      zIndex: 9999,
+    });
   };
 
   const handleEmailSubmit = async (email: string) => {
@@ -282,13 +227,9 @@ const Index = () => {
       <Dialog open={showSuccess} onOpenChange={setShowSuccess}>
         <DialogContent className="max-w-2xl text-center border-4 border-primary">
           <DialogHeader>
-            <DialogTitle className="text-4xl md:text-5xl font-bold text-primary mb-4" style={{ fontFamily: 'Obviously, Recoleta, Satchel, sans-serif' }}>
-              Hell yes — you're in!
+            <DialogTitle className="text-3xl md:text-5xl font-bold text-foreground mb-4 leading-tight" style={{ fontFamily: 'Obviously, Recoleta, Satchel, sans-serif' }}>
+              You're in! Lifetime unlimited dates locked. Tell every single friend before Sydney steals the spots.
             </DialogTitle>
-            <DialogDescription className="text-2xl md:text-3xl text-foreground font-medium leading-relaxed">
-              First 2,000 get lifetime unlimited.<br />
-              Tell your single friends before Sydney finds out.
-            </DialogDescription>
           </DialogHeader>
         </DialogContent>
       </Dialog>
@@ -334,10 +275,10 @@ const Index = () => {
           <div className="max-w-5xl mx-auto text-center">
             {/* Headline */}
             <h1 
-              className="text-[56px] sm:text-[72px] md:text-[96px] lg:text-[120px] font-bold text-white mb-6 md:mb-8 leading-[1.1] tracking-wide whitespace-nowrap"
+              className="text-[52px] sm:text-[72px] md:text-[96px] lg:text-[120px] font-bold text-white mb-6 md:mb-8 leading-[1.15] tracking-wide"
               style={{ fontFamily: 'Obviously, Recoleta, Satchel, sans-serif' }}
             >
-              Date people,<br className="block sm:hidden" /> not profiles.
+              Date people,<br className="hidden sm:block" /> not profiles.
             </h1>
 
             {/* Subheadline */}
@@ -374,7 +315,7 @@ const Index = () => {
                   </Button>
                 </div>
                 <p className="text-center text-sm text-white/80 mt-4">
-                  Share this with your single friends → get +5 extra dates each when they join
+                  Share with single friends → you both get +5 extra dates on launch
                 </p>
                 <SocialShareButtons />
               </form>
@@ -386,7 +327,7 @@ const Index = () => {
             </p>
             
             {/* Waitlist count */}
-            <p className="text-primary text-xl md:text-2xl font-bold">
+            <p className="text-primary text-2xl md:text-4xl font-bold">
               <AnimatedCounter target={18274} /> Australians already waiting
             </p>
           </div>
@@ -548,7 +489,7 @@ const Index = () => {
 
           {/* Animated Counter */}
           <div className="mt-24 md:mt-32 text-center">
-            <p className="text-2xl md:text-4xl font-bold mb-8 text-primary">
+            <p className="text-3xl md:text-5xl font-bold mb-8 text-primary">
               <AnimatedCounter target={18274} /> Australians already waiting
             </p>
 
@@ -600,7 +541,7 @@ const Index = () => {
               </Button>
             </div>
             <p className="text-center text-sm text-white/90 mt-4">
-              Share this with your single friends → get +5 extra dates each when they join
+              Share with single friends → you both get +5 extra dates on launch
             </p>
             <SocialShareButtons />
           </form>
