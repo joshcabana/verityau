@@ -2,9 +2,10 @@ import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Heart, Meh, X, Sparkles } from "lucide-react";
+import { Heart, Meh, X, Sparkles, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import confetti from "canvas-confetti";
+import { ReportDialog } from "@/components/ReportDialog";
 
 const VerityDateFeedback = () => {
   const [searchParams] = useSearchParams();
@@ -14,6 +15,7 @@ const VerityDateFeedback = () => {
   const [submitting, setSubmitting] = useState(false);
   const [partnerName, setPartnerName] = useState<string>("");
   const [matchId, setMatchId] = useState<string>("");
+  const [reportOpen, setReportOpen] = useState(false);
 
   useEffect(() => {
     if (!verityDateId) {
@@ -116,13 +118,35 @@ const VerityDateFeedback = () => {
             .update({ both_interested: true })
             .eq("id", matchId);
 
-          // Celebrate!
-          confetti({
-            particleCount: 100,
-            spread: 70,
-            origin: { y: 0.6 },
-            colors: ["#FF6B6B", "#FFE66D", "#FF8E9E"],
-          });
+          // Epic celebration with multiple confetti bursts!
+          const duration = 3000;
+          const animationEnd = Date.now() + duration;
+          const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+          const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
+
+          const interval = setInterval(() => {
+            const timeLeft = animationEnd - Date.now();
+
+            if (timeLeft <= 0) {
+              return clearInterval(interval);
+            }
+
+            const particleCount = 50 * (timeLeft / duration);
+
+            confetti({
+              ...defaults,
+              particleCount,
+              origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+              colors: ["#FF3B30", "#FFE66D", "#FF8E9E", "#FFB6C1", "#FFA07A"],
+            });
+            confetti({
+              ...defaults,
+              particleCount,
+              origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+              colors: ["#FF3B30", "#FFE66D", "#FF8E9E", "#FFB6C1", "#FFA07A"],
+            });
+          }, 250);
 
           toast({
             title: "🎉 It's a Match!",
@@ -131,17 +155,21 @@ const VerityDateFeedback = () => {
 
           setTimeout(() => {
             navigate(`/matches`);
-          }, 2000);
+          }, 3500);
         } else {
-          // Not a mutual match
+          // Not a mutual match - show warm, respectful message
+          const isNoFeedback = updatedVerityDate.user1_feedback === "no" || updatedVerityDate.user2_feedback === "no";
+          
           toast({
-            title: "Thank you for your feedback",
-            description: "You parted ways respectfully. Keep exploring!",
+            title: isNoFeedback ? "You parted ways respectfully" : "Thanks for your honesty",
+            description: isNoFeedback 
+              ? "On to the next connection. Your perfect match is out there! ✨"
+              : "We'll let you know if feelings align. Keep being real!",
           });
 
           setTimeout(() => {
             navigate("/main");
-          }, 2000);
+          }, 2500);
         }
       } else {
         // Waiting for other person's feedback
@@ -163,6 +191,14 @@ const VerityDateFeedback = () => {
       });
       setSubmitting(false);
     }
+  };
+
+  const handleReportSubmit = () => {
+    setReportOpen(false);
+    toast({
+      title: "Report submitted",
+      description: "Our safety team will review this. Thank you for keeping Verity safe.",
+    });
   };
 
   return (
@@ -228,7 +264,26 @@ const VerityDateFeedback = () => {
         <div className="text-center text-sm text-muted-foreground bg-card/50 backdrop-blur-sm border border-border rounded-xl p-4 max-w-md mx-auto">
           <p>Your honest feedback helps create meaningful connections. If you both say yes, chat will be unlocked! 💬</p>
         </div>
+
+        <div className="text-center">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setReportOpen(true)}
+            className="text-muted-foreground hover:text-destructive transition-colors"
+          >
+            <AlertCircle className="w-4 h-4 mr-2" />
+            Report {partnerName}
+          </Button>
+        </div>
       </div>
+
+      <ReportDialog
+        open={reportOpen}
+        onOpenChange={setReportOpen}
+        onSubmit={handleReportSubmit}
+        userName={partnerName}
+      />
     </div>
   );
 };

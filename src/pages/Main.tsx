@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -9,8 +9,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Heart, Sparkles, Shield, ShieldCheck, Ban, Camera, AlertCircle, Eye } from "lucide-react";
+import { Heart, Sparkles, Shield, ShieldCheck, Ban, Camera, AlertCircle, Eye, Crown } from "lucide-react";
 import { VerityDateNotification } from "@/components/VerityDateNotification";
+import { useToast } from "@/hooks/use-toast";
 
 const guidelines = [
   {
@@ -36,6 +37,7 @@ const guidelines = [
 ];
 
 const Main = () => {
+  const { toast } = useToast();
   const [isSearching, setIsSearching] = useState(false);
   const [showMe, setShowMe] = useState<"men" | "women" | "everyone">("everyone");
   const [radius, setRadius] = useState(25);
@@ -43,6 +45,26 @@ const Main = () => {
   
   // Mock user name - in production this would come from auth/state
   const userName = "Alex";
+
+  // Demo notification system - in production this would use realtime subscriptions
+  useEffect(() => {
+    // Simulate notifications for demo purposes
+    const notifyTimers: NodeJS.Timeout[] = [];
+
+    // Random like notification after 30 seconds
+    const likeTimer = setTimeout(() => {
+      toast({
+        title: "💕 New Like!",
+        description: "Someone is interested in your profile",
+        duration: 4000,
+      });
+    }, 30000);
+    notifyTimers.push(likeTimer);
+
+    return () => {
+      notifyTimers.forEach(timer => clearTimeout(timer));
+    };
+  }, [toast]);
   
   // Get time-based greeting
   const getGreeting = () => {
@@ -82,6 +104,26 @@ const Main = () => {
             </h1>
           </div>
 
+          {/* Verity Plus Teaser Banner */}
+          <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-secondary/10 rounded-2xl p-6 border border-primary/20 shadow-premium">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
+                  <Crown className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-foreground">Verity Plus</h3>
+                  <p className="text-sm text-muted-foreground">Unlimited dates • Priority matching</p>
+                </div>
+              </div>
+              <Link to="/verity-plus">
+                <Button variant="default" size="sm" className="btn-premium">
+                  $24.99/mo
+                </Button>
+              </Link>
+            </div>
+          </div>
+
           {/* Primary CTA Card */}
           <div className="bg-card rounded-2xl shadow-lg p-12">
             <div className="text-center space-y-6">
@@ -89,14 +131,21 @@ const Main = () => {
                 onClick={handleFindSomeone}
                 disabled={isSearching}
                 size="lg"
-                className="h-16 px-12 text-lg font-semibold"
+                className="h-16 px-12 text-lg font-semibold btn-premium shadow-premium"
               >
-                {isSearching ? "Searching..." : "Find someone now"}
+                {isSearching ? (
+                  <span className="flex items-center gap-2">
+                    <Heart className="w-5 h-5 animate-heartbeat" fill="currentColor" />
+                    Finding someone real...
+                  </span>
+                ) : (
+                  "Find someone now"
+                )}
               </Button>
               
               <p className="text-sm text-muted-foreground">
                 {isSearching 
-                  ? "We're introducing you to someone nearby…" 
+                  ? "Finding humans who are ready to be real..." 
                   : "Ready when you are."}
               </p>
             </div>

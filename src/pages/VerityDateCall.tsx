@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Heart, Clock } from "lucide-react";
+import { Heart, Clock, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import { ReportDialog } from "@/components/ReportDialog";
 
 const ICEBREAKER_PROMPTS = [
   "What's the best adventure you've been on recently?",
@@ -34,7 +36,10 @@ const VerityDateCall = () => {
   const verityDateId = searchParams.get("id");
   const [roomUrl, setRoomUrl] = useState<string>("");
   const [timeRemaining, setTimeRemaining] = useState<number>(600); // 10 minutes
-  const [icebreaker, setIcebreaker] = useState<string>("");
+  const [currentIcebreakerIndex, setCurrentIcebreakerIndex] = useState<number>(0);
+  const [icebreakerVisible, setIcebreakerVisible] = useState(true);
+  const [reportOpen, setReportOpen] = useState(false);
+  const [partnerName, setPartnerName] = useState<string>("this user");
 
   useEffect(() => {
     if (!verityDateId) {
@@ -42,11 +47,17 @@ const VerityDateCall = () => {
       return;
     }
 
-    // Load room URL
+    // Load room URL and partner name
     const loadRoom = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        navigate("/auth");
+        return;
+      }
+
       const { data, error } = await supabase
         .from("verity_dates")
-        .select("room_url, scheduled_at")
+        .select("room_url, scheduled_at, matches!inner(user1, user2)")
         .eq("id", verityDateId)
         .single();
 
@@ -62,6 +73,19 @@ const VerityDateCall = () => {
 
       setRoomUrl(data.room_url);
 
+      // Get partner name
+      const match = data.matches;
+      const partnerId = match.user1 === user.id ? match.user2 : match.user1;
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("name")
+        .eq("user_id", partnerId)
+        .single();
+      
+      if (profile) {
+        setPartnerName(profile.name || "this user");
+      }
+
       // Calculate time remaining
       if (data.scheduled_at) {
         const scheduledTime = new Date(data.scheduled_at).getTime();
@@ -74,9 +98,8 @@ const VerityDateCall = () => {
 
     loadRoom();
 
-    // Random icebreaker
-    const randomPrompt = ICEBREAKER_PROMPTS[Math.floor(Math.random() * ICEBREAKER_PROMPTS.length)];
-    setIcebreaker(randomPrompt);
+    // Start with random icebreaker
+    setCurrentIcebreakerIndex(Math.floor(Math.random() * ICEBREAKER_PROMPTS.length));
 
     // Countdown timer
     const timer = setInterval(() => {
@@ -90,7 +113,19 @@ const VerityDateCall = () => {
       });
     }, 1000);
 
-    return () => clearInterval(timer);
+    // Icebreaker rotation - fade out, change, fade in every 60 seconds
+    const icebreakerTimer = setInterval(() => {
+      setIcebreakerVisible(false);
+      setTimeout(() => {
+        setCurrentIcebreakerIndex((prev) => (prev + 1) % ICEBREAKER_PROMPTS.length);
+        setIcebreakerVisible(true);
+      }, 500); // Wait for fade out
+    }, 60000); // Every 60 seconds
+
+    return () => {
+      clearInterval(timer);
+      clearInterval(icebreakerTimer);
+    };
   }, [verityDateId, navigate, toast]);
 
   const formatTime = (seconds: number): string => {
@@ -99,16 +134,26 @@ const VerityDateCall = () => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const handleReportSubmit = () => {
+    setReportOpen(false);
+    toast({
+      title: "Report submitted",
+      description: "Our safety team will review this. Thank you for keeping Verity safe.",
+    });
+  };
+
   if (!roomUrl) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading video room...</p>
+          <p className="text-muted-foreground">Finding humans who are ready to be real...</p>
         </div>
       </div>
     );
   }
+
+  const currentIcebreaker = ICEBREAKER_PROMPTS[currentIcebreakerIndex];
 
   return (
     <div className="relative w-full h-screen bg-background">
@@ -118,15 +163,32 @@ const VerityDateCall = () => {
         <span className="font-mono text-lg font-semibold text-foreground">{formatTime(timeRemaining)}</span>
       </div>
 
-      {/* Icebreaker prompt overlay */}
-      <div className="absolute top-20 left-1/2 -translate-x-1/2 z-50 max-w-md w-full mx-4 bg-gradient-to-br from-primary/90 to-secondary/90 backdrop-blur-md border border-primary/30 rounded-2xl p-6 shadow-2xl animate-in fade-in slide-in-from-top duration-500">
+      {/* Icebreaker prompt overlay with fade transitions */}
+      <div 
+        className={`absolute top-20 left-1/2 -translate-x-1/2 z-50 max-w-md w-full mx-4 bg-gradient-to-br from-primary/90 to-secondary/90 backdrop-blur-md border border-primary/30 rounded-2xl p-6 shadow-2xl transition-all duration-500 ${
+          icebreakerVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'
+        }`}
+      >
         <div className="flex items-start gap-3">
           <Heart className="w-6 h-6 text-white flex-shrink-0 mt-1" fill="white" />
           <div>
             <h3 className="text-white font-semibold mb-2">Conversation Starter</h3>
-            <p className="text-white/90 text-sm leading-relaxed">{icebreaker}</p>
+            <p className="text-white/90 text-sm leading-relaxed">{currentIcebreaker}</p>
           </div>
         </div>
+      </div>
+
+      {/* Report button */}
+      <div className="absolute top-4 right-4 z-50">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setReportOpen(true)}
+          className="bg-card/80 backdrop-blur-md border border-border hover:bg-destructive/10 hover:text-destructive transition-all"
+        >
+          <AlertCircle className="w-4 h-4 mr-2" />
+          Report
+        </Button>
       </div>
 
       {/* Daily.co iframe */}
@@ -141,6 +203,13 @@ const VerityDateCall = () => {
       <div className="absolute bottom-4 right-4 z-50 opacity-20 pointer-events-none">
         <Heart className="w-12 h-12 text-primary animate-pulse" fill="currentColor" />
       </div>
+
+      <ReportDialog
+        open={reportOpen}
+        onOpenChange={setReportOpen}
+        onSubmit={handleReportSubmit}
+        userName={partnerName}
+      />
     </div>
   );
 };

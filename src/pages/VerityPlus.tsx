@@ -1,125 +1,225 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { ArrowLeft, Clock, Users, Zap, Sparkles } from "lucide-react";
+import { Crown, Heart, Sparkles, Zap, Users, Star, ArrowLeft, Check } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const VerityPlus = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [selectedPlan, setSelectedPlan] = useState<"monthly" | "annual">("monthly");
+
+  const handleSubscribe = () => {
+    // In production, this would integrate with Stripe
+    toast({
+      title: "Coming Soon! 🎉",
+      description: "Verity Plus will be available at launch. Stay tuned!",
+      duration: 5000,
+    });
+  };
 
   const features = [
     {
-      icon: Users,
-      title: "More daily introductions",
-      description: "Get introduced to more people each day to find your perfect match faster."
+      icon: Heart,
+      title: "Unlimited Verity Dates",
+      description: "Connect with as many people as you want, no restrictions",
     },
     {
       icon: Zap,
-      title: "Priority introductions",
-      description: "Jump to the front of the queue during busy times and never miss out."
+      title: "Priority Matching",
+      description: "Get matched first when new users join in your area",
     },
     {
-      icon: Clock,
-      title: "Longer extended calls",
-      description: "When you're really connecting, enjoy more time together on extended calls."
-    }
+      icon: Users,
+      title: "Extended Search Radius",
+      description: "Find connections up to 500km away instead of just 100km",
+    },
+    {
+      icon: Star,
+      title: "Profile Boost",
+      description: "Your profile gets shown more often to potential matches",
+    },
+    {
+      icon: Sparkles,
+      title: "Advanced Filters",
+      description: "Filter by interests, values, and relationship goals",
+    },
+    {
+      icon: Crown,
+      title: "Exclusive Badge",
+      description: "Stand out with a premium Verity Plus badge on your profile",
+    },
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-secondary">
+    <div className="min-h-screen bg-gradient-to-b from-background via-primary/5 to-secondary/10">
       {/* Header */}
-      <div className="bg-card border-b border-border sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center gap-4">
+      <div className="border-b border-border bg-card/50 backdrop-blur sticky top-0 z-10">
+        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <Button
             variant="ghost"
-            size="icon"
+            size="sm"
             onClick={() => navigate("/main")}
+            className="gap-2"
           >
-            <ArrowLeft className="h-5 w-5" />
+            <ArrowLeft className="w-4 h-4" />
+            Back
           </Button>
-          <div className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-primary" />
-            <h1 className="text-2xl font-bold text-foreground">Verity Plus</h1>
+          <div className="flex items-center gap-2 text-primary">
+            <Crown className="w-5 h-5" />
+            <span className="font-semibold">Verity Plus</span>
           </div>
+          <div className="w-20" /> {/* Spacer for center alignment */}
         </div>
       </div>
 
-      {/* Content */}
-      <div className="max-w-4xl mx-auto px-4 py-12 space-y-12">
-        {/* Hero Section */}
-        <div className="text-center space-y-4 max-w-2xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground">
-            Verity Plus
-          </h2>
-          <p className="text-lg text-muted-foreground">
-            For serious members who want more live introductions and longer conversations.
-          </p>
+      {/* Hero Section */}
+      <div className="max-w-6xl mx-auto px-4 py-16 text-center">
+        <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-primary to-secondary mb-6 shadow-coral-intense animate-heartbeat">
+          <Crown className="w-10 h-10 text-white" />
+        </div>
+        
+        <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+          Upgrade to Verity Plus
+        </h1>
+        <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
+          Unlock unlimited connections and premium features to find your perfect match faster
+        </p>
+
+        {/* Pricing Toggle */}
+        <div className="inline-flex items-center gap-3 bg-card border border-border rounded-full p-1 mb-12">
+          <Button
+            variant={selectedPlan === "monthly" ? "default" : "ghost"}
+            onClick={() => setSelectedPlan("monthly")}
+            className="rounded-full px-8"
+          >
+            Monthly
+          </Button>
+          <Button
+            variant={selectedPlan === "annual" ? "default" : "ghost"}
+            onClick={() => setSelectedPlan("annual")}
+            className="rounded-full px-8 relative"
+          >
+            Annual
+            <span className="absolute -top-2 -right-2 bg-primary text-white text-xs px-2 py-0.5 rounded-full">
+              Save 20%
+            </span>
+          </Button>
         </div>
 
-        {/* Features Grid */}
-        <div className="grid md:grid-cols-3 gap-6">
+        {/* Pricing Card */}
+        <div className="max-w-md mx-auto bg-gradient-to-br from-card to-secondary/30 rounded-3xl border-2 border-primary/30 p-8 shadow-premium">
+          <div className="text-center mb-6">
+            <div className="text-5xl font-bold text-foreground mb-2">
+              ${selectedPlan === "monthly" ? "24.99" : "19.99"}
+              <span className="text-2xl text-muted-foreground">/mo</span>
+            </div>
+            {selectedPlan === "annual" && (
+              <p className="text-sm text-muted-foreground">
+                Billed as $239.99/year
+              </p>
+            )}
+          </div>
+
+          <Button
+            onClick={handleSubscribe}
+            size="lg"
+            className="w-full h-14 text-lg font-semibold btn-premium shadow-premium mb-4"
+          >
+            <Crown className="w-5 h-5 mr-2" />
+            Start Verity Plus
+          </Button>
+
+          <p className="text-xs text-muted-foreground text-center">
+            Cancel anytime. No commitments.
+          </p>
+        </div>
+      </div>
+
+      {/* Features Grid */}
+      <div className="max-w-6xl mx-auto px-4 pb-20">
+        <h2 className="text-3xl font-bold text-foreground text-center mb-12">
+          Everything you get with Plus
+        </h2>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((feature, index) => {
             const Icon = feature.icon;
             return (
-              <Card key={index} className="p-8 space-y-4 hover:shadow-lg transition-shadow">
-                <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Icon className="h-6 w-6 text-primary" />
+              <div
+                key={index}
+                className="bg-card rounded-2xl p-6 border border-border hover:border-primary/30 transition-all duration-300 hover:shadow-premium group"
+              >
+                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <Icon className="w-6 h-6 text-primary" />
                 </div>
-                <div className="space-y-2">
-                  <h3 className="text-lg font-semibold text-foreground">
-                    {feature.title}
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    {feature.description}
-                  </p>
+                <h3 className="font-semibold text-foreground mb-2">
+                  {feature.title}
+                </h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {feature.description}
+                </p>
+                <div className="mt-4 flex items-center gap-2 text-primary text-sm font-medium">
+                  <Check className="w-4 h-4" />
+                  <span>Included</span>
                 </div>
-              </Card>
+              </div>
             );
           })}
         </div>
 
-        {/* Pricing Section */}
-        <div className="bg-card rounded-2xl shadow-lg p-8 md:p-12 space-y-8 max-w-2xl mx-auto">
-          <div className="text-center space-y-3">
-            <div className="text-4xl font-bold text-foreground">
-              $19<span className="text-2xl text-muted-foreground">/month</span>
+        {/* FAQ Section */}
+        <div className="mt-20 max-w-3xl mx-auto">
+          <h2 className="text-3xl font-bold text-foreground text-center mb-12">
+            Frequently Asked Questions
+          </h2>
+
+          <div className="space-y-6">
+            <div className="bg-card rounded-2xl p-6 border border-border">
+              <h3 className="font-semibold text-foreground mb-2">
+                Can I cancel anytime?
+              </h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Yes! You can cancel your Verity Plus subscription at any time. You'll continue to have access to Plus features until the end of your billing period.
+              </p>
             </div>
-            <p className="text-muted-foreground">
-              Cancel anytime. No commitments.
-            </p>
-          </div>
 
-          <div className="space-y-4">
-            <Button
-              onClick={() => navigate("/checkout")}
-              size="lg"
-              className="w-full h-14 text-lg font-semibold"
-            >
-              Upgrade to Verity Plus
-            </Button>
+            <div className="bg-card rounded-2xl p-6 border border-border">
+              <h3 className="font-semibold text-foreground mb-2">
+                What happens if I cancel?
+              </h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                If you cancel, you'll revert to the free plan. You'll be limited to 5 Verity Dates per month and standard matching priority, but you'll keep all your existing matches and conversations.
+              </p>
+            </div>
 
-            <div className="text-center">
-              <Button
-                variant="link"
-                className="text-muted-foreground"
-                onClick={() => {
-                  // In production, this could open a modal or navigate to a detailed benefits page
-                  console.log("Learn more clicked");
-                }}
-              >
-                Learn more about Plus benefits
-              </Button>
+            <div className="bg-card rounded-2xl p-6 border border-border">
+              <h3 className="font-semibold text-foreground mb-2">
+                Is there a free trial?
+              </h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                We offer a 7-day free trial for new Verity Plus subscribers. You won't be charged until the trial period ends. Cancel before then and you won't pay anything.
+              </p>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Additional Info */}
-        <div className="text-center text-sm text-muted-foreground max-w-2xl mx-auto space-y-2">
-          <p>
-            Verity Plus is billed monthly and can be cancelled at any time.
-          </p>
-          <p>
-            Your membership will renew automatically unless you cancel.
-          </p>
+      {/* Bottom CTA */}
+      <div className="border-t border-border bg-card/50 backdrop-blur sticky bottom-0">
+        <div className="max-w-6xl mx-auto px-4 py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="text-center sm:text-left">
+            <p className="font-semibold text-foreground">Ready to upgrade?</p>
+            <p className="text-sm text-muted-foreground">Start finding better matches today</p>
+          </div>
+          <Button
+            onClick={handleSubscribe}
+            size="lg"
+            className="btn-premium shadow-premium w-full sm:w-auto"
+          >
+            <Crown className="w-5 h-5 mr-2" />
+            Get Verity Plus
+          </Button>
         </div>
       </div>
     </div>

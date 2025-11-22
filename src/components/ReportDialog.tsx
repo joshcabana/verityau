@@ -2,8 +2,6 @@ import { useState } from "react";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -11,14 +9,16 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
+import { AlertCircle } from "lucide-react";
 
 interface ReportDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: () => void;
+  userName?: string;
 }
 
-export const ReportDialog = ({ open, onOpenChange, onSubmit }: ReportDialogProps) => {
+export const ReportDialog = ({ open, onOpenChange, onSubmit, userName = "this user" }: ReportDialogProps) => {
   const [reason, setReason] = useState("");
   const [details, setDetails] = useState("");
 
@@ -26,85 +26,93 @@ export const ReportDialog = ({ open, onOpenChange, onSubmit }: ReportDialogProps
     // In production, this would submit the report to backend
     console.log("Report submitted:", { reason, details });
     onSubmit();
+    setReason("");
+    setDetails("");
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Report User</DialogTitle>
-          <DialogDescription>
-            Help us keep Verity safe. Your report is confidential.
-          </DialogDescription>
+          <DialogTitle className="flex items-center gap-2 text-xl">
+            <AlertCircle className="h-5 w-5 text-destructive" />
+            Report {userName}
+          </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4 py-4">
-          <div className="space-y-3">
-            <Label>Reason for report</Label>
+        <div className="space-y-6 py-4">
+          <div className="space-y-4">
+            <Label className="text-sm font-medium">Why are you reporting {userName}?</Label>
             <RadioGroup value={reason} onValueChange={setReason}>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="inappropriate" id="inappropriate" />
-                <Label htmlFor="inappropriate" className="font-normal cursor-pointer">
+              <div className="flex items-start space-x-3 p-3 rounded-lg hover:bg-secondary/50 transition-colors">
+                <RadioGroupItem value="inappropriate" id="inappropriate" className="mt-0.5" />
+                <Label htmlFor="inappropriate" className="font-normal cursor-pointer leading-relaxed flex-1">
                   Inappropriate behavior or content
                 </Label>
               </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="harassment" id="harassment" />
-                <Label htmlFor="harassment" className="font-normal cursor-pointer">
+              <div className="flex items-start space-x-3 p-3 rounded-lg hover:bg-secondary/50 transition-colors">
+                <RadioGroupItem value="harassment" id="harassment" className="mt-0.5" />
+                <Label htmlFor="harassment" className="font-normal cursor-pointer leading-relaxed flex-1">
                   Harassment or hate speech
                 </Label>
               </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="underage" id="underage" />
-                <Label htmlFor="underage" className="font-normal cursor-pointer">
-                  Appears to be underage
+              <div className="flex items-start space-x-3 p-3 rounded-lg hover:bg-secondary/50 transition-colors">
+                <RadioGroupItem value="fake" id="fake" className="mt-0.5" />
+                <Label htmlFor="fake" className="font-normal cursor-pointer leading-relaxed flex-1">
+                  Fake profile or spam
                 </Label>
               </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="spam" id="spam" />
-                <Label htmlFor="spam" className="font-normal cursor-pointer">
-                  Spam or scam
+              <div className="flex items-start space-x-3 p-3 rounded-lg hover:bg-secondary/50 transition-colors">
+                <RadioGroupItem value="underage" id="underage" className="mt-0.5" />
+                <Label htmlFor="underage" className="font-normal cursor-pointer leading-relaxed flex-1">
+                  Appears to be under 18
                 </Label>
               </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="other" id="other" />
-                <Label htmlFor="other" className="font-normal cursor-pointer">
-                  Other
+              <div className="flex items-start space-x-3 p-3 rounded-lg hover:bg-secondary/50 transition-colors">
+                <RadioGroupItem value="other" id="other" className="mt-0.5" />
+                <Label htmlFor="other" className="font-normal cursor-pointer leading-relaxed flex-1">
+                  Other safety concern
                 </Label>
               </div>
             </RadioGroup>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="details">Additional details (optional)</Label>
+          <div className="space-y-3">
+            <Label htmlFor="details" className="text-sm font-medium">
+              Additional details (optional)
+            </Label>
             <Textarea
               id="details"
-              placeholder="Tell us more about what happened..."
+              placeholder="Help us understand what happened..."
               value={details}
               onChange={(e) => setDetails(e.target.value)}
-              className="min-h-[100px]"
+              className="min-h-[100px] resize-none"
             />
+          </div>
+
+          <div className="bg-muted/50 border border-border rounded-lg p-4">
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Your report is anonymous and will be reviewed by our safety team. We take all reports seriously and will take appropriate action.
+            </p>
           </div>
         </div>
 
-        <DialogFooter className="flex-col sm:flex-row gap-2">
+        <div className="flex gap-3">
           <Button
-            type="button"
-            variant="ghost"
+            variant="outline"
             onClick={() => onOpenChange(false)}
-            className="w-full sm:w-auto"
+            className="flex-1"
           >
             Cancel
           </Button>
           <Button
-            type="button"
             onClick={handleSubmit}
             disabled={!reason}
-            className="w-full sm:w-auto"
+            className="flex-1 bg-destructive hover:bg-destructive/90 text-destructive-foreground"
           >
             Submit Report
           </Button>
-        </DialogFooter>
+        </div>
       </DialogContent>
     </Dialog>
   );
