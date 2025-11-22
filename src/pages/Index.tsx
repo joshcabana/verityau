@@ -315,13 +315,13 @@ const Index = () => {
               className="text-[48px] sm:text-[72px] md:text-[96px] lg:text-[120px] font-bold text-white mb-6 md:mb-8 leading-[1.1] tracking-wide max-w-5xl mx-auto drop-shadow-2xl"
               style={{ fontFamily: 'Obviously Wide, Satchel, sans-serif' }}
             >
-              Date people, not profiles.
+              We&apos;re done with the dating app bullshit.
             </h1>
 
             {/* Subheadline */}
             <p className="text-[22px] md:text-[32px] text-white/95 mb-10 md:mb-12 leading-relaxed max-w-4xl mx-auto font-medium drop-shadow-lg">
-              The only dating app where your first conversation is a 10-minute video date.<br />
-              <span className="text-white/90">No endless chatting. No catfishing. No disappointment.</span>
+              Verity forces a 10-minute video date first. No filtered photos. No endless texting. No ghosts.<br />
+              <span className="text-white/90">Just humans being humans — or fuck off.</span>
             </p>
 
             {/* Email Input Form */}
@@ -360,7 +360,7 @@ const Index = () => {
 
             {/* Small text under button */}
             <p className="text-white/90 text-base md:text-lg font-medium mb-3">
-              First 2,000 Australians get unlimited Verity Dates for life — Canberra gets priority access.
+              Canberra launches January 2026. First 2,000 Australians get it free forever. We&apos;re starting here because this city deserves it first.
             </p>
             
             {/* Waitlist count */}
@@ -384,33 +384,33 @@ const Index = () => {
             className="text-4xl md:text-[64px] font-bold text-center mb-16 md:mb-20 leading-tight animate-fade-up"
             style={{ fontFamily: 'Obviously Wide, Satchel, sans-serif' }}
           >
-            Canberra, we're done with the games.
+            Every other app is lying to you.
           </h2>
 
           {/* Three Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-12 md:mb-16">
             <div className="bg-card border-2 border-border rounded-[24px] p-8 md:p-10 shadow-glass hover:shadow-coral-glow transition-all duration-300 hover:scale-[1.02] animate-fade-up">
               <p className="text-xl md:text-2xl text-foreground leading-relaxed font-medium">
-                You spend weeks texting someone who looks nothing like their photos.
+                They&apos;re selling you filtered lies. You text for weeks only to meet someone who looks nothing like their doctored photos.
               </p>
             </div>
 
             <div className="bg-card border-2 border-border rounded-[24px] p-8 md:p-10 shadow-glass hover:shadow-coral-glow transition-all duration-300 hover:scale-[1.02] animate-fade-up" style={{ animationDelay: '0.1s' }}>
               <p className="text-xl md:text-2xl text-foreground leading-relaxed font-medium">
-                You finally meet and there's zero chemistry.
+                You finally meet in person and there&apos;s zero fucking chemistry. Complete waste of your Saturday night.
               </p>
             </div>
 
             <div className="bg-card border-2 border-border rounded-[24px] p-8 md:p-10 shadow-glass hover:shadow-coral-glow transition-all duration-300 hover:scale-[1.02] animate-fade-up" style={{ animationDelay: '0.2s' }}>
               <p className="text-xl md:text-2xl text-foreground leading-relaxed font-medium">
-                You waste another night on someone who ghosts after three days.
+                They ghost you after three days because they were never serious. Just swiping to feel validated.
               </p>
             </div>
           </div>
 
           {/* Coral Bold Text */}
           <p className="text-center text-2xl md:text-3xl font-bold text-primary leading-relaxed">
-            Verity forces a 10-minute video date first. Spark or move on. Simple.
+            Both Interested → forced video date → both yes → chat → real life. Simple. Brutal. Effective.
           </p>
         </div>
       </section>
@@ -446,10 +446,10 @@ const Index = () => {
                   <span className="text-6xl md:text-7xl font-black text-primary">1</span>
                 </div>
                 <h3 className="text-3xl md:text-4xl font-bold mb-4">
-                  See someone's profile → both say Interested
+                  See someone&apos;s profile → both say Interested
                 </h3>
                 <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed">
-                  Browse profiles with photos and videos. If you both swipe right, it's time for a date.
+                  Browse real profiles. If you both swipe right, you&apos;re locked into a video date. No backing out.
                 </p>
               </div>
               <div className="order-1 md:order-2">
@@ -478,10 +478,10 @@ const Index = () => {
                   <span className="text-6xl md:text-7xl font-black text-primary">2</span>
                 </div>
                 <h3 className="text-3xl md:text-4xl font-bold mb-4">
-                  Jump on a 10-minute Verity Date
+                  10-minute video date — no escape
                 </h3>
                 <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed">
-                  Split-screen video call with a timer and icebreaker prompts. See the real person, not a curated profile.
+                  Split-screen video call with a timer. See the actual human. No filters. No lies. Just chemistry or not.
                 </p>
               </div>
             </div>
@@ -496,10 +496,10 @@ const Index = () => {
                   <span className="text-6xl md:text-7xl font-black text-primary">3</span>
                 </div>
                 <h3 className="text-3xl md:text-4xl font-bold mb-4">
-                  Both say "Yes" → unlock chat + keep talking
+                  Both say &quot;Yes&quot; → unlock chat + meet IRL
                 </h3>
                 <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed">
-                  Mutual interest? Start chatting and plan to meet IRL.
+                  Mutual spark? Start chatting and plan a real date. Actually meet the person, not just text forever.
                 </p>
               </div>
               <div className="order-1 md:order-2">
@@ -521,10 +521,10 @@ const Index = () => {
                   <span className="text-6xl md:text-7xl font-black text-primary">4</span>
                 </div>
                 <h3 className="text-3xl md:text-4xl font-bold mb-4">
-                  One or both "No" → part ways respectfully
+                  One or both &quot;No&quot; → done, next
                 </h3>
                 <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed">
-                  No awkwardness. No ghosting. Just a clean, respectful exit. Move on to your next match.
+                  No awkwardness. No ghosting. No bullshit. Clean exit. Move on to someone who&apos;s actually right for you.
                 </p>
               </div>
               <div className="order-1 md:order-2">
@@ -560,7 +560,7 @@ const Index = () => {
             className="text-5xl md:text-[80px] font-bold text-white mb-12 md:mb-16 leading-tight animate-fade-up"
             style={{ fontFamily: 'Obviously Wide, Satchel, sans-serif' }}
           >
-            Be the first in Canberra to date like a human again.
+            Be the first in Canberra to date someone real.
           </h2>
 
           {/* Email Form */}
@@ -598,7 +598,7 @@ const Index = () => {
 
           {/* Small Launch Text */}
           <p className="text-white/90 text-lg md:text-xl font-medium">
-            Launching Australia January 2026 — starting in Canberra because we're from here.
+            Launching Australia January 2026 — starting in Canberra because we&apos;re from here and this city deserves better.
           </p>
         </div>
       </section>
