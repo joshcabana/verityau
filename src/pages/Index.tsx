@@ -386,6 +386,76 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      {/* Final CTA Section - Full Bleed Coral */}
+      <section className="relative py-24 md:py-40 px-4 bg-primary overflow-hidden">
+        {/* Subtle gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary to-primary/90" />
+        
+        <div className="relative max-w-5xl mx-auto text-center">
+          {/* Massive Headline */}
+          <h2 
+            className="text-5xl md:text-[80px] font-bold text-white mb-12 md:mb-16 leading-tight"
+            style={{ fontFamily: 'Obviously, Recoleta, Satchel, sans-serif' }}
+          >
+            Be the first in Canberra to date like a human again.
+          </h2>
+
+          {/* Email Form */}
+          <form onSubmit={async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.currentTarget);
+            const email = formData.get('email') as string;
+            
+            const validation = emailSchema.safeParse(email);
+            if (!validation.success) {
+              return;
+            }
+
+            try {
+              const { error } = await supabase.from('waitlist').insert([{ 
+                email: email.toLowerCase().trim(),
+                city: 'Canberra',
+                referral_code: null
+              }]);
+              
+              if (error && error.code !== '23505') {
+                throw error;
+              }
+            } catch (error) {
+              console.error(error);
+            }
+          }} className="max-w-2xl mx-auto mb-8">
+            <div className="flex flex-col md:flex-row gap-4">
+              <Input
+                type="email"
+                name="email"
+                placeholder="your@email.com"
+                required
+                className="flex-1 h-16 md:h-20 text-lg md:text-xl px-6 md:px-8 bg-white text-foreground border-2 border-white rounded-[20px] shadow-xl focus-visible:ring-white focus-visible:ring-4 transition-all placeholder:text-foreground/40"
+              />
+              <Button
+                type="submit"
+                size="lg"
+                variant="outline"
+                className="h-16 md:h-20 px-8 md:px-12 text-base md:text-xl font-bold bg-white text-primary border-2 border-white hover:bg-white/90 hover:scale-105 shadow-2xl transition-all"
+              >
+                <span className="hidden md:inline">
+                  Join Waitlist — Lifetime Unlimited for First 1,000
+                </span>
+                <span className="md:hidden">
+                  Join Waitlist
+                </span>
+              </Button>
+            </div>
+          </form>
+
+          {/* Small Launch Text */}
+          <p className="text-white/90 text-lg md:text-xl font-medium">
+            Launching Canberra January 2026 → then Sydney/Melbourne
+          </p>
+        </div>
+      </section>
     </div>
   );
 };
