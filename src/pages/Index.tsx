@@ -276,6 +276,133 @@ const Index = () => {
         </div>
       </section>
 
+      {/* How Verity Works - Detailed Steps */}
+      <section className="py-16 sm:py-20 md:py-24 lg:py-32 px-4" style={{ backgroundColor: '#F5F1ED' }}>
+        <div className="max-w-[1200px] mx-auto">
+          <AnimatedSection>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-16 sm:mb-20 md:mb-24 leading-tight">
+              How Verity works — 30 seconds to real connection
+            </h2>
+          </AnimatedSection>
+
+          {/* Step 1 - Image Right on Desktop */}
+          <AnimatedSection>
+            <div className="grid md:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-center mb-16 md:mb-24">
+              <div className="order-2 md:order-1">
+                <div className="text-6xl sm:text-7xl md:text-8xl font-black text-primary mb-6">1</div>
+                <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
+                  Record your 30-second intro
+                </h3>
+                <p className="text-base sm:text-lg md:text-xl text-muted-foreground leading-relaxed">
+                  We guide you with 3 simple prompts. Just be yourself — smile, talk, laugh.
+                </p>
+              </div>
+              <div className="order-1 md:order-2">
+                <div className="relative aspect-[9/16] max-w-[300px] mx-auto bg-card rounded-[40px] shadow-2xl border-8 border-foreground/10 overflow-hidden">
+                  <img 
+                    src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=800&fit=crop&q=80" 
+                    alt="Recording video intro"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                  <div className="absolute bottom-8 left-0 right-0 text-center">
+                    <div className="inline-flex items-center gap-2 bg-red-500 text-white px-4 py-2 rounded-full text-sm font-bold">
+                      <div className="w-3 h-3 bg-white rounded-full animate-pulse" />
+                      Recording
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </AnimatedSection>
+
+          {/* Step 2 - Image Left on Desktop */}
+          <AnimatedSection delay={100}>
+            <div className="grid md:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-center mb-16 md:mb-24">
+              <div className="order-1">
+                <div className="relative aspect-[9/16] max-w-[300px] mx-auto bg-card rounded-[40px] shadow-2xl border-8 border-foreground/10 overflow-hidden">
+                  <div className="w-full h-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
+                    <div className="text-center p-8">
+                      <Users className="h-16 w-16 text-primary mx-auto mb-4" />
+                      <p className="text-sm text-foreground/70 font-medium">Match Preview</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="order-2">
+                <div className="text-6xl sm:text-7xl md:text-8xl font-black text-primary mb-6">2</div>
+                <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
+                  We match you with real humans
+                </h3>
+                <p className="text-base sm:text-lg md:text-xl text-muted-foreground leading-relaxed">
+                  Everyone has a video → you see energy, voice, mannerisms before you match.
+                </p>
+              </div>
+            </div>
+          </AnimatedSection>
+
+          {/* Step 3 - Image Right on Desktop */}
+          <AnimatedSection delay={200}>
+            <div className="grid md:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-center mb-16 md:mb-24">
+              <div className="order-2 md:order-1">
+                <div className="text-6xl sm:text-7xl md:text-8xl font-black text-primary mb-6">3</div>
+                <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
+                  Video Speed Dates (our secret weapon)
+                </h3>
+                <p className="text-base sm:text-lg md:text-xl text-muted-foreground leading-relaxed">
+                  Optional 3-minute live video calls before meeting IRL. 94% say it feels like you've known them forever.
+                </p>
+              </div>
+              <div className="order-1 md:order-2">
+                <div className="relative aspect-[9/16] max-w-[300px] mx-auto bg-card rounded-[40px] shadow-2xl border-8 border-foreground/10 overflow-hidden">
+                  <img 
+                    src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=400&h=800&fit=crop&q=80" 
+                    alt="Video speed date"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute top-8 left-0 right-0 text-center">
+                    <div className="inline-flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-full text-sm font-bold">
+                      <Video className="h-4 w-4" />
+                      2:47 remaining
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </AnimatedSection>
+
+          {/* Step 4 - Image Left on Desktop */}
+          <AnimatedSection delay={300}>
+            <div className="grid md:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-center">
+              <div className="order-1">
+                <div className="relative aspect-[9/16] max-w-[300px] mx-auto bg-card rounded-[40px] shadow-2xl border-8 border-foreground/10 overflow-hidden">
+                  <img 
+                    src="https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=400&h=800&fit=crop&q=80" 
+                    alt="Meeting in real life"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute bottom-8 left-0 right-0 text-center">
+                    <div className="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-full text-sm font-bold shadow-lg">
+                      <Heart className="h-5 w-5" />
+                      Natural Connection
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="order-2">
+                <div className="text-6xl sm:text-7xl md:text-8xl font-black text-primary mb-6">4</div>
+                <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
+                  Meet in real life, zero surprises
+                </h3>
+                <p className="text-base sm:text-lg md:text-xl text-muted-foreground leading-relaxed">
+                  You already know what they sound like, how they laugh, their vibe. Dates actually feel natural.
+                </p>
+              </div>
+            </div>
+          </AnimatedSection>
+        </div>
+      </section>
+
       {/* How It Works */}
       <section id="how-it-works" className="py-12 sm:py-16 md:py-20 lg:py-24 px-4 bg-secondary/30 scroll-mt-20">
         <div className="max-w-7xl mx-auto">
