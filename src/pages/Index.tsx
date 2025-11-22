@@ -1100,127 +1100,49 @@ const Index = () => {
       </section>
 
       {/* Footer */}
-      <footer className="border-t bg-secondary/30 py-12 md:py-16 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
-            <div className="col-span-2 md:col-span-1">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-                  <Heart className="h-5 w-5 text-primary-foreground" />
-                </div>
-                <span className="font-bold text-lg">Verity</span>
-              </div>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                Real connections through authentic video conversations.
-              </p>
+      <footer className="py-8 md:py-12 px-4" style={{ backgroundColor: '#1A1A1A' }}>
+        <div className="max-w-[1400px] mx-auto">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8">
+            {/* Left: Logo */}
+            <div className="flex-shrink-0">
+              <span className="text-2xl md:text-3xl font-bold text-primary" style={{ fontFamily: 'Outfit, sans-serif' }}>
+                Verity
+              </span>
             </div>
-            
-            <div>
-              <h4 className="font-semibold mb-4">Product</h4>
-              <ul className="space-y-2 text-sm">
-                <li><Link to="/auth" className="text-muted-foreground hover:text-foreground transition-colors">Get Started</Link></li>
-                <li><Link to="/verity-plus" className="text-muted-foreground hover:text-foreground transition-colors">Verity Plus</Link></li>
-              </ul>
+
+            {/* Center: Links */}
+            <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6 text-sm md:text-base text-white/80">
+              <Link to="/privacy" className="hover:text-white transition-colors">
+                Privacy
+              </Link>
+              <span className="text-white/40">•</span>
+              <Link to="/terms" className="hover:text-white transition-colors">
+                Terms
+              </Link>
+              <span className="text-white/40">•</span>
+              <a 
+                href="https://instagram.com" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="hover:text-white transition-colors"
+              >
+                Instagram
+              </a>
+              <span className="text-white/40">•</span>
+              <a 
+                href="https://tiktok.com" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="hover:text-white transition-colors"
+              >
+                TikTok
+              </a>
             </div>
-            
-            <div>
-              <h4 className="font-semibold mb-4">Safety</h4>
-              <ul className="space-y-2 text-sm">
-                <li>
-                  <button 
-                    onClick={() => {
-                      const element = document.getElementById('safety');
-                      if (element) {
-                        const offset = 80;
-                        const elementPosition = element.getBoundingClientRect().top;
-                        const offsetPosition = elementPosition + window.pageYOffset - offset;
-                        window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
-                      }
-                    }}
-                    className="text-muted-foreground hover:text-foreground transition-colors text-left"
-                  >
-                    Community Guidelines
-                  </button>
-                </li>
-                <li>
-                  <button 
-                    onClick={() => {
-                      const element = document.getElementById('safety');
-                      if (element) {
-                        const offset = 80;
-                        const elementPosition = element.getBoundingClientRect().top;
-                        const offsetPosition = elementPosition + window.pageYOffset - offset;
-                        window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
-                      }
-                    }}
-                    className="text-muted-foreground hover:text-foreground transition-colors text-left"
-                  >
-                    Safety Tips
-                  </button>
-                </li>
-                <li>
-                  <button 
-                    onClick={() => {
-                      const element = document.getElementById('safety');
-                      if (element) {
-                        const offset = 80;
-                        const elementPosition = element.getBoundingClientRect().top;
-                        const offsetPosition = elementPosition + window.pageYOffset - offset;
-                        window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
-                      }
-                    }}
-                    className="text-muted-foreground hover:text-foreground transition-colors text-left"
-                  >
-                    Report Abuse
-                  </button>
-                </li>
-              </ul>
+
+            {/* Right: Copyright */}
+            <div className="flex-shrink-0 text-sm md:text-base text-white/60 text-center md:text-right">
+              Made with frustration and love © 2025
             </div>
-            
-            <div>
-              <h4 className="font-semibold mb-4">Company</h4>
-              <ul className="space-y-2 text-sm">
-                <li>
-                  <button 
-                    onClick={() => {
-                      const element = document.getElementById('how-it-works');
-                      if (element) {
-                        const offset = 80;
-                        const elementPosition = element.getBoundingClientRect().top;
-                        const offsetPosition = elementPosition + window.pageYOffset - offset;
-                        window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
-                      }
-                    }}
-                    className="text-muted-foreground hover:text-foreground transition-colors text-left"
-                  >
-                    How It Works
-                  </button>
-                </li>
-                <li>
-                  <button 
-                    onClick={() => {
-                      const element = document.getElementById('faq');
-                      if (element) {
-                        const offset = 80;
-                        const elementPosition = element.getBoundingClientRect().top;
-                        const offsetPosition = elementPosition + window.pageYOffset - offset;
-                        window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
-                      }
-                    }}
-                    className="text-muted-foreground hover:text-foreground transition-colors text-left"
-                  >
-                    FAQ
-                  </button>
-                </li>
-                <li><Link to="/privacy" className="text-muted-foreground hover:text-foreground transition-colors">Privacy</Link></li>
-                <li><Link to="/terms" className="text-muted-foreground hover:text-foreground transition-colors">Terms</Link></li>
-                <li><a href="mailto:hello@verity.app" className="text-muted-foreground hover:text-foreground transition-colors">Contact</a></li>
-              </ul>
-            </div>
-          </div>
-          
-          <div className="pt-8 border-t text-center text-sm text-muted-foreground">
-            <p>© 2024 Verity. All rights reserved.</p>
           </div>
         </div>
       </footer>
