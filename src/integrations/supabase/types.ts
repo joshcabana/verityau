@@ -16,23 +16,29 @@ export type Database = {
     Tables: {
       waitlist: {
         Row: {
+          city: string | null
           created_at: string
           email: string
           id: string
+          referral_code: string | null
           referral_source: string | null
           timestamp: string
         }
         Insert: {
+          city?: string | null
           created_at?: string
           email: string
           id?: string
+          referral_code?: string | null
           referral_source?: string | null
           timestamp?: string
         }
         Update: {
+          city?: string | null
           created_at?: string
           email?: string
           id?: string
+          referral_code?: string | null
           referral_source?: string | null
           timestamp?: string
         }
