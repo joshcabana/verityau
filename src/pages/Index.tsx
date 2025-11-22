@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { z } from "zod";
 import { Heart, Video, CheckCircle2, MessageCircle, Twitter, Instagram } from "lucide-react";
 import { useCountAnimation } from "@/hooks/useCountAnimation";
@@ -216,6 +218,7 @@ const AnimatedCounter = ({ target }: { target: number }) => {
 
 const Index = () => {
   const [showSuccess, setShowSuccess] = useState(false);
+  const { user, loading } = useAuth();
 
   const triggerConfetti = () => {
     confetti({
@@ -370,6 +373,25 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      {/* Auth CTA Section */}
+      {!loading && !user && (
+        <section className="py-16 md:py-20 px-4 bg-gradient-to-b from-background to-secondary">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-foreground" style={{ fontFamily: 'Obviously Wide, Satchel, sans-serif' }}>
+              Ready to date someone real?
+            </h2>
+            <p className="text-xl text-muted-foreground mb-8">
+              Join the waitlist above, or sign in to get started with Verity when it launches.
+            </p>
+            <div className="flex gap-4 justify-center flex-wrap">
+              <Button asChild size="lg" className="text-lg px-8">
+                <Link to="/auth">Sign In / Sign Up</Link>
+              </Button>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Problems Section */}
       <section className="py-20 md:py-32 px-4 relative">

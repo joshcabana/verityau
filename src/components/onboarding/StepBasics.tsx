@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { profileSchema } from "@/lib/validations";
 
 interface StepProps {
   data: {
@@ -24,13 +25,38 @@ const StepBasics = ({ data, onComplete }: StepProps) => {
   const [city, setCity] = useState(data.city);
   const [bio, setBio] = useState(data.bio);
   const [lookingFor, setLookingFor] = useState(data.lookingFor);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const isValid = name.trim() && gender && interestedIn && city.trim();
 
   const handleContinue = () => {
-    if (isValid) {
-      onComplete({ name, gender, interestedIn, city, bio, lookingFor });
+    if (!isValid) return;
+
+    // Validate with Zod schema
+    const result = profileSchema.safeParse({
+      name,
+      age: 25, // Will be set in age step, using placeholder
+      gender: gender as "man" | "woman" | "non-binary",
+      interestedIn: interestedIn as "men" | "women" | "everyone",
+      city,
+      bio,
+      lookingFor,
+    });
+
+    if (!result.success) {
+      const fieldErrors = result.error.flatten().fieldErrors;
+      const errorMap: Record<string, string> = {};
+      Object.entries(fieldErrors).forEach(([key, value]) => {
+        if (value && value.length > 0) {
+          errorMap[key] = value[0];
+        }
+      });
+      setErrors(errorMap);
+      return;
     }
+
+    setErrors({});
+    onComplete({ name, gender, interestedIn, city, bio, lookingFor });
   };
 
   return (
@@ -48,8 +74,10 @@ const StepBasics = ({ data, onComplete }: StepProps) => {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Your first name"
-            className="h-12"
+            maxLength={100}
+            className={errors.name ? "h-12 border-destructive" : "h-12"}
           />
+          {errors.name && <p className="text-xs text-destructive mt-1">{errors.name}</p>}
         </div>
 
         <div>
@@ -95,8 +123,10 @@ const StepBasics = ({ data, onComplete }: StepProps) => {
             value={city}
             onChange={(e) => setCity(e.target.value)}
             placeholder="Where are you based?"
-            className="h-12"
+            maxLength={100}
+            className={errors.city ? "h-12 border-destructive" : "h-12"}
           />
+          {errors.city && <p className="text-xs text-destructive mt-1">{errors.city}</p>}
         </div>
 
         <div>
@@ -106,8 +136,11 @@ const StepBasics = ({ data, onComplete }: StepProps) => {
             value={bio}
             onChange={(e) => setBio(e.target.value)}
             placeholder="Tell us a bit about yourself..."
-            className="min-h-24 resize-none"
+            maxLength={500}
+            className={errors.bio ? "min-h-24 resize-none border-destructive" : "min-h-24 resize-none"}
           />
+          <p className="text-xs text-muted-foreground mt-1">{bio.length}/500 characters</p>
+          {errors.bio && <p className="text-xs text-destructive mt-1">{errors.bio}</p>}
         </div>
 
         <div>
@@ -117,8 +150,10 @@ const StepBasics = ({ data, onComplete }: StepProps) => {
             value={lookingFor}
             onChange={(e) => setLookingFor(e.target.value)}
             placeholder="e.g., Something serious, New friends, etc."
-            className="h-12"
+            maxLength={200}
+            className={errors.lookingFor ? "h-12 border-destructive" : "h-12"}
           />
+          {errors.lookingFor && <p className="text-xs text-destructive mt-1">{errors.lookingFor}</p>}
         </div>
       </div>
 
