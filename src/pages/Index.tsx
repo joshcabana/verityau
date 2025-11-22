@@ -1112,7 +1112,7 @@ const Index = () => {
           <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8">
             {/* Left: Logo */}
             <div className="flex-shrink-0">
-              <span className="text-2xl md:text-3xl font-bold text-primary" style={{ fontFamily: 'Outfit, sans-serif' }}>
+              <span className="text-2xl md:text-3xl font-bold text-primary" style={{ fontFamily: 'Obviously, Recoleta, Satchel, sans-serif' }}>
                 Verity
               </span>
             </div>
