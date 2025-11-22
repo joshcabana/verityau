@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { z } from "zod";
-import { Heart, Video, CheckCircle2, MessageCircle } from "lucide-react";
+import { Heart, Video, CheckCircle2, MessageCircle, Twitter, Instagram } from "lucide-react";
 import { useCountAnimation } from "@/hooks/useCountAnimation";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import confetti from "canvas-confetti";
@@ -21,6 +21,63 @@ import step1Profile from "@/assets/step-1-profile.png";
 import step2Video from "@/assets/step-2-video.png";
 import step3Decision from "@/assets/step-3-decision.png";
 import step4Chat from "@/assets/step-4-chat.png";
+
+
+const SocialShareButtons = () => {
+  const shareText = "Join me on Verity - the dating app where you video date first. No catfishing, no endless texting. First 2,000 get lifetime unlimited! 🎉";
+  const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
+
+  const handleTwitterShare = () => {
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
+  };
+
+  const handleTikTokShare = () => {
+    // TikTok doesn't have a direct share URL, so we'll copy to clipboard
+    navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
+  };
+
+  const handleInstagramShare = () => {
+    // Instagram doesn't have a direct share URL, so we'll copy to clipboard
+    navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
+  };
+
+  return (
+    <div className="flex items-center justify-center gap-3 mt-4">
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        onClick={handleTwitterShare}
+        className="flex items-center gap-2 hover:bg-primary/10 hover:text-primary transition-all"
+      >
+        <Twitter className="w-4 h-4" />
+        <span className="hidden sm:inline">Twitter</span>
+      </Button>
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        onClick={handleTikTokShare}
+        className="flex items-center gap-2 hover:bg-primary/10 hover:text-primary transition-all"
+      >
+        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+        </svg>
+        <span className="hidden sm:inline">TikTok</span>
+      </Button>
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        onClick={handleInstagramShare}
+        className="flex items-center gap-2 hover:bg-primary/10 hover:text-primary transition-all"
+      >
+        <Instagram className="w-4 h-4" />
+        <span className="hidden sm:inline">Instagram</span>
+      </Button>
+    </div>
+  );
+};
 
 const emailSchema = z.string().email("Please enter a valid email address");
 
@@ -143,6 +200,10 @@ const WaitlistForm = () => {
             {isSubmitting ? "Joining..." : "Join Waitlist — Lifetime Unlimited"}
           </Button>
         </div>
+        <p className="text-center text-sm text-muted-foreground mt-3">
+          Share this with your single friends → get +5 extra dates each when they join
+        </p>
+        <SocialShareButtons />
       </form>
     </>
   );
@@ -312,6 +373,10 @@ const Index = () => {
                     Join Waitlist — Lifetime Unlimited
                   </Button>
                 </div>
+                <p className="text-center text-sm text-white/80 mt-4">
+                  Share this with your single friends → get +5 extra dates each when they join
+                </p>
+                <SocialShareButtons />
               </form>
             </div>
 
@@ -534,6 +599,10 @@ const Index = () => {
                 Join Waitlist — Lifetime Unlimited for First 2,000
               </Button>
             </div>
+            <p className="text-center text-sm text-white/90 mt-4">
+              Share this with your single friends → get +5 extra dates each when they join
+            </p>
+            <SocialShareButtons />
           </form>
 
           {/* Small Launch Text */}
