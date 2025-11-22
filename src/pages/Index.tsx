@@ -24,7 +24,11 @@ import {
   Flag,
   Ban,
   ArrowRight,
-  MessageCircle
+  MessageCircle,
+  HeartCrack,
+  Ghost,
+  Fish,
+  Frown
 } from "lucide-react";
 
 const AnimatedSection = ({ 
@@ -209,6 +213,68 @@ const Index = () => {
 
       {/* Hero Section */}
       <HeroSection />
+
+      {/* Problems Section */}
+      <section className="py-16 sm:py-20 md:py-24 lg:py-32 px-4">
+        <div className="max-w-[1200px] mx-auto">
+          <AnimatedSection>
+            <h2 className="text-4xl sm:text-5xl md:text-[64px] font-bold text-center mb-12 sm:mb-16 md:mb-20 leading-tight">
+              We're all exhausted by the same bullshit
+            </h2>
+          </AnimatedSection>
+
+          <div className="grid gap-8 md:grid-cols-3 md:gap-12 mb-12 md:mb-16">
+            <AnimatedSection delay={0}>
+              <div className="text-center">
+                <div className="flex items-center justify-center gap-2 mb-6">
+                  <HeartCrack className="h-12 w-12 text-foreground/70" strokeWidth={1.5} />
+                  <Ghost className="h-12 w-12 text-foreground/70" strokeWidth={1.5} />
+                </div>
+                <h3 className="text-2xl sm:text-3xl font-bold mb-4">
+                  Ghosting & endless texting
+                </h3>
+                <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
+                  Weeks of chatting → date shows up looking nothing like photos → instant disappointment.
+                </p>
+              </div>
+            </AnimatedSection>
+
+            <AnimatedSection delay={100}>
+              <div className="text-center">
+                <div className="flex items-center justify-center mb-6">
+                  <Fish className="h-12 w-12 text-foreground/70" strokeWidth={1.5} />
+                </div>
+                <h3 className="text-2xl sm:text-3xl font-bold mb-4">
+                  Catfishing & fake profiles
+                </h3>
+                <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
+                  54% of people lie on dating apps. You waste hours on someone who doesn't exist.
+                </p>
+              </div>
+            </AnimatedSection>
+
+            <AnimatedSection delay={200}>
+              <div className="text-center">
+                <div className="flex items-center justify-center mb-6">
+                  <Frown className="h-12 w-12 text-foreground/70" strokeWidth={1.5} />
+                </div>
+                <h3 className="text-2xl sm:text-3xl font-bold mb-4">
+                  Dead conversations
+                </h3>
+                <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
+                  "Hey" → "Hey" → "How's your week?" → dies. Zero personality in text.
+                </p>
+              </div>
+            </AnimatedSection>
+          </div>
+
+          <AnimatedSection delay={300}>
+            <p className="text-center text-xl sm:text-2xl md:text-3xl font-bold text-primary">
+              Verity fixes all three in one move.
+            </p>
+          </AnimatedSection>
+        </div>
+      </section>
 
       {/* How It Works */}
       <section id="how-it-works" className="py-12 sm:py-16 md:py-20 lg:py-24 px-4 bg-secondary/30 scroll-mt-20">
