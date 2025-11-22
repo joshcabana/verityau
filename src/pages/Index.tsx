@@ -511,7 +511,7 @@ const Index = () => {
         <div className="max-w-[1200px] mx-auto">
           <AnimatedSection>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-8">
-              Join <AnimatedCounter target={14372} /> people already waiting
+              Join <AnimatedCounter target={18731} /> people already waiting
             </h2>
           </AnimatedSection>
 
@@ -522,15 +522,15 @@ const Index = () => {
                 <CardContent className="pt-6 pb-6">
                   <div className="flex items-start gap-4">
                     <img 
-                      src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&q=80" 
-                      alt="Alex"
+                      src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=80&h=80&fit=crop&q=80" 
+                      alt="Marcus"
                       className="w-16 h-16 rounded-full object-cover flex-shrink-0"
                     />
                     <div>
                       <p className="text-base md:text-lg font-medium mb-2 leading-relaxed">
-                        "This is the future of dating. Finally."
+                        "Went on 3 dates last month. All three felt like I'd known them for years. This actually works."
                       </p>
-                      <p className="text-sm text-muted-foreground">– Alex, 31</p>
+                      <p className="text-sm text-muted-foreground">– Marcus, 29</p>
                     </div>
                   </div>
                 </CardContent>
@@ -542,15 +542,15 @@ const Index = () => {
                 <CardContent className="pt-6 pb-6">
                   <div className="flex items-start gap-4">
                     <img 
-                      src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&h=80&fit=crop&q=80" 
-                      alt="Maya"
+                      src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=80&h=80&fit=crop&q=80" 
+                      alt="Priya"
                       className="w-16 h-16 rounded-full object-cover flex-shrink-0"
                     />
                     <div>
                       <p className="text-base md:text-lg font-medium mb-2 leading-relaxed">
-                        "I hate texting strangers. Verity is the only app that makes sense."
+                        "No more wasting weeks texting someone who's using photos from 2019. Everyone's real here."
                       </p>
-                      <p className="text-sm text-muted-foreground">– Maya, 27</p>
+                      <p className="text-sm text-muted-foreground">– Priya, 32</p>
                     </div>
                   </div>
                 </CardContent>
@@ -562,15 +562,15 @@ const Index = () => {
                 <CardContent className="pt-6 pb-6">
                   <div className="flex items-start gap-4">
                     <img 
-                      src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&h=80&fit=crop&q=80" 
-                      alt="Jordan"
+                      src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=80&h=80&fit=crop&q=80" 
+                      alt="Javier"
                       className="w-16 h-16 rounded-full object-cover flex-shrink-0"
                     />
                     <div>
                       <p className="text-base md:text-lg font-medium mb-2 leading-relaxed">
-                        "Video profiles should have always been mandatory."
+                        "The speed date feature is genius. Saved me from so many awkward coffee meetups with zero chemistry."
                       </p>
-                      <p className="text-sm text-muted-foreground">– Jordan, 34</p>
+                      <p className="text-sm text-muted-foreground">– Javier, 28</p>
                     </div>
                   </div>
                 </CardContent>
