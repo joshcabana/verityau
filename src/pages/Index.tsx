@@ -314,7 +314,7 @@ const Index = () => {
                   Jump on a 10-minute Verity Date
                 </h3>
                 <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed">
-                  Live video call with a timer and icebreaker prompts. See the real person, not a curated profile.
+                  Split-screen video call with a timer and icebreaker prompts. See the real person, not a curated profile.
                 </p>
               </div>
             </div>
@@ -329,10 +329,10 @@ const Index = () => {
                   <span className="text-6xl md:text-7xl font-black text-primary">3</span>
                 </div>
                 <h3 className="text-3xl md:text-4xl font-bold mb-4">
-                  Both say "Yes" → unlock chat
+                  Both say "Yes" → unlock chat + keep talking
                 </h3>
                 <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed">
-                  Mutual interest? Start chatting and plan to meet IRL. One or both say "No"? Part ways respectfully.
+                  Mutual interest? Start chatting and plan to meet IRL.
                 </p>
               </div>
               <div className="order-1 md:order-2">
@@ -346,14 +346,7 @@ const Index = () => {
 
             {/* Step 4 */}
             <div className="grid md:grid-cols-2 gap-8 md:gap-16 items-center">
-              <div className="order-1">
-                <img 
-                  src={step4Chat}
-                  alt="Chat screen"
-                  className="w-full max-w-[320px] mx-auto drop-shadow-2xl rounded-[40px]"
-                />
-              </div>
-              <div className="order-2">
+              <div className="order-2 md:order-1">
                 <div className="flex items-center gap-4 mb-6">
                   <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center">
                     <MessageCircle className="w-8 h-8 text-white" />
@@ -361,11 +354,18 @@ const Index = () => {
                   <span className="text-6xl md:text-7xl font-black text-primary">4</span>
                 </div>
                 <h3 className="text-3xl md:text-4xl font-bold mb-4">
-                  Chat unlocked — real connection begins
+                  One or both "No" → part ways respectfully
                 </h3>
                 <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed">
-                  Now that you've met face-to-face, your conversations have context. No more awkward first messages.
+                  No awkwardness. No ghosting. Just a clean, respectful exit. Move on to your next match.
                 </p>
+              </div>
+              <div className="order-1 md:order-2">
+                <img 
+                  src={step4Chat}
+                  alt="No match screen"
+                  className="w-full max-w-[320px] mx-auto drop-shadow-2xl rounded-[40px]"
+                />
               </div>
             </div>
           </div>
@@ -373,7 +373,7 @@ const Index = () => {
           {/* Animated Counter */}
           <div className="mt-24 md:mt-32 text-center">
             <p className="text-2xl md:text-4xl font-bold mb-8">
-              Join <AnimatedCounter target={9312} /> Canberrans already waiting
+              Join <AnimatedCounter target={11337} /> Australians already waiting
             </p>
 
             {/* Email Form */}
