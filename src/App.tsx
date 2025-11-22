@@ -3,8 +3,10 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import ResetPassword from "./pages/ResetPassword";
 import Onboarding from "./pages/Onboarding";
 import Main from "./pages/Main";
 import IntroCall from "./pages/IntroCall";
@@ -29,17 +31,21 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
-          <Route path="/onboarding" element={<Onboarding />} />
-          <Route path="/main" element={<Main />} />
-          <Route path="/intro-call" element={<IntroCall />} />
-          <Route path="/extended-call" element={<ExtendedCall />} />
-          <Route path="/match-success" element={<MatchSuccess />} />
-          <Route path="/matches" element={<Matches />} />
-          <Route path="/match/:matchId" element={<MatchProfile />} />
-          <Route path="/upgrade" element={<VerityPlus />} />
-          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
+          
+          {/* Protected Routes */}
+          <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
+          <Route path="/main" element={<ProtectedRoute><Main /></ProtectedRoute>} />
+          <Route path="/intro-call" element={<ProtectedRoute><IntroCall /></ProtectedRoute>} />
+          <Route path="/extended-call" element={<ProtectedRoute><ExtendedCall /></ProtectedRoute>} />
+          <Route path="/match-success" element={<ProtectedRoute><MatchSuccess /></ProtectedRoute>} />
+          <Route path="/matches" element={<ProtectedRoute><Matches /></ProtectedRoute>} />
+          <Route path="/match/:matchId" element={<ProtectedRoute><MatchProfile /></ProtectedRoute>} />
+          <Route path="/upgrade" element={<ProtectedRoute><VerityPlus /></ProtectedRoute>} />
+          <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
+          
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

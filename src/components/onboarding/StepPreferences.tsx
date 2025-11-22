@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
+import { preferencesSchema } from "@/lib/validations";
 
 interface StepProps {
   data: {
@@ -24,6 +25,14 @@ const StepPreferences = ({ data, onComplete }: StepProps) => {
   const [radius, setRadius] = useState(data.radius);
 
   const handleContinue = () => {
+    // Validate with Zod schema
+    const result = preferencesSchema.safeParse({ ageRange, radius });
+    
+    if (!result.success) {
+      console.error("Validation failed:", result.error);
+      return;
+    }
+
     onComplete({ ageRange, radius });
   };
 
