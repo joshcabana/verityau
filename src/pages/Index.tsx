@@ -5,6 +5,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
+import HeroSection from "@/components/HeroSection";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { useParallax } from "@/hooks/useParallax";
 import { cn } from "@/lib/utils";
@@ -207,102 +208,7 @@ const Index = () => {
       <Navigation />
 
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center px-4 pt-20 pb-16 overflow-hidden">
-        {/* Parallax Gradient Background */}
-        <div 
-          className="absolute inset-0 bg-gradient-to-br from-[hsl(220,80%,25%)] via-[hsl(270,60%,35%)] to-[hsl(220,20%,25%)] opacity-[0.02]"
-          style={{ transform: `translateY(${parallaxOffset}px)` }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-background via-background/50 to-background" />
-        
-        {/* Animated gradient orbs */}
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-pulse" style={{ animationDuration: "4s" }} />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/5 rounded-full blur-3xl animate-pulse" style={{ animationDuration: "6s", animationDelay: "1s" }} />
-        
-        <div className="relative z-10 max-w-5xl mx-auto text-center">
-          <AnimatedSection delay={0}>
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-8">
-              <Sparkles className="h-4 w-4" />
-              <span>Video-first dating for real connections</span>
-            </div>
-          </AnimatedSection>
-          
-          <AnimatedSection delay={100}>
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6 leading-[1.1] px-4">
-              Meaningful Connections
-              <br />
-              Through Real Video Conversations
-            </h1>
-          </AnimatedSection>
-          
-          <AnimatedSection delay={200}>
-            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground mb-10 sm:mb-12 max-w-3xl mx-auto leading-relaxed px-6">
-              No filters. No endless swiping. Just real people and real chemistry — face-to-face.
-            </p>
-          </AnimatedSection>
-          
-          <AnimatedSection delay={300}>
-            <div className="flex flex-col gap-3 px-6 max-w-md mx-auto sm:max-w-none sm:flex-row sm:items-center sm:justify-center sm:gap-4">
-              <Button asChild size="lg" className="text-base sm:text-lg px-6 sm:px-8 py-6 sm:py-7 h-auto rounded-xl shadow-premium w-full sm:w-auto font-bold">
-                <Link to="/auth">
-                  Join Verity
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
-              <Button 
-                size="lg" 
-                variant="outline" 
-                className="text-base sm:text-lg px-6 sm:px-8 py-6 sm:py-7 h-auto rounded-xl w-full sm:w-auto font-bold"
-                onClick={() => {
-                  const element = document.getElementById('how-it-works');
-                  if (element) {
-                    const offset = 80;
-                    const elementPosition = element.getBoundingClientRect().top;
-                    const offsetPosition = elementPosition + window.pageYOffset - offset;
-                    window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
-                  }
-                }}
-              >
-                See how it works
-              </Button>
-            </div>
-          </AnimatedSection>
-
-          {/* Trust Indicators */}
-          <AnimatedSection delay={400}>
-            <div className="mt-12 sm:mt-16 grid grid-cols-2 gap-4 sm:flex sm:flex-wrap sm:items-center sm:justify-center sm:gap-6 lg:gap-8 text-xs sm:text-sm text-muted-foreground px-6 max-w-2xl mx-auto">
-              <div className="flex items-center gap-2 justify-center">
-                <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0" />
-                <span>Adults only</span>
-              </div>
-              <div className="flex items-center gap-2 justify-center">
-                <Video className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0" />
-                <span>Live verification</span>
-              </div>
-              <div className="flex items-center gap-2 justify-center">
-                <Lock className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0" />
-                <span>Safe & secure</span>
-              </div>
-              <div className="flex items-center gap-2 justify-center">
-                <Ban className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0" />
-                <span>Zero tolerance</span>
-              </div>
-            </div>
-            <p className="text-xs sm:text-sm text-muted-foreground/80 mt-4 px-6 text-center">
-              Verity is strictly 18+ and community-moderated.
-            </p>
-          </AnimatedSection>
-        </div>
-
-        {/* Mobile Sticky CTA */}
-        {isMobile && (
-          <div className="fixed bottom-0 left-0 right-0 z-40 p-4 bg-background/95 backdrop-blur-xl border-t md:hidden safe-area-bottom">
-            <Button asChild size="lg" className="w-full rounded-xl shadow-lg text-base font-bold py-6">
-              <Link to="/auth">Join Verity</Link>
-            </Button>
-          </div>
-        )}
-      </section>
+      <HeroSection />
 
       {/* How It Works */}
       <section id="how-it-works" className="py-12 sm:py-16 md:py-20 lg:py-24 px-4 bg-secondary/30 scroll-mt-20">
