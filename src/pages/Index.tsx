@@ -210,8 +210,13 @@ const Index = () => {
             </div>
 
             {/* Small text under button */}
-            <p className="text-white/80 text-base md:text-lg font-medium">
-              First 1,000 Canberrans get unlimited Verity Dates for life.
+            <p className="text-white/80 text-base md:text-lg font-medium mb-3">
+              First 2,000 Australians get unlimited Verity Dates for life — Canberra gets priority access.
+            </p>
+            
+            {/* Waitlist count */}
+            <p className="text-primary text-xl md:text-2xl font-bold">
+              18,274 people already waiting
             </p>
           </div>
         </div>
@@ -435,14 +440,14 @@ const Index = () => {
                 variant="outline"
                 className="h-16 md:h-20 px-8 md:px-12 text-base md:text-xl font-bold bg-white text-primary border-2 border-white hover:bg-white/90 hover:scale-105 shadow-2xl transition-all"
               >
-                Join Waitlist — Lifetime Unlimited
+                Join Waitlist — Lifetime Unlimited for First 2,000
               </Button>
             </div>
           </form>
 
           {/* Small Launch Text */}
           <p className="text-white/90 text-lg md:text-xl font-medium">
-            Launching Canberra January 2026 → then Sydney/Melbourne
+            Launching Australia January 2026 — starting in Canberra because we're from here.
           </p>
         </div>
       </section>
