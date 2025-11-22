@@ -10,6 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Heart, Sparkles, Shield, ShieldCheck, Ban, Camera, AlertCircle, Eye } from "lucide-react";
+import { VerityDateNotification } from "@/components/VerityDateNotification";
 
 const guidelines = [
   {
@@ -68,6 +69,9 @@ const Main = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-secondary flex flex-col">
+      {/* Verity Date Notification */}
+      <VerityDateNotification />
+      
       {/* Main Content */}
       <div className="flex-1 flex items-center justify-center px-4 py-8">
         <div className="w-full max-w-2xl space-y-12">
