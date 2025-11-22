@@ -14,6 +14,7 @@ const VerityDateFeedback = () => {
   const verityDateId = searchParams.get("id");
   const [submitting, setSubmitting] = useState(false);
   const [partnerName, setPartnerName] = useState<string>("");
+  const [partnerId, setPartnerId] = useState<string>("");
   const [matchId, setMatchId] = useState<string>("");
   const [reportOpen, setReportOpen] = useState(false);
 
@@ -48,12 +49,13 @@ const VerityDateFeedback = () => {
 
       const match = verityDate.matches;
       setMatchId(match.id);
-      const partnerId = match.user1 === user.id ? match.user2 : match.user1;
+      const partnerUserId = match.user1 === user.id ? match.user2 : match.user1;
+      setPartnerId(partnerUserId);
 
       const { data: profile } = await supabase
         .from("profiles")
         .select("name")
-        .eq("user_id", partnerId)
+        .eq("user_id", partnerUserId)
         .single();
 
       if (profile) {
@@ -283,6 +285,8 @@ const VerityDateFeedback = () => {
         onOpenChange={setReportOpen}
         onSubmit={handleReportSubmit}
         userName={partnerName}
+        reportedUserId={partnerId}
+        context="verity_date_feedback"
       />
     </div>
   );

@@ -130,6 +130,7 @@ const IntroCall = () => {
         open={isReportOpen}
         onOpenChange={setIsReportOpen}
         onSubmit={handleReportSubmit}
+        context="intro_call_demo"
       />
     </div>
   );

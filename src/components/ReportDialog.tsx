@@ -10,24 +10,80 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { AlertCircle } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface ReportDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: () => void;
   userName?: string;
+  reportedUserId?: string;
+  context?: string;
 }
 
-export const ReportDialog = ({ open, onOpenChange, onSubmit, userName = "this user" }: ReportDialogProps) => {
+export const ReportDialog = ({ 
+  open, 
+  onOpenChange, 
+  onSubmit, 
+  userName = "this user",
+  reportedUserId,
+  context = "unknown"
+}: ReportDialogProps) => {
   const [reason, setReason] = useState("");
   const [details, setDetails] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const { toast } = useToast();
 
-  const handleSubmit = () => {
-    // In production, this would submit the report to backend
-    console.log("Report submitted:", { reason, details });
-    onSubmit();
-    setReason("");
-    setDetails("");
+  const handleSubmit = async () => {
+    if (!reportedUserId) {
+      toast({
+        title: "Error",
+        description: "Unable to submit report. User information missing.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setSubmitting(true);
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          title: "Error",
+          description: "You must be logged in to submit a report.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const { error } = await supabase
+        .from("reports")
+        .insert({
+          reporter_id: user.id,
+          reported_user_id: reportedUserId,
+          reason,
+          details,
+          context,
+          status: "pending",
+        });
+
+      if (error) throw error;
+
+      onSubmit();
+      setReason("");
+      setDetails("");
+    } catch (error) {
+      console.error("Error submitting report:", error);
+      toast({
+        title: "Error",
+        description: "Failed to submit report. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -107,10 +163,10 @@ export const ReportDialog = ({ open, onOpenChange, onSubmit, userName = "this us
           </Button>
           <Button
             onClick={handleSubmit}
-            disabled={!reason}
+            disabled={!reason || submitting}
             className="flex-1 bg-destructive hover:bg-destructive/90 text-destructive-foreground"
           >
-            Submit Report
+            {submitting ? "Submitting..." : "Submit Report"}
           </Button>
         </div>
       </DialogContent>
