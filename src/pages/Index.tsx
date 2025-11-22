@@ -155,6 +155,45 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      {/* Problems Section */}
+      <section className="py-20 md:py-32 px-4">
+        <div className="max-w-6xl mx-auto">
+          {/* Headline */}
+          <h2 
+            className="text-4xl md:text-[64px] font-bold text-center mb-16 md:mb-20 leading-tight"
+            style={{ fontFamily: 'Obviously, Recoleta, Satchel, sans-serif' }}
+          >
+            Canberra, we're done with the games.
+          </h2>
+
+          {/* Three Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-12 md:mb-16">
+            <div className="bg-card border-2 border-border rounded-[24px] p-8 md:p-10 shadow-glass hover:shadow-premium transition-all duration-300 hover:scale-[1.02]">
+              <p className="text-xl md:text-2xl text-foreground leading-relaxed font-medium">
+                You spend weeks texting someone who looks nothing like their photos.
+              </p>
+            </div>
+
+            <div className="bg-card border-2 border-border rounded-[24px] p-8 md:p-10 shadow-glass hover:shadow-premium transition-all duration-300 hover:scale-[1.02]">
+              <p className="text-xl md:text-2xl text-foreground leading-relaxed font-medium">
+                You finally meet and there's zero chemistry.
+              </p>
+            </div>
+
+            <div className="bg-card border-2 border-border rounded-[24px] p-8 md:p-10 shadow-glass hover:shadow-premium transition-all duration-300 hover:scale-[1.02]">
+              <p className="text-xl md:text-2xl text-foreground leading-relaxed font-medium">
+                You waste another night on someone who ghosts after three days.
+              </p>
+            </div>
+          </div>
+
+          {/* Coral Bold Text */}
+          <p className="text-center text-2xl md:text-3xl font-bold text-primary leading-relaxed">
+            Verity forces a 10-minute video date first. Spark or move on. Simple.
+          </p>
+        </div>
+      </section>
     </div>
   );
 };
