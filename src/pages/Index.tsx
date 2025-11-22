@@ -456,6 +456,51 @@ const Index = () => {
           </p>
         </div>
       </section>
+
+      {/* Footer */}
+      <footer className="bg-[#1A1A1A] text-white py-12 md:py-16 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+            {/* Left: Logo */}
+            <div className="flex-shrink-0">
+              <span 
+                className="text-3xl md:text-4xl font-bold text-primary"
+                style={{ fontFamily: 'Obviously, Recoleta, Satchel, sans-serif' }}
+              >
+                Verity
+              </span>
+            </div>
+
+            {/* Center: Links */}
+            <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6 text-white/80 text-sm md:text-base">
+              <a href="/privacy" className="hover:text-primary transition-colors">
+                Privacy
+              </a>
+              <span className="text-white/40">·</span>
+              <a href="/terms" className="hover:text-primary transition-colors">
+                Terms
+              </a>
+              <span className="text-white/40">·</span>
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+                Instagram
+              </a>
+              <span className="text-white/40">·</span>
+              <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+                TikTok
+              </a>
+              <span className="text-white/40">·</span>
+              <a href="mailto:hello@verity.au" className="hover:text-primary transition-colors">
+                hello@verity.au
+              </a>
+            </div>
+
+            {/* Right: Copyright */}
+            <div className="flex-shrink-0 text-white/60 text-sm md:text-base text-center md:text-right">
+              Made with frustration and love in Canberra © 2025
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
