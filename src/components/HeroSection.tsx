@@ -4,12 +4,14 @@ import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
+import { ArrowRight } from "lucide-react";
 
 const emailSchema = z.string().email("Please enter a valid email address");
 
 const HeroSection = () => {
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -71,8 +73,9 @@ const HeroSection = () => {
           loop
           muted
           playsInline
+          preload="metadata"
           className="absolute inset-0 w-full h-full object-cover"
-          poster="https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=1920&q=80"
+          poster="https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=1920&q=80&fm=webp"
         >
           <source 
             src="https://cdn.pixabay.com/video/2020/06/15/41861-432271780_large.mp4" 
@@ -87,8 +90,9 @@ const HeroSection = () => {
       <div className="hidden lg:block absolute left-[8%] top-1/2 -translate-y-1/2 z-10 animate-float">
         <div className="w-[240px] h-[480px] bg-card rounded-[40px] shadow-2xl border-8 border-foreground/10 overflow-hidden">
           <img 
-            src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=800&fit=crop&q=80" 
+            src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=800&fit=crop&q=80&fm=webp" 
             alt="Video profile mockup"
+            loading="lazy"
             className="w-full h-full object-cover"
           />
         </div>
@@ -97,8 +101,9 @@ const HeroSection = () => {
       <div className="hidden lg:block absolute right-[8%] top-1/2 -translate-y-1/2 z-10 animate-float" style={{ animationDelay: '1s' }}>
         <div className="w-[240px] h-[480px] bg-card rounded-[40px] shadow-2xl border-8 border-foreground/10 overflow-hidden">
           <img 
-            src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=800&fit=crop&q=80" 
+            src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=800&fit=crop&q=80&fm=webp" 
             alt="Video profile mockup"
+            loading="lazy"
             className="w-full h-full object-cover"
           />
         </div>
@@ -137,9 +142,15 @@ const HeroSection = () => {
               type="submit"
               size="lg"
               disabled={isSubmitting}
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
               className="h-16 md:h-20 px-10 md:px-14 text-lg md:text-xl whitespace-nowrap font-bold shadow-xl"
             >
-              {isSubmitting ? "Joining..." : "Join the Waitlist — Launching Soon"}
+              {isSubmitting ? "Joining..." : (isHovered && email.length > 0 ? (
+                <>
+                  Hell yes <ArrowRight className="ml-2 h-6 w-6" />
+                </>
+              ) : "Join the Waitlist — Launching Soon")}
             </Button>
           </div>
         </form>

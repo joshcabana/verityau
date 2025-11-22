@@ -210,6 +210,15 @@ All colors MUST be HSL.
     }
   }
 
+  @keyframes buttonGlow {
+    0%, 100% {
+      box-shadow: 0 0 20px hsla(356, 100%, 65%, 0);
+    }
+    50% {
+      box-shadow: 0 0 30px hsla(356, 100%, 65%, 0.4);
+    }
+  }
+
   .animate-fade-up {
     animation: fadeUp 0.6s ease-out;
   }
@@ -220,6 +229,10 @@ All colors MUST be HSL.
 
   .animate-scale-in {
     animation: scaleIn 0.5s ease-out;
+  }
+
+  .button-glow {
+    animation: buttonGlow 4s ease-in-out infinite;
   }
   
   /* Mobile-specific utilities */
