@@ -152,10 +152,10 @@ const Index = () => {
           <div className="max-w-5xl mx-auto text-center">
             {/* Headline */}
             <h1 
-              className="text-[64px] md:text-[120px] font-bold text-white mb-6 md:mb-8 leading-[0.95] tracking-tight"
+              className="text-[56px] sm:text-[72px] md:text-[96px] lg:text-[120px] font-bold text-white mb-6 md:mb-8 leading-[1.1] tracking-wide whitespace-nowrap"
               style={{ fontFamily: 'Obviously, Recoleta, Satchel, sans-serif' }}
             >
-              Date people, not profiles.
+              Date people,<br className="block sm:hidden" /> not profiles.
             </h1>
 
             {/* Subheadline */}
