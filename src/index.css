@@ -1,0 +1,241 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Premium Dark Luxury Theme - Verity Brand Identity */
+    --background: 240 20% 5%;
+    --foreground: 0 0% 100%;
+
+    --card: 240 19% 9%;
+    --card-foreground: 0 0% 100%;
+
+    --popover: 240 19% 9%;
+    --popover-foreground: 0 0% 100%;
+
+    --primary: 250 100% 68%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 245 100% 63%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 240 10% 20%;
+    --muted-foreground: 240 8% 65%;
+
+    --accent: 250 100% 68%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 240 15% 18%;
+    --input: 240 19% 9%;
+    --ring: 250 100% 68%;
+
+    --radius: 1rem;
+
+    /* Body text colors */
+    --body-text: 240 8% 84%;
+    --secondary-text: 240 8% 65%;
+
+    /* Premium gradients with neon accents */
+    --gradient-premium: linear-gradient(135deg, hsl(240, 20%, 5%) 0%, hsl(250, 48%, 13%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(240, 20%, 5%) 0%, hsl(250, 48%, 13%) 100%);
+    --gradient-glass: linear-gradient(135deg, hsla(240, 19%, 9%, 0.9) 0%, hsla(240, 19%, 9%, 0.7) 100%);
+    --gradient-glow: radial-gradient(circle at 50% 50%, hsla(250, 100%, 68%, 0.20) 0%, transparent 70%);
+    
+    /* Shadows with neon glow */
+    --shadow-premium: 0 8px 32px -8px hsla(250, 100%, 68%, 0.3);
+    --shadow-glass: 0 8px 32px 0 hsla(250, 100%, 68%, 0.15);
+    --shadow-glow: 0 0 40px hsla(250, 100%, 68%, 0.20);
+    
+    /* Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    --sidebar-background: 240 19% 9%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 250 100% 68%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 19% 12%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 240 15% 18%;
+    --sidebar-ring: 250 100% 68%;
+  }
+
+  .dark {
+    /* Dark mode uses same premium dark theme */
+    --background: 240 20% 5%;
+    --foreground: 0 0% 100%;
+    --card: 240 19% 9%;
+    --card-foreground: 0 0% 100%;
+    --popover: 240 19% 9%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 250 100% 68%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 245 100% 63%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 240 10% 20%;
+    --muted-foreground: 240 8% 65%;
+    --accent: 250 100% 68%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 15% 18%;
+    --input: 240 19% 9%;
+    --ring: 250 100% 68%;
+    --body-text: 240 8% 84%;
+    --secondary-text: 240 8% 65%;
+    --gradient-premium: linear-gradient(135deg, hsl(240, 20%, 5%) 0%, hsl(250, 48%, 13%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(240, 20%, 5%) 0%, hsl(250, 48%, 13%) 100%);
+    --gradient-glass: linear-gradient(135deg, hsla(240, 19%, 9%, 0.9) 0%, hsla(240, 19%, 9%, 0.7) 100%);
+    --gradient-glow: radial-gradient(circle at 50% 50%, hsla(250, 100%, 68%, 0.20) 0%, transparent 70%);
+    --shadow-premium: 0 8px 32px -8px hsla(250, 100%, 68%, 0.3);
+    --shadow-glass: 0 8px 32px 0 hsla(250, 100%, 68%, 0.15);
+    --shadow-glow: 0 0 40px hsla(250, 100%, 68%, 0.20);
+    --sidebar-background: 240 19% 9%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 250 100% 68%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 19% 12%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 240 15% 18%;
+    --sidebar-ring: 250 100% 68%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', 'Helvetica Neue', Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: hsl(var(--body-text));
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: hsl(var(--foreground));
+  }
+  
+  p {
+    color: hsl(var(--body-text));
+  }
+}
+
+@layer utilities {
+  /* Glass effects */
+  .glass-effect {
+    background: var(--gradient-glass);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid hsla(0, 0%, 100%, 0.2);
+  }
+  
+  .gradient-premium {
+    background: var(--gradient-premium);
+  }
+  
+  .shadow-premium {
+    box-shadow: var(--shadow-premium);
+  }
+  
+  .shadow-glass {
+    box-shadow: var(--shadow-glass);
+  }
+  
+  .transition-smooth {
+    transition: var(--transition-smooth);
+  }
+  
+  /* Spacing system - 8px grid */
+  .space-8 { padding: 0.5rem; }
+  .space-16 { padding: 1rem; }
+  .space-24 { padding: 1.5rem; }
+  .space-32 { padding: 2rem; }
+  .space-40 { padding: 2.5rem; }
+  .space-48 { padding: 3rem; }
+  .space-64 { padding: 4rem; }
+  .space-80 { padding: 5rem; }
+  .space-96 { padding: 6rem; }
+  
+  /* Scroll animations - reduced motion on mobile */
+  @media (max-width: 768px) {
+    .animate-fade-up,
+    .animate-fade-in-slow,
+    .animate-scale-in {
+      animation-duration: 0.3s;
+    }
+  }
+  
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
+  /* Mobile-specific utilities */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  /* Smooth scroll */
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    .animate-fade-up,
+    .animate-fade-in-slow,
+    .animate-scale-in {
+      animation: none;
+      opacity: 1;
+    }
+  }
+}
