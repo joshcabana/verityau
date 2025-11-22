@@ -9,18 +9,18 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-white rounded-[16px] hover:scale-[1.05] active:scale-[0.98] shadow-md hover:shadow-coral-glow hover:shadow-2xl",
-        destructive: "bg-destructive text-white rounded-[16px] hover:bg-destructive/90 hover:shadow-lg hover:scale-[1.05]",
-        outline: "border-2 border-primary/30 bg-transparent text-primary rounded-[16px] hover:bg-primary/10 hover:border-primary hover:scale-[1.05] hover:shadow-coral-glow",
-        secondary: "bg-secondary text-secondary-foreground rounded-[16px] hover:bg-secondary/90 hover:scale-[1.05]",
-        ghost: "rounded-[16px] hover:bg-accent/10 hover:text-accent-foreground",
+        default: "bg-primary text-white rounded-full hover:scale-[1.05] active:scale-[0.98] shadow-lg hover:shadow-golden-glow",
+        destructive: "bg-destructive text-white rounded-full hover:bg-destructive/90 hover:shadow-lg hover:scale-[1.05]",
+        outline: "border-2 border-primary/30 bg-transparent text-primary rounded-full hover:bg-primary/10 hover:border-primary hover:scale-[1.05] hover:shadow-golden-glow",
+        secondary: "bg-secondary text-secondary-foreground rounded-full hover:bg-secondary/90 hover:scale-[1.05]",
+        ghost: "rounded-full hover:bg-accent/10 hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
-        default: "h-14 px-8 py-4",
-        sm: "h-10 px-5 py-3",
-        lg: "h-16 px-10 py-5 text-base",
-        icon: "h-14 w-14",
+        default: "h-16 px-12 py-5",
+        sm: "h-12 px-8 py-4",
+        lg: "h-20 px-16 py-6 text-base",
+        icon: "h-16 w-16",
       },
     },
     defaultVariants: {

@@ -22,6 +22,9 @@ import stepIllustration1 from "@/assets/step-illustration-1.png";
 import stepIllustration2 from "@/assets/step-illustration-2.png";
 import stepIllustration3 from "@/assets/step-illustration-3.png";
 import stepIllustration4 from "@/assets/step-illustration-4.png";
+import videoDateIllustration from "@/assets/video-date-illustration.png";
+import heartVideoIcon from "@/assets/heart-video-icon.png";
+import conversationIllustration from "@/assets/conversation-illustration.png";
 
 
 const SocialShareButtons = ({ variant = "default" }: { variant?: "default" | "success" }) => {
@@ -158,7 +161,7 @@ const WaitlistForm = () => {
       <Dialog open={showSuccess} onOpenChange={setShowSuccess}>
         <DialogContent className="max-w-3xl text-center border-none bg-black/95 backdrop-blur-xl">
           <DialogHeader className="space-y-6">
-            <DialogTitle className="text-3xl md:text-6xl font-bold text-white mb-4 leading-tight" style={{ fontFamily: 'Obviously Wide, Obviously, Recoleta, sans-serif' }}>
+            <DialogTitle className="text-3xl md:text-6xl font-bold text-white mb-4 leading-tight" style={{ fontFamily: 'Obviously Wide, Satchel, sans-serif' }}>
               You're in! Lifetime unlimited Verity Dates locked for you.
             </DialogTitle>
             <DialogDescription className="text-xl md:text-2xl text-white/90 font-medium leading-relaxed">
@@ -173,20 +176,20 @@ const WaitlistForm = () => {
       
       <form onSubmit={handleSubmit} className="max-w-2xl mx-auto">
         <div className="flex flex-col md:flex-row gap-4">
-          <Input
-            type="email"
-            placeholder="your@email.com →"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            disabled={isSubmitting}
-            className="flex-1 h-14 md:h-16 text-base md:text-lg px-6 bg-white border-2 border-border rounded-[20px] shadow-md focus-visible:ring-primary focus-visible:ring-4 focus-visible:border-primary transition-all placeholder:text-foreground/40"
-          />
+            <Input
+              type="email"
+              placeholder="your@email.com →"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              disabled={isSubmitting}
+              className="flex-1 h-14 md:h-16 text-base md:text-lg px-6 bg-white border-2 border-border rounded-full shadow-md focus-visible:ring-primary focus-visible:ring-4 focus-visible:border-primary transition-all placeholder:text-foreground/40"
+            />
             <Button
               type="submit"
               size="lg"
               disabled={isSubmitting}
-              className="h-14 md:h-16 px-8 md:px-12 text-base md:text-lg font-bold shadow-xl hover:shadow-primary/50 transition-all coral-glow"
+              className="h-14 md:h-16 px-12 md:px-16 text-base md:text-lg font-bold shadow-xl hover:shadow-golden-glow transition-all golden-glow"
             >
               {isSubmitting ? "Joining..." : "Join Waitlist — Lifetime Unlimited"}
             </Button>
@@ -254,7 +257,7 @@ const Index = () => {
       <Dialog open={showSuccess} onOpenChange={setShowSuccess}>
         <DialogContent className="max-w-3xl text-center border-none bg-black/95 backdrop-blur-xl">
           <DialogHeader className="space-y-6">
-            <DialogTitle className="text-3xl md:text-6xl font-bold text-white mb-4 leading-tight" style={{ fontFamily: 'Obviously Wide, Obviously, Recoleta, sans-serif' }}>
+            <DialogTitle className="text-3xl md:text-6xl font-bold text-white mb-4 leading-tight" style={{ fontFamily: 'Obviously Wide, Satchel, sans-serif' }}>
               You're in! Lifetime unlimited Verity Dates locked for you.
             </DialogTitle>
             <DialogDescription className="text-xl md:text-2xl text-white/90 font-medium leading-relaxed">
@@ -269,17 +272,18 @@ const Index = () => {
 
       {/* Full-bleed Hero Section */}
       <section className="relative h-screen w-full overflow-hidden">
-        {/* Background Illustration with Coral Glow */}
+        {/* Background Image with Warm Golden Hour Overlay */}
         <div className="absolute inset-0">
           <div 
             className="absolute inset-0 bg-cover bg-center"
             style={{
-              backgroundImage: `url(${heroIllustration})`,
+              backgroundImage: 'url(/hero-golden-hour.jpg)',
+              filter: 'brightness(0.5) saturate(1.2)'
             }}
           />
-          {/* Coral glow overlay */}
-          <div className="absolute inset-0 gradient-coral-glow opacity-40" />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/20 via-transparent to-background/40" />
+          {/* Warm golden overlay */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-transparent to-background/60" />
+          <div className="absolute inset-0 gradient-golden opacity-30" />
         </div>
 
         {/* Floating Phone Mockups */}
@@ -308,16 +312,16 @@ const Index = () => {
           <div className="max-w-5xl mx-auto text-center">
             {/* Headline */}
             <h1 
-              className="text-[48px] sm:text-[72px] md:text-[96px] lg:text-[120px] font-bold text-foreground mb-6 md:mb-8 leading-[1.15] tracking-wide max-w-5xl mx-auto drop-shadow-lg"
-              style={{ fontFamily: 'Obviously Wide, Obviously, Recoleta, sans-serif' }}
+              className="text-[48px] sm:text-[72px] md:text-[96px] lg:text-[120px] font-bold text-white mb-6 md:mb-8 leading-[1.1] tracking-wide max-w-5xl mx-auto drop-shadow-2xl"
+              style={{ fontFamily: 'Obviously Wide, Satchel, sans-serif' }}
             >
               Date people, not profiles.
             </h1>
 
             {/* Subheadline */}
-            <p className="text-[22px] md:text-[32px] text-foreground/90 mb-10 md:mb-12 leading-relaxed max-w-4xl mx-auto font-medium drop-shadow-md">
+            <p className="text-[22px] md:text-[32px] text-white/95 mb-10 md:mb-12 leading-relaxed max-w-4xl mx-auto font-medium drop-shadow-lg">
               The only dating app where your first conversation is a 10-minute video date.<br />
-              <span className="text-foreground/80">No endless chatting. No catfishing. No disappointment.</span>
+              <span className="text-white/90">No endless chatting. No catfishing. No disappointment.</span>
             </p>
 
             {/* Email Input Form */}
@@ -337,17 +341,17 @@ const Index = () => {
                     name="email"
                     placeholder="your@email.com →"
                     required
-                    className="flex-1 h-16 md:h-[72px] text-lg md:text-xl px-6 md:px-8 bg-white/95 backdrop-blur-sm border-2 border-primary/30 rounded-[20px] shadow-xl focus-visible:ring-primary focus-visible:ring-4 focus-visible:border-primary transition-all placeholder:text-foreground/40"
+                    className="flex-1 h-16 md:h-[72px] text-lg md:text-xl px-6 md:px-8 bg-white/95 backdrop-blur-sm border-2 border-white/40 rounded-full shadow-2xl focus-visible:ring-primary focus-visible:ring-4 focus-visible:border-white transition-all placeholder:text-foreground/40"
                   />
                   <Button
                     type="submit"
                     size="lg"
-                    className="h-16 md:h-[72px] px-8 md:px-12 text-base md:text-xl font-bold shadow-2xl hover:shadow-primary/50 transition-all coral-glow"
+                    className="h-16 md:h-[72px] px-12 md:px-16 text-base md:text-xl font-bold shadow-2xl hover:shadow-golden-glow transition-all golden-glow"
                   >
                     Join Waitlist — Lifetime Unlimited
                   </Button>
                 </div>
-                <p className="text-center text-sm text-muted-foreground mt-4">
+                <p className="text-center text-sm text-white/90 mt-4">
                   Share with single friends → you both get +5 extra dates on launch
                 </p>
                 <SocialShareButtons />
@@ -355,12 +359,12 @@ const Index = () => {
             </div>
 
             {/* Small text under button */}
-            <p className="text-foreground/80 text-base md:text-lg font-medium mb-3">
+            <p className="text-white/90 text-base md:text-lg font-medium mb-3">
               First 2,000 Australians get unlimited Verity Dates for life — Canberra gets priority access.
             </p>
             
             {/* Waitlist count */}
-            <p className="text-primary text-2xl md:text-4xl font-bold drop-shadow-md">
+            <p className="text-primary text-2xl md:text-4xl font-bold drop-shadow-2xl">
               <AnimatedCounter target={18274} /> Australians already waiting
             </p>
           </div>
@@ -368,12 +372,17 @@ const Index = () => {
       </section>
 
       {/* Problems Section */}
-      <section className="py-20 md:py-32 px-4">
+      <section className="py-20 md:py-32 px-4 relative">
+        {/* Line illustration decoration */}
+        <div className="absolute top-10 right-10 w-32 h-32 opacity-20 hidden lg:block">
+          <img src={heartVideoIcon} alt="" className="w-full h-full" />
+        </div>
+        
         <div className="max-w-6xl mx-auto">
           {/* Headline */}
           <h2 
             className="text-4xl md:text-[64px] font-bold text-center mb-16 md:mb-20 leading-tight animate-fade-up"
-            style={{ fontFamily: 'Obviously Wide, Obviously, Recoleta, sans-serif' }}
+            style={{ fontFamily: 'Obviously Wide, Satchel, sans-serif' }}
           >
             Canberra, we're done with the games.
           </h2>
@@ -407,12 +416,20 @@ const Index = () => {
       </section>
 
       {/* How It Works Section */}
-      <section className="py-20 md:py-32 px-4 bg-secondary/30">
+      <section className="py-20 md:py-32 px-4 bg-secondary/30 relative">
+        {/* Line illustration decorations */}
+        <div className="absolute top-20 left-10 w-40 h-40 opacity-15 hidden lg:block">
+          <img src={conversationIllustration} alt="" className="w-full h-full" />
+        </div>
+        <div className="absolute bottom-20 right-10 w-40 h-40 opacity-15 hidden lg:block">
+          <img src={videoDateIllustration} alt="" className="w-full h-full" />
+        </div>
+        
         <div className="max-w-6xl mx-auto">
           {/* Headline */}
           <h2 
             className="text-4xl md:text-[64px] font-bold text-center mb-20 md:mb-32 leading-tight animate-fade-up"
-            style={{ fontFamily: 'Obviously Wide, Obviously, Recoleta, sans-serif' }}
+            style={{ fontFamily: 'Obviously Wide, Satchel, sans-serif' }}
           >
             One video date changes everything
           </h2>
@@ -541,7 +558,7 @@ const Index = () => {
           {/* Massive Headline */}
           <h2 
             className="text-5xl md:text-[80px] font-bold text-white mb-12 md:mb-16 leading-tight animate-fade-up"
-            style={{ fontFamily: 'Obviously Wide, Obviously, Recoleta, sans-serif' }}
+            style={{ fontFamily: 'Obviously Wide, Satchel, sans-serif' }}
           >
             Be the first in Canberra to date like a human again.
           </h2>
@@ -562,13 +579,13 @@ const Index = () => {
                 name="email"
                 placeholder="your@email.com →"
                 required
-                className="flex-1 h-16 md:h-20 text-lg md:text-xl px-6 md:px-8 bg-white text-foreground border-2 border-white rounded-[20px] shadow-xl focus-visible:ring-white focus-visible:ring-4 transition-all placeholder:text-foreground/40"
+                className="flex-1 h-16 md:h-20 text-lg md:text-xl px-6 md:px-8 bg-white text-foreground border-2 border-white rounded-full shadow-xl focus-visible:ring-white focus-visible:ring-4 transition-all placeholder:text-foreground/40"
               />
               <Button
                 type="submit"
                 size="lg"
                 variant="outline"
-                className="h-16 md:h-20 px-8 md:px-12 text-base md:text-xl font-bold bg-white text-primary border-2 border-white hover:bg-white/90 hover:scale-105 shadow-2xl transition-all shadow-coral-intense"
+                className="h-16 md:h-20 px-12 md:px-16 text-base md:text-xl font-bold bg-white text-primary border-2 border-white hover:bg-white/90 hover:scale-105 shadow-2xl transition-all shadow-golden-glow"
               >
                 Join Waitlist — Lifetime Unlimited for First 2,000
               </Button>
@@ -594,7 +611,7 @@ const Index = () => {
             <div className="flex-shrink-0">
               <span 
                 className="text-3xl md:text-4xl font-bold text-primary"
-                style={{ fontFamily: 'Obviously Wide, Obviously, Recoleta, sans-serif' }}
+                style={{ fontFamily: 'Obviously Wide, Satchel, sans-serif' }}
               >
                 Verity
               </span>
