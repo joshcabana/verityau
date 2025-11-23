@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Send, ArrowLeft } from "lucide-react";
+import { Send, ArrowLeft, Check, CheckCheck } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
@@ -15,6 +15,11 @@ interface Message {
   created_at: string;
   read: boolean;
   match_id: string;
+}
+
+interface PresenceState {
+  user_id: string;
+  typing: boolean;
 }
 
 interface ChatProps {
@@ -31,7 +36,9 @@ export const Chat = ({ open, onOpenChange, matchId, matchName, matchPhoto, curre
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isTyping, setIsTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Fetch messages
   useEffect(() => {
@@ -62,12 +69,12 @@ export const Chat = ({ open, onOpenChange, matchId, matchName, matchPhoto, curre
     fetchMessages();
   }, [open, matchId]);
 
-  // Subscribe to real-time messages
+  // Subscribe to real-time messages and typing indicators
   useEffect(() => {
     if (!open || !matchId) return;
 
     const channel = supabase
-      .channel(`messages:${matchId}`)
+      .channel(`chat:${matchId}`)
       .on(
         "postgres_changes",
         {
@@ -77,26 +84,94 @@ export const Chat = ({ open, onOpenChange, matchId, matchName, matchPhoto, curre
           filter: `match_id=eq.${matchId}`,
         },
         (payload) => {
-          // Only add message if it's for this match
           const newMessage = payload.new as Message;
           if (newMessage.match_id === matchId) {
             setMessages((prev) => [...prev, newMessage]);
           }
         }
       )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "messages",
+          filter: `match_id=eq.${matchId}`,
+        },
+        (payload) => {
+          const updatedMessage = payload.new as Message;
+          setMessages((prev) =>
+            prev.map((msg) => (msg.id === updatedMessage.id ? updatedMessage : msg))
+          );
+        }
+      )
+      .on("presence", { event: "sync" }, () => {
+        const presenceState = channel.presenceState<PresenceState>();
+        const otherUsersPresence = Object.values(presenceState).flat();
+        const otherUser = otherUsersPresence.find(
+          (presence) => presence?.user_id !== currentUserId
+        );
+        setIsTyping(otherUser?.typing || false);
+      })
       .subscribe();
 
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [open, matchId]);
+  }, [open, matchId, currentUserId]);
+
+  // Mark messages as read when chat is opened
+  useEffect(() => {
+    if (!open || !matchId || !currentUserId) return;
+
+    const markAsRead = async () => {
+      const unreadMessages = messages.filter(
+        (msg) => msg.sender_id !== currentUserId && !msg.read
+      );
+
+      if (unreadMessages.length > 0) {
+        const { error } = await supabase
+          .from("messages")
+          .update({ read: true })
+          .eq("match_id", matchId)
+          .eq("sender_id", unreadMessages[0].sender_id)
+          .eq("read", false);
+
+        if (error) {
+          console.error("Error marking messages as read:", error);
+        }
+      }
+    };
+
+    markAsRead();
+  }, [open, matchId, currentUserId, messages]);
 
   // Auto-scroll to bottom
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages]);
+  }, [messages, isTyping]);
+
+  const handleTyping = () => {
+    const channel = supabase.channel(`chat:${matchId}`);
+    
+    channel.track({
+      user_id: currentUserId,
+      typing: true,
+    });
+
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+
+    typingTimeoutRef.current = setTimeout(() => {
+      channel.track({
+        user_id: currentUserId,
+        typing: false,
+      });
+    }, 2000);
+  };
 
   const handleSend = async () => {
     if (!message.trim()) return;
@@ -110,6 +185,13 @@ export const Chat = ({ open, onOpenChange, matchId, matchName, matchPhoto, curre
 
       if (error) throw error;
       setMessage("");
+      
+      // Stop typing indicator
+      const channel = supabase.channel(`chat:${matchId}`);
+      channel.track({
+        user_id: currentUserId,
+        typing: false,
+      });
     } catch (error) {
       console.error("Error sending message:", error);
       toast({
@@ -177,15 +259,37 @@ export const Chat = ({ open, onOpenChange, matchId, matchName, matchPhoto, curre
                     }`}
                   >
                     <p className="text-sm">{msg.content}</p>
-                    <p className="text-xs opacity-70 mt-1">
-                      {new Date(msg.created_at).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </p>
+                    <div className="flex items-center gap-1 mt-1">
+                      <p className="text-xs opacity-70">
+                        {new Date(msg.created_at).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </p>
+                      {msg.sender_id === currentUserId && (
+                        <span className="opacity-70">
+                          {msg.read ? (
+                            <CheckCheck className="w-3 h-3" />
+                          ) : (
+                            <Check className="w-3 h-3" />
+                          )}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}
+              {isTyping && (
+                <div className="flex justify-start">
+                  <div className="bg-secondary text-secondary-foreground rounded-2xl px-4 py-2">
+                    <div className="flex gap-1">
+                      <span className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                      <span className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                      <span className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </ScrollArea>
@@ -197,7 +301,10 @@ export const Chat = ({ open, onOpenChange, matchId, matchName, matchPhoto, curre
               <Input
                 placeholder="Type a message..."
                 value={message}
-                onChange={(e) => setMessage(e.target.value)}
+                onChange={(e) => {
+                  setMessage(e.target.value);
+                  handleTyping();
+                }}
                 onKeyPress={(e) => e.key === "Enter" && handleSend()}
                 className="flex-1"
               />
