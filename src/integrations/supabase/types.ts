@@ -56,6 +56,41 @@ export type Database = {
         }
         Relationships: []
       }
+      messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          match_id: string
+          read: boolean | null
+          sender_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          match_id: string
+          read?: boolean | null
+          sender_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          match_id?: string
+          read?: boolean | null
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: false
+            referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       preferences: {
         Row: {
           age_range: unknown
@@ -604,6 +639,29 @@ export type Database = {
       geomfromewkt: { Args: { "": string }; Returns: unknown }
       gettransactionid: { Args: never; Returns: unknown }
       longtransactionsenabled: { Args: never; Returns: boolean }
+      nearby_profiles: {
+        Args: {
+          age_max: number
+          age_min: number
+          distance_km: number
+          excluded_ids: string[]
+          gender_prefs: string[]
+          user_lat: number
+          user_lon: number
+        }
+        Returns: {
+          age: number
+          bio: string
+          distance_meters: number
+          gender: string
+          id: string
+          intro_video_url: string
+          location: unknown
+          name: string
+          photos: string[]
+          user_id: string
+        }[]
+      }
       populate_geometry_columns:
         | { Args: { use_typmod?: boolean }; Returns: string }
         | { Args: { tbl_oid: unknown; use_typmod?: boolean }; Returns: number }

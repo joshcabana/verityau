@@ -15,11 +15,21 @@ const StepCameraAndMic = ({ data, onComplete }: StepProps) => {
 
   const handleTestPermissions = async () => {
     setTesting(true);
-    // Mock permission request - in production this would request actual permissions
-    setTimeout(() => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true,
+      });
+      
+      // Permission granted - stop the stream
+      stream.getTracks().forEach((track) => track.stop());
       setPermissionGranted(true);
+    } catch (error) {
+      console.error("Permission denied:", error);
+      alert("Camera and microphone access is required for video calls. Please grant permissions in your browser settings.");
+    } finally {
       setTesting(false);
-    }, 1000);
+    }
   };
 
   const handleContinue = () => {

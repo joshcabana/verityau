@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Heart, ArrowLeft, Sparkles } from "lucide-react";
 import { MatchCard } from "@/components/MatchCard";
-import { ChatStub } from "@/components/ChatStub";
+import { Chat } from "@/components/Chat";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { 
@@ -201,11 +201,13 @@ const Matches = () => {
 
       {/* Chat Dialog */}
       {selectedMatch && (
-        <ChatStub
+        <Chat
           open={chatOpen}
           onOpenChange={setChatOpen}
+          matchId={selectedMatch.id}
           matchName={selectedMatch.profile.name}
           matchPhoto={selectedMatch.profile.photos?.[0]}
+          currentUserId={user?.id || ""}
         />
       )}
 
