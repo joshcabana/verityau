@@ -1043,10 +1043,9 @@ export type Database = {
       }
       postgis_version: { Args: never; Returns: string }
       postgis_wagyu_version: { Args: never; Returns: string }
-      rate_limited_like: {
-        Args: { p_from_user: string; p_to_user: string }
-        Returns: Json
-      }
+      rate_limited_like:
+        | { Args: { p_from_user: string; p_to_user: string }; Returns: Json }
+        | { Args: { p_from_user: string; p_to_user: string }; Returns: Json }
       rate_limited_message: {
         Args: { p_content: string; p_match_id: string; p_sender_id: string }
         Returns: Json
