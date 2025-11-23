@@ -2,12 +2,13 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Heart, Sparkles, Shield, Loader2, RotateCcw, Crown, SlidersHorizontal } from "lucide-react";
+import { Heart, Sparkles, Shield, Loader2, RotateCcw, Crown, SlidersHorizontal, Bell, BellOff } from "lucide-react";
 import { ProfileCard } from "@/components/ProfileCard";
 import { PreferencesDrawer } from "@/components/PreferencesDrawer";
 import { VerityDateNotification } from "@/components/VerityDateNotification";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { useToast } from "@/hooks/use-toast";
 import { fetchMatchingProfiles, likeProfile, passProfile, undoLastPass, boostProfile, Profile } from "@/utils/matchmaking";
 import { trackEvent, trackPageView } from "@/utils/analytics";
@@ -17,6 +18,7 @@ import { startLastActiveUpdates } from "@/utils/updateLastActive";
 const Main = () => {
   const { user } = useAuth();
   const { hasSubscription, isPremium } = useSubscription();
+  const { isSupported, subscription, subscribeToPush, unsubscribeFromPush } = usePushNotifications(user?.id);
   const { toast } = useToast();
   const navigate = useNavigate();
   
@@ -476,6 +478,25 @@ const Main = () => {
 
       {/* Verity Date Notifications */}
       <VerityDateNotification />
+
+      {/* Push Notification Toggle */}
+      {isSupported && (
+        <div className="fixed bottom-24 right-4 z-50">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={subscription ? unsubscribeFromPush : subscribeToPush}
+            className="rounded-full shadow-lg bg-card"
+            title={subscription ? "Disable push notifications" : "Enable push notifications"}
+          >
+            {subscription ? (
+              <Bell className="h-4 w-4" />
+            ) : (
+              <BellOff className="h-4 w-4" />
+            )}
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

@@ -184,6 +184,27 @@ export const Chat = ({ open, onOpenChange, matchId, matchName, matchPhoto, curre
       });
 
       if (error) throw error;
+
+      // Create notification for the recipient
+      const { data: matchData } = await supabase
+        .from("matches")
+        .select("user1, user2")
+        .eq("id", matchId)
+        .single();
+
+      if (matchData) {
+        const recipientId = matchData.user1 === currentUserId ? matchData.user2 : matchData.user1;
+        
+        const { createNotification } = await import("@/utils/notifications");
+        await createNotification({
+          userId: recipientId,
+          type: "message",
+          title: `New message from ${matchName}`,
+          message: message.trim().substring(0, 100),
+          relatedId: matchId,
+        });
+      }
+
       setMessage("");
       
       // Stop typing indicator

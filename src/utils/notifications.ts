@@ -26,6 +26,24 @@ export async function createNotification({
 
     if (error) {
       console.error("Error creating notification:", error);
+      return;
+    }
+
+    // Send push notification for message types
+    if (type === "message") {
+      try {
+        await supabase.functions.invoke("send-push-notification", {
+          body: {
+            recipientId: userId,
+            title,
+            body: message,
+            url: `/matches?chat=${relatedId}`,
+            matchId: relatedId,
+          },
+        });
+      } catch (pushError) {
+        console.error("Error sending push notification:", pushError);
+      }
     }
   } catch (error) {
     console.error("Error in createNotification:", error);
