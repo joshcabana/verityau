@@ -24,9 +24,10 @@ interface ChatProps {
   matchName: string;
   matchPhoto?: string;
   currentUserId: string;
+  chatUnlocked: boolean;
 }
 
-export const Chat = ({ open, onOpenChange, matchId, matchName, matchPhoto, currentUserId }: ChatProps) => {
+export const Chat = ({ open, onOpenChange, matchId, matchName, matchPhoto, currentUserId, chatUnlocked }: ChatProps) => {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
@@ -145,7 +146,17 @@ export const Chat = ({ open, onOpenChange, matchId, matchName, matchPhoto, curre
 
         {/* Messages */}
         <ScrollArea className="flex-1 p-4" ref={scrollRef}>
-          {loading ? (
+          {!chatUnlocked ? (
+            <div className="text-center text-muted-foreground space-y-4 py-8">
+              <div className="text-4xl">🔒</div>
+              <div>
+                <p className="font-semibold mb-2">Chat Locked</p>
+                <p className="text-sm">
+                  Complete a Verity Date where you both say "yes" to unlock chat!
+                </p>
+              </div>
+            </div>
+          ) : loading ? (
             <div className="text-center text-muted-foreground">Loading messages...</div>
           ) : messages.length === 0 ? (
             <div className="text-center text-muted-foreground">
@@ -181,22 +192,28 @@ export const Chat = ({ open, onOpenChange, matchId, matchName, matchPhoto, curre
 
         {/* Input */}
         <div className="border-t border-border p-4 flex-shrink-0">
-          <div className="flex items-center gap-2">
-            <Input
-              placeholder="Type a message..."
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && handleSend()}
-              className="flex-1"
-            />
-            <Button
-              onClick={handleSend}
-              size="icon"
-              disabled={!message.trim()}
-            >
-              <Send className="w-4 h-4" />
-            </Button>
-          </div>
+          {chatUnlocked ? (
+            <div className="flex items-center gap-2">
+              <Input
+                placeholder="Type a message..."
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                onKeyPress={(e) => e.key === "Enter" && handleSend()}
+                className="flex-1"
+              />
+              <Button
+                onClick={handleSend}
+                size="icon"
+                disabled={!message.trim()}
+              >
+                <Send className="w-4 h-4" />
+              </Button>
+            </div>
+          ) : (
+            <div className="text-center text-sm text-muted-foreground">
+              Complete a Verity Date to unlock messaging
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>

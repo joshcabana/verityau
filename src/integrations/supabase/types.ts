@@ -35,6 +35,7 @@ export type Database = {
       matches: {
         Row: {
           both_interested: boolean | null
+          chat_unlocked: boolean | null
           created_at: string | null
           id: string
           user1: string
@@ -42,6 +43,7 @@ export type Database = {
         }
         Insert: {
           both_interested?: boolean | null
+          chat_unlocked?: boolean | null
           created_at?: string | null
           id?: string
           user1: string
@@ -49,6 +51,7 @@ export type Database = {
         }
         Update: {
           both_interested?: boolean | null
+          chat_unlocked?: boolean | null
           created_at?: string | null
           id?: string
           user1?: string

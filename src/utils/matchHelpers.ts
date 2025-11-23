@@ -5,6 +5,7 @@ export interface Match {
   user1: string;
   user2: string;
   created_at: string;
+  chat_unlocked: boolean;
   profile: {
     id: string;
     user_id: string;
@@ -35,6 +36,7 @@ export const fetchUserMatches = async (userId: string): Promise<Match[]> => {
         user2,
         created_at,
         both_interested,
+        chat_unlocked,
         verity_dates (
           id,
           scheduled_at,
@@ -72,6 +74,7 @@ export const fetchUserMatches = async (userId: string): Promise<Match[]> => {
           user1: match.user1,
           user2: match.user2,
           created_at: match.created_at,
+          chat_unlocked: match.chat_unlocked || false,
           profile: profile || {
             id: "",
             user_id: matchedUserId,
@@ -82,7 +85,7 @@ export const fetchUserMatches = async (userId: string): Promise<Match[]> => {
           },
           verity_date: verityDate,
           last_message: {
-            content: "Say hi! 👋",
+            content: match.chat_unlocked ? "Say hi! 👋" : "Complete Verity Date to chat",
             sent_at: match.created_at,
           },
         };
