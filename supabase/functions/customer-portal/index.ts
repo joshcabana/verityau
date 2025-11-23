@@ -63,9 +63,33 @@ serve(async (req) => {
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     logStep("ERROR in customer-portal", { message: errorMessage });
-    return new Response(JSON.stringify({ error: errorMessage }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 500,
-    });
+    
+    // User-friendly error messages
+    let userMessage = errorMessage;
+    let statusCode = 500;
+    
+    if (errorMessage.includes("not set")) {
+      userMessage = "Customer portal is temporarily unavailable. Please try again later.";
+      statusCode = 503;
+    } else if (errorMessage.includes("Authentication")) {
+      userMessage = "Please log in to access the customer portal.";
+      statusCode = 401;
+    } else if (errorMessage.includes("No Stripe customer")) {
+      userMessage = "No subscription found. Please subscribe first.";
+      statusCode = 404;
+    } else if (!userMessage) {
+      userMessage = "Unable to access customer portal. Please try again.";
+    }
+    
+    return new Response(
+      JSON.stringify({ 
+        error: userMessage,
+        details: errorMessage 
+      }), 
+      {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: statusCode,
+      }
+    );
   }
 });

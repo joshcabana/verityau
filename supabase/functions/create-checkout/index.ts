@@ -29,25 +29,41 @@ serve(async (req) => {
     const token = authHeader.replace("Bearer ", "");
     const { data } = await supabaseClient.auth.getUser(token);
     const user = data.user;
-    if (!user?.email) throw new Error("User not authenticated or email not available");
+    
+    if (!user?.email) {
+      throw new Error("User not authenticated or email not available");
+    }
+    
     logStep("User authenticated", { userId: user.id, email: user.email });
 
     const { priceId } = await req.json();
-    if (!priceId) throw new Error("Price ID is required");
+    
+    if (!priceId) {
+      throw new Error("Price ID is required");
+    }
+    
     logStep("Price ID received", { priceId });
 
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", { 
+    const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
+    if (!stripeKey) {
+      throw new Error("Stripe configuration error. Please contact support.");
+    }
+
+    const stripe = new Stripe(stripeKey, { 
       apiVersion: "2025-08-27.basil" 
     });
     
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
     let customerId;
+    
     if (customers.data.length > 0) {
       customerId = customers.data[0].id;
       logStep("Existing customer found", { customerId });
     } else {
       logStep("No existing customer found, will create one");
     }
+
+    const origin = req.headers.get("origin") || "http://localhost:5173";
 
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
@@ -59,9 +75,13 @@ serve(async (req) => {
         },
       ],
       mode: "subscription",
-      success_url: `${req.headers.get("origin")}/verity-plus?success=true`,
-      cancel_url: `${req.headers.get("origin")}/verity-plus?canceled=true`,
+      success_url: `${origin}/verity-plus?success=true`,
+      cancel_url: `${origin}/verity-plus?canceled=true`,
     });
+
+    if (!session.url) {
+      throw new Error("Failed to create checkout session");
+    }
 
     logStep("Checkout session created", { sessionId: session.id, url: session.url });
 
@@ -72,9 +92,33 @@ serve(async (req) => {
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     logStep("ERROR", { message: errorMessage });
-    return new Response(JSON.stringify({ error: errorMessage }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 500,
-    });
+    
+    // User-friendly error messages
+    let userMessage = errorMessage;
+    let statusCode = 500;
+    
+    if (errorMessage.includes("required")) {
+      userMessage = "Missing required information. Please try again.";
+      statusCode = 400;
+    } else if (errorMessage.includes("authenticated")) {
+      userMessage = "Please log in to continue with checkout.";
+      statusCode = 401;
+    } else if (errorMessage.includes("configuration")) {
+      userMessage = "Payment system is temporarily unavailable. Please try again later.";
+      statusCode = 503;
+    } else if (!userMessage) {
+      userMessage = "Unable to process checkout. Please try again.";
+    }
+    
+    return new Response(
+      JSON.stringify({ 
+        error: userMessage,
+        details: errorMessage 
+      }), 
+      {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: statusCode,
+      }
+    );
   }
 });
