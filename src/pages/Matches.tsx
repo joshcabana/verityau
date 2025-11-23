@@ -1,97 +1,235 @@
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { MapPin, ArrowLeft } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Heart, ArrowLeft, Sparkles } from "lucide-react";
+import { MatchCard } from "@/components/MatchCard";
+import { ChatStub } from "@/components/ChatStub";
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
+import { 
+  fetchUserMatches, 
+  unmatchUser, 
+  acceptVerityDate,
+  Match 
+} from "@/utils/matchHelpers";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const Matches = () => {
+  const { user } = useAuth();
+  const { toast } = useToast();
   const navigate = useNavigate();
 
-  // Mock matches data - in production this would come from backend
-  const matches = [
-    {
-      id: "1",
-      name: "Sarah",
-      age: 28,
-      city: "London",
-      photo: null,
-      matchedDate: "21 November 2025"
-    },
-    {
-      id: "2",
-      name: "Emily",
-      age: 26,
-      city: "Manchester",
-      photo: null,
-      matchedDate: "20 November 2025"
-    },
-    {
-      id: "3",
-      name: "Jessica",
-      age: 30,
-      city: "Bristol",
-      photo: null,
-      matchedDate: "19 November 2025"
+  const [matches, setMatches] = useState<Match[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
+  const [chatOpen, setChatOpen] = useState(false);
+  const [unmatchDialogOpen, setUnmatchDialogOpen] = useState(false);
+  const [matchToUnmatch, setMatchToUnmatch] = useState<Match | null>(null);
+
+  // Load matches
+  useEffect(() => {
+    const loadMatches = async () => {
+      if (!user) return;
+
+      try {
+        setIsLoading(true);
+        const userMatches = await fetchUserMatches(user.id);
+        setMatches(userMatches);
+      } catch (error) {
+        console.error("Error loading matches:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load matches. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadMatches();
+  }, [user, toast]);
+
+  const handleOpenChat = (match: Match) => {
+    setSelectedMatch(match);
+    setChatOpen(true);
+  };
+
+  const handleAcceptVerityDate = async (match: Match) => {
+    if (!match.verity_date) return;
+
+    const success = await acceptVerityDate(match.verity_date.id);
+
+    if (success) {
+      toast({
+        title: "🎉 Verity Date Accepted!",
+        description: "Your date has been scheduled. Check your notifications for details.",
+        duration: 5000,
+      });
+
+      // Refresh matches
+      if (user) {
+        const updatedMatches = await fetchUserMatches(user.id);
+        setMatches(updatedMatches);
+      }
+    } else {
+      toast({
+        title: "Error",
+        description: "Failed to accept Verity Date. Please try again.",
+        variant: "destructive",
+      });
     }
-  ];
+  };
+
+  const handleUnmatchClick = (match: Match) => {
+    setMatchToUnmatch(match);
+    setUnmatchDialogOpen(true);
+  };
+
+  const handleConfirmUnmatch = async () => {
+    if (!matchToUnmatch) return;
+
+    const success = await unmatchUser(matchToUnmatch.id);
+
+    if (success) {
+      toast({
+        title: "Unmatched",
+        description: `You've unmatched with ${matchToUnmatch.profile.name}.`,
+      });
+
+      // Remove from local state
+      setMatches(matches.filter((m) => m.id !== matchToUnmatch.id));
+    } else {
+      toast({
+        title: "Error",
+        description: "Failed to unmatch. Please try again.",
+        variant: "destructive",
+      });
+    }
+
+    setUnmatchDialogOpen(false);
+    setMatchToUnmatch(null);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-background to-secondary">
+        <div className="border-b border-border bg-card/50 backdrop-blur">
+          <div className="max-w-2xl mx-auto px-4 py-4">
+            <Skeleton className="h-8 w-32" />
+          </div>
+        </div>
+        <div className="max-w-2xl mx-auto px-4 py-8 space-y-4">
+          {[1, 2, 3].map((i) => (
+            <Skeleton key={i} className="h-32 w-full" />
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-secondary">
+    <div className="min-h-screen bg-gradient-to-b from-background to-secondary flex flex-col">
       {/* Header */}
-      <div className="bg-card border-b border-border sticky top-0 z-10">
-        <div className="max-w-2xl mx-auto px-4 py-4 flex items-center gap-4">
+      <div className="border-b border-border bg-card/50 backdrop-blur">
+        <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate("/main")}
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+            <h1 className="text-2xl font-bold text-foreground">Matches</h1>
+          </div>
           <Button
             variant="ghost"
-            size="icon"
-            onClick={() => navigate("/main")}
+            size="sm"
+            onClick={() => navigate("/verity-plus")}
           >
-            <ArrowLeft className="h-5 w-5" />
+            <Sparkles className="h-5 w-5" />
           </Button>
-          <h1 className="text-2xl font-bold text-foreground">Matches</h1>
         </div>
       </div>
 
-      {/* Matches List */}
-      <div className="max-w-2xl mx-auto px-4 py-6 space-y-4">
+      {/* Content */}
+      <div className="flex-1 max-w-2xl mx-auto w-full px-4 py-8">
         {matches.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-muted-foreground">No matches yet</p>
-            <p className="text-sm text-muted-foreground mt-2">
-              Start a call to meet someone new!
+            <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
+              <Heart className="h-10 w-10 text-primary" />
+            </div>
+            <h2 className="text-xl font-semibold text-foreground mb-2">
+              No matches yet
+            </h2>
+            <p className="text-muted-foreground mb-6">
+              Keep swiping to find your connection!
             </p>
+            <Button onClick={() => navigate("/main")} className="btn-premium">
+              Start Discovering
+            </Button>
           </div>
         ) : (
-          matches.map((match) => (
-            <div
-              key={match.id}
-              onClick={() => navigate(`/match/${match.id}`)}
-              className="bg-card rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-            >
-              <div className="flex items-center gap-4">
-                <Avatar className="h-16 w-16">
-                  <AvatarFallback className="text-xl bg-primary/10 text-primary">
-                    {match.name[0]}
-                  </AvatarFallback>
-                </Avatar>
-
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-foreground text-lg">
-                    {match.name}, {match.age}
-                  </h3>
-                  
-                  <div className="flex items-center gap-1.5 text-muted-foreground mt-1">
-                    <MapPin className="h-4 w-4 flex-shrink-0" />
-                    <span className="text-sm">{match.city}</span>
-                  </div>
-
-                  <p className="text-xs text-muted-foreground mt-2">
-                    Matched on {match.matchedDate}
-                  </p>
-                </div>
-              </div>
-            </div>
-          ))
+          <div className="space-y-4">
+            {matches.map((match) => (
+              <MatchCard
+                key={match.id}
+                match={match}
+                onOpenChat={() => handleOpenChat(match)}
+                onAcceptVerityDate={
+                  match.verity_date && !match.verity_date.scheduled_at
+                    ? () => handleAcceptVerityDate(match)
+                    : undefined
+                }
+                onUnmatch={() => handleUnmatchClick(match)}
+              />
+            ))}
+          </div>
         )}
       </div>
+
+      {/* Chat Dialog */}
+      {selectedMatch && (
+        <ChatStub
+          open={chatOpen}
+          onOpenChange={setChatOpen}
+          matchName={selectedMatch.profile.name}
+          matchPhoto={selectedMatch.profile.photos?.[0]}
+        />
+      )}
+
+      {/* Unmatch Confirmation Dialog */}
+      <AlertDialog open={unmatchDialogOpen} onOpenChange={setUnmatchDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Unmatch with {matchToUnmatch?.profile.name}?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will remove them from your matches and you won't be able to message them anymore.
+              This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmUnmatch}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Unmatch
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
