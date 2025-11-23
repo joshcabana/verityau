@@ -62,7 +62,7 @@ export const fetchMatchingProfiles = async (
     excludedUserIds.push(userId); // Exclude self
 
     // Use PostGIS RPC function for distance-based filtering
-    const { data: profiles, error } = await supabase.rpc("nearby_profiles", {
+    let { data: profiles, error } = await supabase.rpc("nearby_profiles", {
       user_lat: userLat,
       user_lon: userLon,
       distance_km: preferences.distance_km,
@@ -77,7 +77,15 @@ export const fetchMatchingProfiles = async (
       return [];
     }
 
-    let filteredProfiles = profiles || [];
+    // Sort profiles to show boosted profiles first
+    let filteredProfiles = (profiles || []).sort((a: any, b: any) => {
+      const aBoostActive = a.boost_expires_at && new Date(a.boost_expires_at) > new Date();
+      const bBoostActive = b.boost_expires_at && new Date(b.boost_expires_at) > new Date();
+      
+      if (aBoostActive && !bBoostActive) return -1;
+      if (!aBoostActive && bBoostActive) return 1;
+      return 0;
+    });
 
     // Apply verified only filter
     if (filters?.verifiedOnly) {
@@ -225,9 +233,15 @@ export const passProfile = async (
 };
 
 export const undoLastPass = async (
-  userId: string
-): Promise<{ success: boolean; profileId?: string }> => {
+  userId: string,
+  isPremium: boolean = false
+): Promise<{ success: boolean; profileId?: string; requiresPremium?: boolean }> => {
   try {
+    // Check if user has premium
+    if (!isPremium) {
+      return { success: false, requiresPremium: true };
+    }
+
     // Get the most recent pass
     const { data: lastPass } = await supabase
       .from("seen_profiles")
@@ -256,3 +270,40 @@ export const undoLastPass = async (
     return { success: false };
   }
 };
+
+// Boost profile - makes profile appear first in discovery (PREMIUM ONLY)
+export async function boostProfile(userId: string, isPremium: boolean = false): Promise<boolean> {
+  try {
+    if (!isPremium) {
+      return false;
+    }
+
+    // Set boost expiration to 30 minutes from now
+    const boostExpiry = new Date();
+    boostExpiry.setMinutes(boostExpiry.getMinutes() + 30);
+
+    // Get current boost count
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("boost_count")
+      .eq("user_id", userId)
+      .single();
+
+    const newBoostCount = (profile?.boost_count || 0) + 1;
+
+    const { error } = await supabase
+      .from("profiles")
+      .update({
+        boost_expires_at: boostExpiry.toISOString(),
+        boost_count: newBoostCount,
+      })
+      .eq("user_id", userId);
+
+    if (error) throw error;
+
+    return true;
+  } catch (error) {
+    console.error("Error boosting profile:", error);
+    return false;
+  }
+}
