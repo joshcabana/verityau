@@ -1,21 +1,45 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Crown, Heart, Sparkles, Zap, Users, Star, ArrowLeft, Check } from "lucide-react";
+import { Crown, Heart, Sparkles, Zap, Users, Star, ArrowLeft, Check, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const VerityPlus = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [selectedPlan, setSelectedPlan] = useState<"monthly" | "annual">("monthly");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubscribe = () => {
-    // In production, this would integrate with Stripe
-    toast({
-      title: "Coming Soon! 🎉",
-      description: "Verity Plus will be available at launch. Stay tuned!",
-      duration: 5000,
-    });
+  const handleSubscribe = async () => {
+    setLoading(true);
+
+    try {
+      const priceId = selectedPlan === "monthly" 
+        ? "price_1SWUoFHGk085e6qAVmuxpq7w" // Basic monthly
+        : "price_1SWUoqHGk085e6qAG0RkOy85"; // Premium monthly
+
+      const { data, error } = await supabase.functions.invoke("create-checkout", {
+        body: { priceId },
+      });
+
+      if (error) throw error;
+
+      if (data?.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error("No checkout URL received");
+      }
+    } catch (error) {
+      console.error("Checkout error:", error);
+      toast({
+        title: "Checkout Failed",
+        description: error instanceof Error ? error.message : "Unable to start checkout. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const features = [
@@ -123,11 +147,21 @@ const VerityPlus = () => {
 
           <Button
             onClick={handleSubscribe}
+            disabled={loading}
             size="lg"
             className="w-full h-14 text-lg font-semibold btn-premium shadow-premium mb-4"
           >
-            <Crown className="w-5 h-5 mr-2" />
-            Start Verity Plus
+            {loading ? (
+              <>
+                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                Processing...
+              </>
+            ) : (
+              <>
+                <Crown className="w-5 h-5 mr-2" />
+                Start Verity Plus
+              </>
+            )}
           </Button>
 
           <p className="text-xs text-muted-foreground text-center">
@@ -214,11 +248,21 @@ const VerityPlus = () => {
           </div>
           <Button
             onClick={handleSubscribe}
+            disabled={loading}
             size="lg"
             className="btn-premium shadow-premium w-full sm:w-auto"
           >
-            <Crown className="w-5 h-5 mr-2" />
-            Get Verity Plus
+            {loading ? (
+              <>
+                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                Processing...
+              </>
+            ) : (
+              <>
+                <Crown className="w-5 h-5 mr-2" />
+                Get Verity Plus
+              </>
+            )}
           </Button>
         </div>
       </div>

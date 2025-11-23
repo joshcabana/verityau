@@ -131,9 +131,31 @@ serve(async (req) => {
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     logStep("ERROR in check-subscription", { message: errorMessage });
-    return new Response(JSON.stringify({ error: errorMessage }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 500,
-    });
+    
+    // User-friendly error messages
+    let userMessage = errorMessage;
+    let statusCode = 500;
+    
+    if (errorMessage.includes("not set")) {
+      userMessage = "Subscription service is temporarily unavailable.";
+      statusCode = 503;
+    } else if (errorMessage.includes("Authentication")) {
+      userMessage = "Please log in to check your subscription status.";
+      statusCode = 401;
+    } else if (!userMessage) {
+      userMessage = "Unable to check subscription status. Using cached data if available.";
+    }
+    
+    return new Response(
+      JSON.stringify({ 
+        error: userMessage,
+        details: errorMessage,
+        subscribed: false 
+      }), 
+      {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: statusCode,
+      }
+    );
   }
 });

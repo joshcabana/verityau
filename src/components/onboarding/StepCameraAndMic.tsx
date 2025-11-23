@@ -16,6 +16,11 @@ const StepCameraAndMic = ({ data, onComplete }: StepProps) => {
   const handleTestPermissions = async () => {
     setTesting(true);
     try {
+      // Check if mediaDevices is supported
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error("Your browser doesn't support camera and microphone access. Please use a modern browser like Chrome, Firefox, or Safari.");
+      }
+
       const stream = await navigator.mediaDevices.getUserMedia({
         video: true,
         audio: true,
@@ -25,8 +30,23 @@ const StepCameraAndMic = ({ data, onComplete }: StepProps) => {
       stream.getTracks().forEach((track) => track.stop());
       setPermissionGranted(true);
     } catch (error) {
-      console.error("Permission denied:", error);
-      alert("Camera and microphone access is required for video calls. Please grant permissions in your browser settings.");
+      console.error("Permission error:", error);
+      
+      let errorMessage = "Camera and microphone access is required for video calls.";
+      
+      if (error instanceof Error) {
+        if (error.name === "NotAllowedError" || error.name === "PermissionDeniedError") {
+          errorMessage = "Permission denied. Please allow camera and microphone access in your browser settings.";
+        } else if (error.name === "NotFoundError") {
+          errorMessage = "No camera or microphone found. Please connect a device and try again.";
+        } else if (error.name === "NotReadableError") {
+          errorMessage = "Camera or microphone is already in use by another application.";
+        } else if (error.message.includes("browser")) {
+          errorMessage = error.message;
+        }
+      }
+      
+      alert(errorMessage);
     } finally {
       setTesting(false);
     }

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
 import { toast } from "sonner";
+import { retryAsync, isOnline } from "@/utils/retryUtils";
 
 export interface SubscriptionStatus {
   subscribed: boolean;
@@ -19,6 +20,7 @@ export const useSubscription = () => {
     subscription_end: null,
   });
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const checkSubscription = async () => {
     if (!user) {
@@ -32,15 +34,36 @@ export const useSubscription = () => {
       return;
     }
 
+    if (!isOnline()) {
+      setError("You are offline. Subscription status may be outdated.");
+      setLoading(false);
+      return;
+    }
+
     try {
-      const { data, error } = await supabase.functions.invoke("check-subscription");
+      setError(null);
+      
+      await retryAsync(
+        async () => {
+          const { data, error } = await supabase.functions.invoke("check-subscription");
 
-      if (error) throw error;
+          if (error) throw error;
 
-      setSubscription(data);
+          setSubscription(data);
+        },
+        {
+          maxRetries: 2,
+          delayMs: 1000,
+          onRetry: (attempt) => {
+            console.log(`Retrying subscription check (attempt ${attempt})`);
+          },
+        }
+      );
     } catch (error) {
       console.error("Error checking subscription:", error);
-      toast.error("Failed to check subscription status");
+      const message = error instanceof Error ? error.message : "Failed to check subscription";
+      setError(message);
+      toast.error("Failed to check subscription status. Using cached data if available.");
     } finally {
       setLoading(false);
     }
@@ -56,6 +79,11 @@ export const useSubscription = () => {
   }, [user]);
 
   const createCheckout = async (priceId: string) => {
+    if (!isOnline()) {
+      toast.error("You are offline. Please check your internet connection.");
+      return;
+    }
+
     try {
       const { data, error } = await supabase.functions.invoke("create-checkout", {
         body: { priceId },
@@ -64,32 +92,44 @@ export const useSubscription = () => {
       if (error) throw error;
 
       if (data?.url) {
-        window.open(data.url, "_blank");
+        window.location.href = data.url;
+      } else {
+        throw new Error("No checkout URL received");
       }
     } catch (error) {
       console.error("Error creating checkout:", error);
-      toast.error("Failed to start checkout process");
+      const message = error instanceof Error ? error.message : "Failed to start checkout";
+      toast.error(message);
     }
   };
 
   const openCustomerPortal = async () => {
+    if (!isOnline()) {
+      toast.error("You are offline. Please check your internet connection.");
+      return;
+    }
+
     try {
       const { data, error } = await supabase.functions.invoke("customer-portal");
 
       if (error) throw error;
 
       if (data?.url) {
-        window.open(data.url, "_blank");
+        window.location.href = data.url;
+      } else {
+        throw new Error("No portal URL received");
       }
     } catch (error) {
       console.error("Error opening customer portal:", error);
-      toast.error("Failed to open customer portal");
+      const message = error instanceof Error ? error.message : "Failed to open customer portal";
+      toast.error(message);
     }
   };
 
   return {
     subscription,
     loading,
+    error,
     checkSubscription,
     createCheckout,
     openCustomerPortal,
