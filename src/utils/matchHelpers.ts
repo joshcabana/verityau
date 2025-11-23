@@ -111,16 +111,18 @@ export const unmatchUser = async (matchId: string): Promise<boolean> => {
   }
 };
 
-export const acceptVerityDate = async (verityDateId: string): Promise<boolean> => {
+export async function acceptVerityDate(
+  verityDateId: string,
+  currentUserId: string,
+  partnerId: string
+): Promise<boolean> {
   try {
-    // Get the auth token
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
       console.error("No active session");
       return false;
     }
 
-    // Call the edge function to create the Daily.co room
     const { data, error } = await supabase.functions.invoke("create-daily-room", {
       body: { verityDateId },
     });
@@ -130,10 +132,20 @@ export const acceptVerityDate = async (verityDateId: string): Promise<boolean> =
       return false;
     }
 
+    // Create notification for partner
+    const { createNotification } = await import("./notifications");
+    await createNotification({
+      userId: partnerId,
+      type: "verity_date_accepted",
+      title: "Verity Date Accepted!",
+      message: "Your match has accepted the Verity Date. Get ready!",
+      relatedId: verityDateId,
+    });
+
     console.log("Daily.co room created:", data);
     return true;
   } catch (error) {
     console.error("Error accepting Verity Date:", error);
     return false;
   }
-};
+}

@@ -66,22 +66,20 @@ const Matches = () => {
   };
 
   const handleAcceptVerityDate = async (match: Match) => {
-    if (!match.verity_date) return;
+    if (!match.verity_date || !user) return;
 
-    const success = await acceptVerityDate(match.verity_date.id);
+    const partnerId = match.user1 === user.id ? match.user2 : match.user1;
+    const success = await acceptVerityDate(match.verity_date.id, user.id, partnerId);
 
     if (success) {
       toast({
         title: "🎉 Verity Date Accepted!",
-        description: "Your date has been scheduled. Check your notifications for details.",
-        duration: 5000,
+        description: "Redirecting to waiting room...",
+        duration: 3000,
       });
 
-      // Refresh matches
-      if (user) {
-        const updatedMatches = await fetchUserMatches(user.id);
-        setMatches(updatedMatches);
-      }
+      // Navigate to waiting page
+      navigate(`/verity-date/waiting?verityDateId=${match.verity_date.id}`);
     } else {
       toast({
         title: "Error",
