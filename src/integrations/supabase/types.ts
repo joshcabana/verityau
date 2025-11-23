@@ -161,6 +161,8 @@ export type Database = {
         Row: {
           age: number | null
           bio: string | null
+          boost_count: number | null
+          boost_expires_at: string | null
           created_at: string | null
           gender: string | null
           id: string
@@ -171,6 +173,9 @@ export type Database = {
           looking_for: string[] | null
           name: string | null
           photos: string[] | null
+          subscription_expires_at: string | null
+          subscription_product_id: string | null
+          subscription_tier: string | null
           user_id: string
           verification_video_url: string | null
           verified: boolean | null
@@ -178,6 +183,8 @@ export type Database = {
         Insert: {
           age?: number | null
           bio?: string | null
+          boost_count?: number | null
+          boost_expires_at?: string | null
           created_at?: string | null
           gender?: string | null
           id?: string
@@ -188,6 +195,9 @@ export type Database = {
           looking_for?: string[] | null
           name?: string | null
           photos?: string[] | null
+          subscription_expires_at?: string | null
+          subscription_product_id?: string | null
+          subscription_tier?: string | null
           user_id: string
           verification_video_url?: string | null
           verified?: boolean | null
@@ -195,6 +205,8 @@ export type Database = {
         Update: {
           age?: number | null
           bio?: string | null
+          boost_count?: number | null
+          boost_expires_at?: string | null
           created_at?: string | null
           gender?: string | null
           id?: string
@@ -205,6 +217,9 @@ export type Database = {
           looking_for?: string[] | null
           name?: string | null
           photos?: string[] | null
+          subscription_expires_at?: string | null
+          subscription_product_id?: string | null
+          subscription_tier?: string | null
           user_id?: string
           verification_video_url?: string | null
           verified?: boolean | null

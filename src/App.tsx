@@ -14,6 +14,7 @@ import ExtendedCall from "./pages/ExtendedCall";
 import MatchSuccess from "./pages/MatchSuccess";
 import Matches from "./pages/Matches";
 import MatchProfile from "./pages/MatchProfile";
+import WhoLikedYou from "./pages/WhoLikedYou";
 import VerityPlus from "./pages/VerityPlus";
 import Checkout from "./pages/Checkout";
 import Privacy from "./pages/Privacy";
@@ -48,6 +49,7 @@ const App = () => (
           <Route path="/match-success" element={<ProtectedRoute><MatchSuccess /></ProtectedRoute>} />
           <Route path="/matches" element={<ProtectedRoute><Matches /></ProtectedRoute>} />
           <Route path="/match/:matchId" element={<ProtectedRoute><MatchProfile /></ProtectedRoute>} />
+          <Route path="/who-liked-you" element={<ProtectedRoute><WhoLikedYou /></ProtectedRoute>} />
           <Route path="/upgrade" element={<ProtectedRoute><VerityPlus /></ProtectedRoute>} />
           <Route path="/verity-plus" element={<ProtectedRoute><VerityPlus /></ProtectedRoute>} />
           <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />

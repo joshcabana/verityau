@@ -6,13 +6,15 @@ import { Heart, Sparkles, Shield, Loader2, RotateCcw, Crown, SlidersHorizontal }
 import { ProfileCard } from "@/components/ProfileCard";
 import { PreferencesDrawer } from "@/components/PreferencesDrawer";
 import { useAuth } from "@/hooks/useAuth";
+import { useSubscription } from "@/hooks/useSubscription";
 import { useToast } from "@/hooks/use-toast";
-import { fetchMatchingProfiles, likeProfile, passProfile, undoLastPass, Profile } from "@/utils/matchmaking";
+import { fetchMatchingProfiles, likeProfile, passProfile, undoLastPass, boostProfile, Profile } from "@/utils/matchmaking";
 import { supabase } from "@/integrations/supabase/client";
 import { startLastActiveUpdates } from "@/utils/updateLastActive";
 
 const Main = () => {
   const { user } = useAuth();
+  const { hasSubscription, isPremium } = useSubscription();
   const { toast } = useToast();
   const navigate = useNavigate();
   
@@ -198,31 +200,53 @@ const Main = () => {
   const handleUndo = async () => {
     if (!user || isUndoing) return;
 
-    // Show premium teaser for undo feature
-    toast({
-      title: "⭐ Verity Plus Feature",
-      description: "Undo your last pass and see that profile again!",
-      action: (
-        <Button
-          size="sm"
-          onClick={() => navigate("/verity-plus")}
-          className="btn-premium"
-        >
-          <Crown className="w-4 h-4 mr-2" />
-          Upgrade
-        </Button>
-      ),
-      duration: 6000,
-    });
+    try {
+      setIsUndoing(true);
 
-    // Optionally: For premium users, actually perform the undo
-    // if (userIsPremium) {
-    //   const result = await undoLastPass(user.id);
-    //   if (result.success) {
-    //     setCurrentProfileIndex((prev) => Math.max(0, prev - 1));
-    //     setCanUndo(false);
-    //   }
-    // }
+      const result = await undoLastPass(user.id, hasSubscription);
+      
+      if (result.requiresPremium) {
+        toast({
+          title: "🔒 Premium Feature",
+          description: "Upgrade to Verity Plus to undo passes!",
+          action: (
+            <Button size="sm" onClick={() => navigate("/verity-plus")}>
+              <Crown className="h-4 w-4 mr-1" />
+              Upgrade
+            </Button>
+          ),
+          duration: 6000,
+        });
+        return;
+      }
+
+      if (result.success) {
+        setCanUndo(false);
+        // Reload profiles from beginning
+        setCurrentProfileIndex(0);
+        setProfiles([]);
+
+        toast({
+          title: "⏮️ Rewinded!",
+          description: "Profile brought back to your feed.",
+        });
+      } else {
+        toast({
+          title: "Nothing to undo",
+          description: "No recent passes to rewind.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Error undoing pass:", error);
+      toast({
+        title: "Error",
+        description: "Failed to undo. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUndoing(false);
+    }
   };
 
   const handleFiltersChange = async (newFilters: typeof filters) => {
