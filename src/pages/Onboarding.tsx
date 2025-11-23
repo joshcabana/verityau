@@ -20,7 +20,7 @@ const Onboarding = () => {
     gender: "",
     interestedIn: "",
     city: "",
-    photo: undefined as File | undefined,
+    photos: [] as File[],
     cameraPermission: false,
     introVideo: undefined as File | undefined,
     verificationVideo: undefined as File | undefined,
@@ -54,7 +54,7 @@ const Onboarding = () => {
         lookingFor: updatedData.lookingFor,
         ageRange: updatedData.ageRange,
         radius: updatedData.radius,
-        photo: updatedData.photo,
+        photos: updatedData.photos,
         introVideo: updatedData.introVideo,
         verificationVideo: updatedData.verificationVideo,
       });
