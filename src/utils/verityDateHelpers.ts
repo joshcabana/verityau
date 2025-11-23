@@ -86,6 +86,16 @@ export async function checkAndCreateVerityDate(
       .eq("user_id", likedUserId)
       .single();
 
+    // Create notification for the partner
+    const { createNotification } = await import("./notifications");
+    await createNotification({
+      userId: likedUserId,
+      type: "verity_date_request",
+      title: "New Verity Date Request!",
+      message: `${partnerProfile?.name || "Someone"} wants to have a Verity Date with you!`,
+      relatedId: verityDate.id,
+    });
+
     return {
       matchId,
       partnerId: likedUserId,
