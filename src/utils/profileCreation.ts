@@ -72,14 +72,18 @@ export async function createProfile(data: OnboardingData): Promise<boolean> {
       : null;
 
     // Geocode the city to get coordinates
-    let locationString = "POINT(0 0)"; // Fallback
     const coords = await geocodeCity(data.city);
-    if (coords) {
-      locationString = coordinatesToPostGIS(coords);
-      console.log(`Geocoded ${data.city} to:`, coords);
-    } else {
-      console.warn(`Failed to geocode ${data.city}, using fallback location`);
+    if (!coords) {
+      toast({
+        title: "Location Error",
+        description: `Could not find "${data.city}". Please try a different city name or format (e.g., "New York, USA").`,
+        variant: "destructive",
+      });
+      return false;
     }
+    
+    const locationString = coordinatesToPostGIS(coords);
+    console.log(`Geocoded ${data.city} to:`, coords);
 
     // Upload photo
     let photoUrl: string | null = null;
