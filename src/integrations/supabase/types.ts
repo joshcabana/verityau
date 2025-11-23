@@ -94,6 +94,7 @@ export type Database = {
           gender: string | null
           id: string
           intro_video_url: string | null
+          last_active: string | null
           location: unknown
           looking_for: string[] | null
           name: string | null
@@ -109,6 +110,7 @@ export type Database = {
           gender?: string | null
           id?: string
           intro_video_url?: string | null
+          last_active?: string | null
           location?: unknown
           looking_for?: string[] | null
           name?: string | null
@@ -124,6 +126,7 @@ export type Database = {
           gender?: string | null
           id?: string
           intro_video_url?: string | null
+          last_active?: string | null
           location?: unknown
           looking_for?: string[] | null
           name?: string | null
@@ -170,6 +173,33 @@ export type Database = {
           reporter_id?: string
           status?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      seen_profiles: {
+        Row: {
+          action: string
+          created_at: string
+          id: string
+          seen_at: string
+          seen_user_id: string
+          user_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          id?: string
+          seen_at?: string
+          seen_user_id: string
+          user_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          id?: string
+          seen_at?: string
+          seen_user_id?: string
+          user_id?: string
         }
         Relationships: []
       }

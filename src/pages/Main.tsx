@@ -2,12 +2,13 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Heart, Sparkles, Shield, AlertCircle, Loader2 } from "lucide-react";
+import { Heart, Sparkles, Shield, AlertCircle, Loader2, RotateCcw, Crown } from "lucide-react";
 import { ProfileCard } from "@/components/ProfileCard";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { fetchMatchingProfiles, likeProfile, passProfile, Profile } from "@/utils/matchmaking";
+import { fetchMatchingProfiles, likeProfile, passProfile, undoLastPass, Profile } from "@/utils/matchmaking";
 import { supabase } from "@/integrations/supabase/client";
+import { startLastActiveUpdates } from "@/utils/updateLastActive";
 
 const Main = () => {
   const { user } = useAuth();
@@ -20,6 +21,8 @@ const Main = () => {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [isProcessingAction, setIsProcessingAction] = useState(false);
   const [preferences, setPreferences] = useState<any>(null);
+  const [canUndo, setCanUndo] = useState(false);
+  const [isUndoing, setIsUndoing] = useState(false);
 
   // Fetch user preferences and profiles
   useEffect(() => {
@@ -28,6 +31,9 @@ const Main = () => {
 
       try {
         setIsLoading(true);
+
+        // Start updating last_active
+        const cleanup = startLastActiveUpdates(user.id);
 
         // Get user preferences
         const { data: userPrefs } = await supabase
@@ -65,6 +71,8 @@ const Main = () => {
 
           setProfiles(matchingProfiles);
         }
+
+        return cleanup;
       } catch (error) {
         console.error("Error loading profiles:", error);
         toast({
@@ -77,7 +85,11 @@ const Main = () => {
       }
     };
 
-    loadProfilesAndPreferences();
+    const cleanup = loadProfilesAndPreferences();
+
+    return () => {
+      cleanup.then((fn) => fn && fn());
+    };
   }, [user, toast]);
 
   // Load more profiles when near the end
@@ -149,8 +161,9 @@ const Main = () => {
         });
       }
 
-      // Move to next profile
+      // Move to next profile and reset undo
       setCurrentProfileIndex((prev) => prev + 1);
+      setCanUndo(false);
     } catch (error) {
       console.error("Error liking profile:", error);
       toast({
@@ -171,6 +184,9 @@ const Main = () => {
 
       await passProfile(user.id, currentProfile.user_id);
 
+      // Enable undo button
+      setCanUndo(true);
+
       // Move to next profile
       setCurrentProfileIndex((prev) => prev + 1);
     } catch (error) {
@@ -178,6 +194,36 @@ const Main = () => {
     } finally {
       setIsProcessingAction(false);
     }
+  };
+
+  const handleUndo = async () => {
+    if (!user || isUndoing) return;
+
+    // Show premium teaser for undo feature
+    toast({
+      title: "⭐ Verity Plus Feature",
+      description: "Undo your last pass and see that profile again!",
+      action: (
+        <Button
+          size="sm"
+          onClick={() => navigate("/verity-plus")}
+          className="btn-premium"
+        >
+          <Crown className="w-4 h-4 mr-2" />
+          Upgrade
+        </Button>
+      ),
+      duration: 6000,
+    });
+
+    // Optionally: For premium users, actually perform the undo
+    // if (userIsPremium) {
+    //   const result = await undoLastPass(user.id);
+    //   if (result.success) {
+    //     setCurrentProfileIndex((prev) => Math.max(0, prev - 1));
+    //     setCanUndo(false);
+    //   }
+    // }
   };
 
   const currentProfile = profiles[currentProfileIndex];
@@ -246,6 +292,18 @@ const Main = () => {
         <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
           <h1 className="text-2xl font-bold text-foreground">Discover</h1>
           <div className="flex items-center gap-2">
+            {canUndo && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleUndo}
+                disabled={isUndoing}
+                className="relative group"
+              >
+                <RotateCcw className={`h-5 w-5 ${isUndoing ? 'animate-spin' : ''}`} />
+                <Crown className="absolute -top-1 -right-1 h-3 w-3 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+              </Button>
+            )}
             <Button
               variant="ghost"
               size="sm"

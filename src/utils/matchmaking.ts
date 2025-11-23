@@ -33,16 +33,16 @@ export const fetchMatchingProfiles = async (
       throw new Error("User location not found");
     }
 
-    // Get users already liked or passed
-    const { data: alreadyInteractedWith } = await supabase
-      .from("likes")
-      .select("to_user")
-      .eq("from_user", userId);
+    // Get users already seen (liked or passed)
+    const { data: alreadySeen } = await supabase
+      .from("seen_profiles")
+      .select("seen_user_id")
+      .eq("user_id", userId);
 
-    const excludedUserIds = alreadyInteractedWith?.map((like) => like.to_user) || [];
+    const excludedUserIds = alreadySeen?.map((seen) => seen.seen_user_id) || [];
     excludedUserIds.push(userId); // Exclude self
 
-    // Query matching profiles
+    // Query matching profiles with ordering
     let query = supabase
       .from("profiles")
       .select("*")
@@ -50,6 +50,7 @@ export const fetchMatchingProfiles = async (
       .not("user_id", "in", `(${excludedUserIds.join(",")})`)
       .gte("age", preferences.age_range[0])
       .lte("age", preferences.age_range[1])
+      .order("last_active", { ascending: false })
       .limit(limit);
 
     // Filter by gender preferences
@@ -76,6 +77,16 @@ export const likeProfile = async (
   toUserId: string
 ): Promise<{ isMatch: boolean; matchId?: string }> => {
   try {
+    // Track seen profile
+    await supabase
+      .from("seen_profiles")
+      .upsert({ 
+        user_id: fromUserId, 
+        seen_user_id: toUserId, 
+        action: "like",
+        seen_at: new Date().toISOString()
+      });
+
     // Insert like
     const { error: likeError } = await supabase
       .from("likes")
@@ -131,15 +142,52 @@ export const passProfile = async (
   toUserId: string
 ): Promise<void> => {
   try {
-    // Insert a "pass" as a like with a flag, or we could create a separate passes table
-    // For now, we'll just not show them again by tracking in likes table
+    // Track seen profile as pass
     const { error } = await supabase
-      .from("likes")
-      .insert({ from_user: fromUserId, to_user: toUserId });
+      .from("seen_profiles")
+      .upsert({ 
+        user_id: fromUserId, 
+        seen_user_id: toUserId, 
+        action: "pass",
+        seen_at: new Date().toISOString()
+      });
 
     if (error) throw error;
   } catch (error) {
     console.error("Error passing profile:", error);
     throw error;
+  }
+};
+
+export const undoLastPass = async (
+  userId: string
+): Promise<{ success: boolean; profileId?: string }> => {
+  try {
+    // Get the most recent pass
+    const { data: lastPass } = await supabase
+      .from("seen_profiles")
+      .select("*")
+      .eq("user_id", userId)
+      .eq("action", "pass")
+      .order("seen_at", { ascending: false })
+      .limit(1)
+      .single();
+
+    if (!lastPass) {
+      return { success: false };
+    }
+
+    // Delete the pass record to make profile visible again
+    const { error } = await supabase
+      .from("seen_profiles")
+      .delete()
+      .eq("id", lastPass.id);
+
+    if (error) throw error;
+
+    return { success: true, profileId: lastPass.seen_user_id };
+  } catch (error) {
+    console.error("Error undoing pass:", error);
+    return { success: false };
   }
 };
