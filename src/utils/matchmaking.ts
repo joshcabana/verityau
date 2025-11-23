@@ -22,7 +22,11 @@ export const fetchMatchingProfiles = async (
     age_range: [number, number];
     distance_km: number;
   },
-  limit: number = 10
+  limit: number = 10,
+  filters?: {
+    verifiedOnly?: boolean;
+    activeRecently?: boolean;
+  }
 ): Promise<Profile[]> => {
   try {
     // Get user's location
@@ -73,7 +77,25 @@ export const fetchMatchingProfiles = async (
       return [];
     }
 
-    return (profiles || []).slice(0, limit);
+    let filteredProfiles = profiles || [];
+
+    // Apply verified only filter
+    if (filters?.verifiedOnly) {
+      filteredProfiles = filteredProfiles.filter(p => p.verified);
+    }
+
+    // Apply active recently filter (last 24 hours)
+    if (filters?.activeRecently) {
+      const yesterday = new Date();
+      yesterday.setHours(yesterday.getHours() - 24);
+      filteredProfiles = filteredProfiles.filter(p => {
+        const lastActive = (p as any).last_active;
+        if (!lastActive) return false;
+        return new Date(lastActive) > yesterday;
+      });
+    }
+
+    return filteredProfiles.slice(0, limit);
   } catch (error) {
     console.error("Error fetching matching profiles:", error);
     return [];

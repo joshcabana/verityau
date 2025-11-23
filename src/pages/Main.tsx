@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Heart, Sparkles, Shield, AlertCircle, Loader2, RotateCcw, Crown } from "lucide-react";
+import { Heart, Sparkles, Shield, Loader2, RotateCcw, Crown, SlidersHorizontal } from "lucide-react";
 import { ProfileCard } from "@/components/ProfileCard";
+import { PreferencesDrawer } from "@/components/PreferencesDrawer";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { fetchMatchingProfiles, likeProfile, passProfile, undoLastPass, Profile } from "@/utils/matchmaking";
@@ -23,6 +24,11 @@ const Main = () => {
   const [preferences, setPreferences] = useState<any>(null);
   const [canUndo, setCanUndo] = useState(false);
   const [isUndoing, setIsUndoing] = useState(false);
+  const [preferencesOpen, setPreferencesOpen] = useState(false);
+  const [filters, setFilters] = useState({
+    verifiedOnly: false,
+    activeRecently: false,
+  });
 
   // Fetch user preferences and profiles
   useEffect(() => {
@@ -66,7 +72,8 @@ const Main = () => {
               age_range: [minAge, maxAge],
               distance_km: userPrefs.distance_km || 100,
             },
-            20
+            20,
+            filters
           );
 
           setProfiles(matchingProfiles);
@@ -90,7 +97,7 @@ const Main = () => {
     return () => {
       cleanup.then((fn) => fn && fn());
     };
-  }, [user, toast]);
+  }, [user, toast, filters]);
 
   // Load more profiles when near the end
   useEffect(() => {
@@ -119,7 +126,8 @@ const Main = () => {
             age_range: [minAge, maxAge],
             distance_km: preferences.distance_km || 100,
           },
-          10
+          10,
+          filters
         );
 
         setProfiles((prev) => [...prev, ...newProfiles]);
@@ -131,7 +139,7 @@ const Main = () => {
     };
 
     loadMoreProfiles();
-  }, [currentProfileIndex, profiles.length, user, preferences, isLoadingMore]);
+  }, [currentProfileIndex, profiles.length, user, preferences, isLoadingMore, filters]);
 
   const handleLike = async () => {
     if (!user || isProcessingAction || !currentProfile) return;
@@ -217,6 +225,12 @@ const Main = () => {
     // }
   };
 
+  const handleFiltersChange = async (newFilters: typeof filters) => {
+    setFilters(newFilters);
+    setCurrentProfileIndex(0);
+    setProfiles([]);
+  };
+
   const currentProfile = profiles[currentProfileIndex];
   const hasMoreProfiles = currentProfileIndex < profiles.length;
 
@@ -247,11 +261,22 @@ const Main = () => {
               No more profiles
             </h2>
             <p className="text-muted-foreground">
-              You've seen everyone nearby. Check back later for new matches!
+              You've seen everyone nearby. {filters.verifiedOnly || filters.activeRecently ? 'Try adjusting your filters!' : 'Check back later for new matches!'}
             </p>
           </div>
 
           <div className="space-y-3">
+            {(filters.verifiedOnly || filters.activeRecently) && (
+              <Button
+                onClick={() => setPreferencesOpen(true)}
+                size="lg"
+                variant="outline"
+                className="w-full"
+              >
+                <SlidersHorizontal className="w-5 h-5 mr-2" />
+                Adjust Filters
+              </Button>
+            )}
             <Button
               onClick={() => navigate("/matches")}
               size="lg"
@@ -283,6 +308,17 @@ const Main = () => {
         <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
           <h1 className="text-2xl font-bold text-foreground">Discover</h1>
           <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPreferencesOpen(true)}
+              className="gap-2"
+            >
+              <SlidersHorizontal className="h-4 w-4" />
+              {(filters.verifiedOnly || filters.activeRecently) && (
+                <span className="w-2 h-2 bg-primary rounded-full" />
+              )}
+            </Button>
             {canUndo && (
               <Button
                 variant="outline"
@@ -373,6 +409,14 @@ const Main = () => {
           </div>
         </div>
       </div>
+
+      {/* Preferences Drawer */}
+      <PreferencesDrawer
+        open={preferencesOpen}
+        onOpenChange={setPreferencesOpen}
+        filters={filters}
+        onFiltersChange={handleFiltersChange}
+      />
     </div>
   );
 };
