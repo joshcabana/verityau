@@ -11,6 +11,8 @@ export interface Profile {
   location: any;
   gender: string;
   verified: boolean;
+  distance_meters?: number;
+  last_active?: string;
 }
 
 export const fetchMatchingProfiles = async (

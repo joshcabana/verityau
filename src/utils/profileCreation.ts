@@ -12,7 +12,7 @@ export interface OnboardingData {
   lookingFor: string;
   ageRange: [number, number];
   radius: number;
-  photo?: File;
+  photos?: File[];
   introVideo?: File;
   verificationVideo?: File;
 }
@@ -85,11 +85,16 @@ export async function createProfile(data: OnboardingData): Promise<boolean> {
     const locationString = coordinatesToPostGIS(coords);
     console.log(`Geocoded ${data.city} to:`, coords);
 
-    // Upload photo
-    let photoUrl: string | null = null;
-    if (data.photo) {
-      photoUrl = await uploadFile(data.photo, "photos", "main");
-      if (!photoUrl) return false;
+    // Upload photos
+    const photoUrls: string[] = [];
+    if (data.photos && data.photos.length > 0) {
+      for (let i = 0; i < data.photos.length; i++) {
+        const photoUrl = await uploadFile(data.photos[i], "photos", `photo-${i}`);
+        if (photoUrl) {
+          photoUrls.push(photoUrl);
+        }
+      }
+      if (photoUrls.length === 0) return false;
     }
 
     // Upload intro video
@@ -118,7 +123,7 @@ export async function createProfile(data: OnboardingData): Promise<boolean> {
       gender: data.gender,
       bio: data.bio,
       looking_for: [data.lookingFor],
-      photos: photoUrl ? [photoUrl] : [],
+      photos: photoUrls,
       intro_video_url: introVideoUrl,
       verification_video_url: verificationVideoUrl,
       verified: !!verificationVideoUrl, // Set verified if verification video uploaded

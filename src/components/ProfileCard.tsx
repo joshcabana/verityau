@@ -2,9 +2,11 @@ import { useState } from "react";
 import { useSwipeable } from "react-swipeable";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { X, Heart, ChevronLeft, ChevronRight } from "lucide-react";
+import { X, Heart, MapPin, Clock, Flag } from "lucide-react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { VerifiedBadge } from "./VerifiedBadge";
+import { ReportDialog } from "./ReportDialog";
+import { formatDistanceToNow } from "date-fns";
 
 interface ProfileCardProps {
   profile: {
@@ -15,6 +17,9 @@ interface ProfileCardProps {
     photos: string[];
     intro_video_url: string | null;
     verified?: boolean;
+    distance_meters?: number;
+    last_active?: string;
+    user_id: string;
   };
   onLike: () => void;
   onPass: () => void;
@@ -24,6 +29,27 @@ export const ProfileCard = ({ profile, onLike, onPass }: ProfileCardProps) => {
   const [videoError, setVideoError] = useState(false);
   const [swipeOffset, setSwipeOffset] = useState({ x: 0, y: 0 });
   const [isSwiping, setIsSwiping] = useState(false);
+  const [reportDialogOpen, setReportDialogOpen] = useState(false);
+
+  // Format distance
+  const formatDistance = (meters?: number) => {
+    if (!meters) return null;
+    const km = Math.round(meters / 1000);
+    return km < 1 ? "< 1 km away" : `${km} km away`;
+  };
+
+  // Format last active
+  const formatLastActive = (lastActive?: string) => {
+    if (!lastActive) return null;
+    const date = new Date(lastActive);
+    const minutesAgo = Math.floor((Date.now() - date.getTime()) / 60000);
+    
+    if (minutesAgo < 5) return "Active now";
+    if (minutesAgo < 60) return `Active ${minutesAgo}m ago`;
+    const hoursAgo = Math.floor(minutesAgo / 60);
+    if (hoursAgo < 24) return `Active ${hoursAgo}h ago`;
+    return `Active ${formatDistanceToNow(date, { addSuffix: true })}`;
+  };
 
   const handlers = useSwipeable({
     onSwiping: (eventData) => {
@@ -129,7 +155,7 @@ export const ProfileCard = ({ profile, onLike, onPass }: ProfileCardProps) => {
                     className="w-full h-full object-cover"
                   />
                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-foreground/80 to-transparent p-6">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 mb-2">
                       <h2 className="text-2xl font-bold text-primary-foreground">
                         {profile.name}, {profile.age}
                       </h2>
@@ -137,8 +163,25 @@ export const ProfileCard = ({ profile, onLike, onPass }: ProfileCardProps) => {
                         <VerifiedBadge size="md" className="text-primary-foreground" />
                       )}
                     </div>
+                    
+                    {/* Distance and Last Active */}
+                    <div className="flex items-center gap-3 mb-2">
+                      {formatDistance(profile.distance_meters) && (
+                        <div className="flex items-center gap-1 text-xs text-primary-foreground/90">
+                          <MapPin className="w-3 h-3" />
+                          {formatDistance(profile.distance_meters)}
+                        </div>
+                      )}
+                      {formatLastActive(profile.last_active) && (
+                        <div className="flex items-center gap-1 text-xs text-primary-foreground/90">
+                          <Clock className="w-3 h-3" />
+                          {formatLastActive(profile.last_active)}
+                        </div>
+                      )}
+                    </div>
+                    
                     {profile.bio && (
-                      <p className="text-sm text-primary-foreground/90 mt-2 line-clamp-2">
+                      <p className="text-sm text-primary-foreground/90 line-clamp-2">
                         {profile.bio}
                       </p>
                     )}
@@ -160,6 +203,15 @@ export const ProfileCard = ({ profile, onLike, onPass }: ProfileCardProps) => {
       {/* Action Buttons */}
       <div className="p-6 flex items-center justify-center gap-6 bg-card">
         <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => setReportDialogOpen(true)}
+          className="text-muted-foreground hover:text-destructive"
+        >
+          <Flag className="w-4 h-4" />
+        </Button>
+
+        <Button
           size="lg"
           variant="outline"
           onClick={onPass}
@@ -177,6 +229,18 @@ export const ProfileCard = ({ profile, onLike, onPass }: ProfileCardProps) => {
         </Button>
       </div>
     </Card>
+    
+    {/* Report Dialog */}
+    <ReportDialog
+      open={reportDialogOpen}
+      onOpenChange={setReportDialogOpen}
+      onSubmit={() => {
+        setReportDialogOpen(false);
+      }}
+      userName={profile.name}
+      reportedUserId={profile.user_id}
+      context="profile"
+    />
     </div>
   );
 };

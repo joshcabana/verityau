@@ -5,85 +5,110 @@ import { Upload, X } from "lucide-react";
 
 interface StepProps {
   data: {
-    photo?: File;
+    photos?: File[];
   };
-  onComplete: (data: { photo?: File }) => void;
+  onComplete: (data: { photos?: File[] }) => void;
 }
 
 const StepPhotos = ({ data, onComplete }: StepProps) => {
-  const [photo, setPhoto] = useState<File | undefined>(data.photo);
-  const [preview, setPreview] = useState<string>("");
+  const [photos, setPhotos] = useState<File[]>(data.photos || []);
+  const [previews, setPreviews] = useState<string[]>([]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setPhoto(file);
+    const files = Array.from(e.target.files || []);
+    
+    if (photos.length + files.length > 6) {
+      alert("You can upload a maximum of 6 photos");
+      return;
+    }
+
+    const newPhotos = [...photos, ...files].slice(0, 6);
+    setPhotos(newPhotos);
+
+    // Generate previews
+    const newPreviews = [...previews];
+    files.forEach((file) => {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setPreview(reader.result as string);
+        newPreviews.push(reader.result as string);
+        setPreviews([...newPreviews]);
       };
       reader.readAsDataURL(file);
-    }
+    });
   };
 
-  const handleRemove = () => {
-    setPhoto(undefined);
-    setPreview("");
+  const handleRemove = (index: number) => {
+    setPhotos((prev) => prev.filter((_, i) => i !== index));
+    setPreviews((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleContinue = () => {
-    onComplete({ photo });
+    if (photos.length < 3) {
+      alert("Please upload at least 3 photos");
+      return;
+    }
+    onComplete({ photos });
   };
 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-3xl font-bold mb-2">Add Your Photo</h2>
+        <h2 className="text-3xl font-bold mb-2">Add Your Photos</h2>
         <p className="text-muted-foreground">
-          Upload a clear photo of yourself
+          Upload 3-6 photos that show your personality ({photos.length}/6)
         </p>
       </div>
 
       <div className="space-y-4">
-        <Label htmlFor="photo">Profile Photo</Label>
+        <Label>Profile Photos</Label>
         
-        {preview ? (
-          <div className="relative w-full max-w-sm mx-auto">
-            <img
-              src={preview}
-              alt="Preview"
-              className="w-full h-64 object-cover rounded-lg"
-            />
-            <Button
-              type="button"
-              variant="destructive"
-              size="icon"
-              className="absolute top-2 right-2"
-              onClick={handleRemove}
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-        ) : (
-          <label
-            htmlFor="photo"
-            className="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50 transition-colors"
-          >
-            <div className="flex flex-col items-center justify-center pt-5 pb-6">
-              <Upload className="w-12 h-12 mb-3 text-muted-foreground" />
-              <p className="mb-2 text-sm text-muted-foreground">
-                <span className="font-semibold">Click to upload</span>
-              </p>
-              <p className="text-xs text-muted-foreground">PNG, JPG or WEBP</p>
+        {/* Photo Grid */}
+        <div className="grid grid-cols-3 gap-4">
+          {previews.map((preview, index) => (
+            <div key={index} className="relative aspect-square">
+              <img
+                src={preview}
+                alt={`Photo ${index + 1}`}
+                className="w-full h-full object-cover rounded-lg"
+              />
+              <Button
+                type="button"
+                variant="destructive"
+                size="icon"
+                className="absolute top-1 right-1 h-6 w-6"
+                onClick={() => handleRemove(index)}
+              >
+                <X className="h-3 w-3" />
+              </Button>
             </div>
-            <input
-              id="photo"
-              type="file"
-              className="hidden"
-              accept="image/jpeg,image/png,image/webp"
-              onChange={handleFileChange}
-            />
-          </label>
+          ))}
+          
+          {/* Upload Button */}
+          {photos.length < 6 && (
+            <label
+              htmlFor="photos"
+              className="aspect-square border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50 transition-colors flex flex-col items-center justify-center"
+            >
+              <Upload className="w-8 h-8 mb-2 text-muted-foreground" />
+              <p className="text-xs text-muted-foreground text-center px-2">
+                Add Photo
+              </p>
+              <input
+                id="photos"
+                type="file"
+                className="hidden"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={handleFileChange}
+                multiple
+              />
+            </label>
+          )}
+        </div>
+
+        {photos.length < 3 && (
+          <p className="text-sm text-destructive">
+            Please upload at least 3 photos to continue
+          </p>
         )}
       </div>
 
@@ -91,6 +116,7 @@ const StepPhotos = ({ data, onComplete }: StepProps) => {
         onClick={handleContinue}
         className="w-full"
         size="lg"
+        disabled={photos.length < 3}
       >
         Continue
       </Button>
