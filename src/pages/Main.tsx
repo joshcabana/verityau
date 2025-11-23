@@ -9,6 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useToast } from "@/hooks/use-toast";
 import { fetchMatchingProfiles, likeProfile, passProfile, undoLastPass, boostProfile, Profile } from "@/utils/matchmaking";
+import { trackEvent, trackPageView } from "@/utils/analytics";
 import { supabase } from "@/integrations/supabase/client";
 import { startLastActiveUpdates } from "@/utils/updateLastActive";
 
@@ -27,9 +28,18 @@ const Main = () => {
   const [canUndo, setCanUndo] = useState(false);
   const [isUndoing, setIsUndoing] = useState(false);
   const [preferencesOpen, setPreferencesOpen] = useState(false);
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<{
+    verifiedOnly: boolean;
+    activeRecently: boolean;
+    heightRange?: [number, number];
+    interests?: string[];
+    values?: string[];
+  }>({
     verifiedOnly: false,
     activeRecently: false,
+    heightRange: [150, 200],
+    interests: [],
+    values: [],
   });
 
   // Fetch user preferences and profiles
@@ -39,6 +49,9 @@ const Main = () => {
 
       try {
         setIsLoading(true);
+
+        // Track page view
+        trackPageView("discovery");
 
         // Start updating last_active
         const cleanup = startLastActiveUpdates(user.id);
@@ -149,9 +162,21 @@ const Main = () => {
     try {
       setIsProcessingAction(true);
 
+      // Track like event
+      trackEvent("profile_like", { 
+        liked_user_id: currentProfile.user_id,
+        profile_name: currentProfile.name 
+      });
+
       const result = await likeProfile(user.id, currentProfile.user_id);
 
       if (result.isMatch && result.matchId) {
+        // Track match event
+        trackEvent("match_created", { 
+          match_id: result.matchId,
+          matched_with: currentProfile.user_id 
+        });
+        
         // Navigate to match success page with confetti
         navigate(`/match-success?matchId=${result.matchId}`);
       } else {
@@ -182,6 +207,12 @@ const Main = () => {
 
     try {
       setIsProcessingAction(true);
+
+      // Track pass event
+      trackEvent("profile_pass", { 
+        passed_user_id: currentProfile.user_id,
+        profile_name: currentProfile.name 
+      });
 
       await passProfile(user.id, currentProfile.user_id);
 

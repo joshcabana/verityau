@@ -27,6 +27,9 @@ export const fetchMatchingProfiles = async (
   filters?: {
     verifiedOnly?: boolean;
     activeRecently?: boolean;
+    heightRange?: [number, number];
+    interests?: string[];
+    values?: string[];
   }
 ): Promise<Profile[]> => {
   if (!isOnline()) {
@@ -104,6 +107,35 @@ export const fetchMatchingProfiles = async (
           const lastActive = (p as any).last_active;
           if (!lastActive) return false;
           return new Date(lastActive) > yesterday;
+        });
+      }
+
+      // Apply height filter
+      if (filters?.heightRange && filters.heightRange[0] > 0) {
+        filteredProfiles = filteredProfiles.filter(p => {
+          const height = (p as any).height_cm;
+          if (!height) return false;
+          return height >= filters.heightRange![0] && height <= filters.heightRange![1];
+        });
+      }
+
+      // Apply interests filter
+      if (filters?.interests && filters.interests.length > 0) {
+        filteredProfiles = filteredProfiles.filter(p => {
+          const profileInterests = (p as any).interests || [];
+          return filters.interests!.some(interest => 
+            profileInterests.includes(interest)
+          );
+        });
+      }
+
+      // Apply values filter
+      if (filters?.values && filters.values.length > 0) {
+        filteredProfiles = filteredProfiles.filter(p => {
+          const profileValues = (p as any).values || [];
+          return filters.values!.some(value => 
+            profileValues.includes(value)
+          );
         });
       }
 

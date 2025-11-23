@@ -14,6 +14,119 @@ export type Database = {
   }
   public: {
     Tables: {
+      ab_test_assignments: {
+        Row: {
+          assigned_at: string | null
+          id: string
+          test_id: string
+          user_id: string
+          variant: string
+        }
+        Insert: {
+          assigned_at?: string | null
+          id?: string
+          test_id: string
+          user_id: string
+          variant: string
+        }
+        Update: {
+          assigned_at?: string | null
+          id?: string
+          test_id?: string
+          user_id?: string
+          variant?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ab_test_assignments_test_id_fkey"
+            columns: ["test_id"]
+            isOneToOne: false
+            referencedRelation: "ab_tests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ab_tests: {
+        Row: {
+          active: boolean | null
+          created_at: string | null
+          description: string | null
+          ends_at: string | null
+          id: string
+          name: string
+          variants: Json
+        }
+        Insert: {
+          active?: boolean | null
+          created_at?: string | null
+          description?: string | null
+          ends_at?: string | null
+          id?: string
+          name: string
+          variants: Json
+        }
+        Update: {
+          active?: boolean | null
+          created_at?: string | null
+          description?: string | null
+          ends_at?: string | null
+          id?: string
+          name?: string
+          variants?: Json
+        }
+        Relationships: []
+      }
+      analytics_events: {
+        Row: {
+          created_at: string | null
+          event_data: Json | null
+          event_type: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          event_data?: Json | null
+          event_type: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          event_data?: Json | null
+          event_type?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      connections: {
+        Row: {
+          created_at: string | null
+          id: string
+          status: string
+          updated_at: string | null
+          user1: string
+          user2: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          status?: string
+          updated_at?: string | null
+          user1: string
+          user2: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          status?: string
+          updated_at?: string | null
+          user1?: string
+          user2?: string
+        }
+        Relationships: []
+      }
       likes: {
         Row: {
           created_at: string | null
@@ -133,27 +246,36 @@ export type Database = {
           created_at: string | null
           distance_km: number | null
           gender_prefs: string[] | null
+          height_range: number[] | null
           id: string
+          interests: string[] | null
           serious_only: boolean | null
           user_id: string
+          values: string[] | null
         }
         Insert: {
           age_range?: unknown
           created_at?: string | null
           distance_km?: number | null
           gender_prefs?: string[] | null
+          height_range?: number[] | null
           id?: string
+          interests?: string[] | null
           serious_only?: boolean | null
           user_id: string
+          values?: string[] | null
         }
         Update: {
           age_range?: unknown
           created_at?: string | null
           distance_km?: number | null
           gender_prefs?: string[] | null
+          height_range?: number[] | null
           id?: string
+          interests?: string[] | null
           serious_only?: boolean | null
           user_id?: string
+          values?: string[] | null
         }
         Relationships: []
       }
@@ -165,7 +287,9 @@ export type Database = {
           boost_expires_at: string | null
           created_at: string | null
           gender: string | null
+          height_cm: number | null
           id: string
+          interests: string[] | null
           intro_video_url: string | null
           is_admin: boolean | null
           last_active: string | null
@@ -177,6 +301,7 @@ export type Database = {
           subscription_product_id: string | null
           subscription_tier: string | null
           user_id: string
+          values: string[] | null
           verification_video_url: string | null
           verified: boolean | null
         }
@@ -187,7 +312,9 @@ export type Database = {
           boost_expires_at?: string | null
           created_at?: string | null
           gender?: string | null
+          height_cm?: number | null
           id?: string
+          interests?: string[] | null
           intro_video_url?: string | null
           is_admin?: boolean | null
           last_active?: string | null
@@ -199,6 +326,7 @@ export type Database = {
           subscription_product_id?: string | null
           subscription_tier?: string | null
           user_id: string
+          values?: string[] | null
           verification_video_url?: string | null
           verified?: boolean | null
         }
@@ -209,7 +337,9 @@ export type Database = {
           boost_expires_at?: string | null
           created_at?: string | null
           gender?: string | null
+          height_cm?: number | null
           id?: string
+          interests?: string[] | null
           intro_video_url?: string | null
           is_admin?: boolean | null
           last_active?: string | null
@@ -221,6 +351,7 @@ export type Database = {
           subscription_product_id?: string | null
           subscription_tier?: string | null
           user_id?: string
+          values?: string[] | null
           verification_video_url?: string | null
           verified?: boolean | null
         }
@@ -394,30 +525,45 @@ export type Database = {
           created_at: string | null
           id: string
           match_id: string
+          reschedule_count: number | null
           room_url: string | null
           scheduled_at: string | null
           user1_feedback: string | null
+          user1_preferred_times: Json | null
+          user1_status: string | null
           user2_feedback: string | null
+          user2_preferred_times: Json | null
+          user2_status: string | null
         }
         Insert: {
           completed?: boolean | null
           created_at?: string | null
           id?: string
           match_id: string
+          reschedule_count?: number | null
           room_url?: string | null
           scheduled_at?: string | null
           user1_feedback?: string | null
+          user1_preferred_times?: Json | null
+          user1_status?: string | null
           user2_feedback?: string | null
+          user2_preferred_times?: Json | null
+          user2_status?: string | null
         }
         Update: {
           completed?: boolean | null
           created_at?: string | null
           id?: string
           match_id?: string
+          reschedule_count?: number | null
           room_url?: string | null
           scheduled_at?: string | null
           user1_feedback?: string | null
+          user1_preferred_times?: Json | null
+          user1_status?: string | null
           user2_feedback?: string | null
+          user2_preferred_times?: Json | null
+          user2_status?: string | null
         }
         Relationships: [
           {
@@ -773,6 +919,13 @@ export type Database = {
         Returns: boolean
       }
       geomfromewkt: { Args: { "": string }; Returns: unknown }
+      get_mutual_connections: {
+        Args: { user_a: string; user_b: string }
+        Returns: {
+          mutual_friend_id: string
+          mutual_friend_name: string
+        }[]
+      }
       gettransactionid: { Args: never; Returns: unknown }
       longtransactionsenabled: { Args: never; Returns: boolean }
       nearby_profiles:

@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Heart, Loader2 } from "lucide-react";
+import { Heart, Loader2, Calendar } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { VerityDateReschedule } from "@/components/VerityDateReschedule";
+import { Button } from "@/components/ui/button";
+import { trackEvent } from "@/utils/analytics";
 
 const VerityDateWaiting = () => {
   const [searchParams] = useSearchParams();
@@ -12,6 +15,8 @@ const VerityDateWaiting = () => {
   const [partnerName, setPartnerName] = useState<string>("");
   const [countdown, setCountdown] = useState<number>(60);
   const [roomUrl, setRoomUrl] = useState<string | null>(null);
+  const [rescheduleOpen, setRescheduleOpen] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string>("");
 
   useEffect(() => {
     if (!verityDateId) {
@@ -30,6 +35,8 @@ const VerityDateWaiting = () => {
         navigate("/auth");
         return;
       }
+
+      setCurrentUserId(user.id);
 
       // Get verity date and partner info
       const { data: verityDate, error } = await supabase
@@ -155,7 +162,36 @@ const VerityDateWaiting = () => {
             <li>❤️ After the call, share if you felt a connection</li>
           </ul>
         </div>
+
+        <Button
+          variant="outline"
+          onClick={() => setRescheduleOpen(true)}
+          className="w-full"
+        >
+          <Calendar className="mr-2 h-4 w-4" />
+          Maybe Later - Reschedule
+        </Button>
       </div>
+
+      {verityDateId && currentUserId && (
+        <VerityDateReschedule
+          verityDateId={verityDateId}
+          currentUserId={currentUserId}
+          open={rescheduleOpen}
+          onOpenChange={setRescheduleOpen}
+          onRescheduled={() => {
+            trackEvent("verity_date_scheduled", { 
+              verity_date_id: verityDateId,
+              action: "rescheduled" 
+            });
+            toast({
+              title: "Preferences saved",
+              description: "We'll help coordinate a better time with your match.",
+            });
+            navigate("/matches");
+          }}
+        />
+      )}
     </div>
   );
 };

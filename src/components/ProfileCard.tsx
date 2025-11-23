@@ -6,7 +6,9 @@ import { X, Heart, MapPin, Clock, Flag } from "lucide-react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { VerifiedBadge } from "./VerifiedBadge";
 import { ReportDialog } from "./ReportDialog";
+import { MutualConnections } from "./MutualConnections";
 import { formatDistanceToNow } from "date-fns";
+import { useAuth } from "@/hooks/useAuth";
 
 interface ProfileCardProps {
   profile: {
@@ -26,6 +28,7 @@ interface ProfileCardProps {
 }
 
 export const ProfileCard = ({ profile, onLike, onPass }: ProfileCardProps) => {
+  const { user } = useAuth();
   const [videoError, setVideoError] = useState(false);
   const [swipeOffset, setSwipeOffset] = useState({ x: 0, y: 0 });
   const [isSwiping, setIsSwiping] = useState(false);
@@ -164,24 +167,33 @@ export const ProfileCard = ({ profile, onLike, onPass }: ProfileCardProps) => {
                       )}
                     </div>
                     
-                    {/* Distance and Last Active */}
-                    <div className="flex items-center gap-3 mb-2">
-                      {formatDistance(profile.distance_meters) && (
-                        <div className="flex items-center gap-1 text-xs text-primary-foreground/90">
-                          <MapPin className="w-3 h-3" />
-                          {formatDistance(profile.distance_meters)}
-                        </div>
-                      )}
-                      {formatLastActive(profile.last_active) && (
-                        <div className="flex items-center gap-1 text-xs text-primary-foreground/90">
-                          <Clock className="w-3 h-3" />
-                          {formatLastActive(profile.last_active)}
-                        </div>
+                    {/* Distance, Last Active, and Mutual Connections */}
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-3">
+                        {formatDistance(profile.distance_meters) && (
+                          <div className="flex items-center gap-1 text-xs text-primary-foreground/90">
+                            <MapPin className="w-3 h-3" />
+                            {formatDistance(profile.distance_meters)}
+                          </div>
+                        )}
+                        {formatLastActive(profile.last_active) && (
+                          <div className="flex items-center gap-1 text-xs text-primary-foreground/90">
+                            <Clock className="w-3 h-3" />
+                            {formatLastActive(profile.last_active)}
+                          </div>
+                        )}
+                      </div>
+                      
+                      {user && (
+                        <MutualConnections 
+                          userId={user.id} 
+                          otherUserId={profile.user_id} 
+                        />
                       )}
                     </div>
                     
                     {profile.bio && (
-                      <p className="text-sm text-primary-foreground/90 line-clamp-2">
+                      <p className="text-sm text-primary-foreground/90 line-clamp-2 mt-2">
                         {profile.bio}
                       </p>
                     )}
