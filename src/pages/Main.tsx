@@ -1,231 +1,322 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Slider } from "@/components/ui/slider";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Heart, Sparkles, Shield, ShieldCheck, Ban, Camera, AlertCircle, Eye, Crown } from "lucide-react";
-import { VerityDateNotification } from "@/components/VerityDateNotification";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Heart, Sparkles, Shield, AlertCircle, Loader2 } from "lucide-react";
+import { ProfileCard } from "@/components/ProfileCard";
+import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-
-const guidelines = [
-  {
-    icon: ShieldCheck,
-    text: "Be respectful and kind to everyone you meet",
-  },
-  {
-    icon: Ban,
-    text: "No nudity, sexual content, or inappropriate behavior",
-  },
-  {
-    icon: AlertCircle,
-    text: "No hate speech, harassment, or bullying of any kind",
-  },
-  {
-    icon: Eye,
-    text: "You must be 18 or over to use Verity",
-  },
-  {
-    icon: Camera,
-    text: "No recording or screenshotting video calls without consent",
-  },
-];
+import { fetchMatchingProfiles, likeProfile, passProfile, Profile } from "@/utils/matchmaking";
+import { supabase } from "@/integrations/supabase/client";
 
 const Main = () => {
+  const { user } = useAuth();
   const { toast } = useToast();
-  const [isSearching, setIsSearching] = useState(false);
-  const [showMe, setShowMe] = useState<"men" | "women" | "everyone">("everyone");
-  const [radius, setRadius] = useState(25);
-  const [guidelinesOpen, setGuidelinesOpen] = useState(false);
+  const navigate = useNavigate();
   
-  // Mock user name - in production this would come from auth/state
-  const userName = "Alex";
+  const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [currentProfileIndex, setCurrentProfileIndex] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [isProcessingAction, setIsProcessingAction] = useState(false);
+  const [preferences, setPreferences] = useState<any>(null);
 
-  // Demo notification system - in production this would use realtime subscriptions
+  // Fetch user preferences and profiles
   useEffect(() => {
-    // Simulate notifications for demo purposes
-    const notifyTimers: NodeJS.Timeout[] = [];
+    const loadProfilesAndPreferences = async () => {
+      if (!user) return;
 
-    // Random like notification after 30 seconds
-    const likeTimer = setTimeout(() => {
-      toast({
-        title: "💕 New Like!",
-        description: "Someone is interested in your profile",
-        duration: 4000,
-      });
-    }, 30000);
-    notifyTimers.push(likeTimer);
+      try {
+        setIsLoading(true);
 
-    return () => {
-      notifyTimers.forEach(timer => clearTimeout(timer));
+        // Get user preferences
+        const { data: userPrefs } = await supabase
+          .from("preferences")
+          .select("*")
+          .eq("user_id", user.id)
+          .single();
+
+        if (userPrefs) {
+          setPreferences(userPrefs);
+
+          // Parse age_range from PostgreSQL int4range format
+          const ageRange = userPrefs.age_range;
+          let minAge = 18;
+          let maxAge = 99;
+          
+          if (typeof ageRange === 'string') {
+            const matches = ageRange.match(/\[(\d+),(\d+)\)/);
+            if (matches) {
+              minAge = parseInt(matches[1]);
+              maxAge = parseInt(matches[2]) - 1; // PostgreSQL ranges are exclusive on upper bound
+            }
+          }
+
+          // Fetch matching profiles
+          const matchingProfiles = await fetchMatchingProfiles(
+            user.id,
+            {
+              gender_prefs: userPrefs.gender_prefs || [],
+              age_range: [minAge, maxAge],
+              distance_km: userPrefs.distance_km || 100,
+            },
+            20
+          );
+
+          setProfiles(matchingProfiles);
+        }
+      } catch (error) {
+        console.error("Error loading profiles:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load profiles. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
     };
-  }, [toast]);
-  
-  // Get time-based greeting
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return "Good morning";
-    if (hour < 18) return "Good afternoon";
-    return "Good evening";
+
+    loadProfilesAndPreferences();
+  }, [user, toast]);
+
+  // Load more profiles when near the end
+  useEffect(() => {
+    const loadMoreProfiles = async () => {
+      if (!user || !preferences || isLoadingMore || profiles.length - currentProfileIndex > 3) return;
+
+      try {
+        setIsLoadingMore(true);
+
+        const ageRange = preferences.age_range;
+        let minAge = 18;
+        let maxAge = 99;
+        
+        if (typeof ageRange === 'string') {
+          const matches = ageRange.match(/\[(\d+),(\d+)\)/);
+          if (matches) {
+            minAge = parseInt(matches[1]);
+            maxAge = parseInt(matches[2]) - 1;
+          }
+        }
+
+        const newProfiles = await fetchMatchingProfiles(
+          user.id,
+          {
+            gender_prefs: preferences.gender_prefs || [],
+            age_range: [minAge, maxAge],
+            distance_km: preferences.distance_km || 100,
+          },
+          10
+        );
+
+        setProfiles((prev) => [...prev, ...newProfiles]);
+      } catch (error) {
+        console.error("Error loading more profiles:", error);
+      } finally {
+        setIsLoadingMore(false);
+      }
+    };
+
+    loadMoreProfiles();
+  }, [currentProfileIndex, profiles.length, user, preferences, isLoadingMore]);
+
+  const handleLike = async () => {
+    if (!user || isProcessingAction || !currentProfile) return;
+
+    try {
+      setIsProcessingAction(true);
+
+      const result = await likeProfile(user.id, currentProfile.user_id);
+
+      if (result.isMatch) {
+        // Show match notification
+        toast({
+          title: "🎉 It's a match!",
+          description: `You and ${currentProfile.name} liked each other!`,
+          duration: 5000,
+        });
+
+        // Optionally navigate to matches page
+        setTimeout(() => {
+          navigate("/matches");
+        }, 2000);
+      } else {
+        toast({
+          title: "💕 Like sent!",
+          description: `${currentProfile.name} will be notified if they like you back.`,
+          duration: 3000,
+        });
+      }
+
+      // Move to next profile
+      setCurrentProfileIndex((prev) => prev + 1);
+    } catch (error) {
+      console.error("Error liking profile:", error);
+      toast({
+        title: "Error",
+        description: "Failed to send like. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsProcessingAction(false);
+    }
   };
 
-  const handleFindSomeone = () => {
-    setIsSearching(true);
-    // Mock search - in production this would trigger matchmaking
-    setTimeout(() => {
-      setIsSearching(false);
-      // Navigate to intro call
-    }, 2000);
+  const handlePass = async () => {
+    if (!user || isProcessingAction || !currentProfile) return;
+
+    try {
+      setIsProcessingAction(true);
+
+      await passProfile(user.id, currentProfile.user_id);
+
+      // Move to next profile
+      setCurrentProfileIndex((prev) => prev + 1);
+    } catch (error) {
+      console.error("Error passing profile:", error);
+    } finally {
+      setIsProcessingAction(false);
+    }
   };
 
-  const radiusOptions = [5, 10, 25, 50, 100];
-  const getRadiusLabel = (value: number) => {
-    if (value >= 100) return "Anywhere";
-    return `${value}km`;
-  };
+  const currentProfile = profiles[currentProfileIndex];
+  const hasMoreProfiles = currentProfileIndex < profiles.length;
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-background to-secondary flex items-center justify-center px-4">
+        <div className="w-full max-w-md">
+          <Skeleton className="w-full aspect-[3/4] rounded-2xl" />
+          <div className="flex justify-center gap-6 mt-6">
+            <Skeleton className="w-16 h-16 rounded-full" />
+            <Skeleton className="w-20 h-20 rounded-full" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!hasMoreProfiles && !isLoadingMore) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-background to-secondary flex flex-col items-center justify-center px-4 py-8">
+        <div className="w-full max-w-md text-center space-y-6">
+          <div className="w-20 h-20 mx-auto rounded-full bg-primary/10 flex items-center justify-center">
+            <Heart className="w-10 h-10 text-primary" />
+          </div>
+          
+          <div>
+            <h2 className="text-2xl font-bold text-foreground mb-2">
+              No more profiles
+            </h2>
+            <p className="text-muted-foreground">
+              You've seen everyone nearby. Check back later for new matches!
+            </p>
+          </div>
+
+          <div className="space-y-3">
+            <Button
+              onClick={() => navigate("/matches")}
+              size="lg"
+              className="w-full btn-premium"
+            >
+              <Heart className="w-5 h-5 mr-2" />
+              View My Matches
+            </Button>
+            
+            <Button
+              onClick={() => navigate("/verity-plus")}
+              variant="outline"
+              size="lg"
+              className="w-full"
+            >
+              <Sparkles className="w-5 h-5 mr-2" />
+              Get Verity Plus
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-secondary flex flex-col">
-      {/* Verity Date Notification */}
-      <VerityDateNotification />
-      
-      {/* Main Content */}
-      <div className="flex-1 flex items-center justify-center px-4 py-8">
-        <div className="w-full max-w-2xl space-y-12">
-          {/* Greeting */}
-          <div className="text-center">
-            <h1 className="text-3xl font-bold text-foreground">
-              {getGreeting()}, {userName}.
-            </h1>
-          </div>
-
-          {/* Verity Plus Teaser Banner */}
-          <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-secondary/10 rounded-2xl p-6 border border-primary/20 shadow-premium">
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
-                  <Crown className="w-6 h-6 text-primary" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-foreground">Verity Plus</h3>
-                  <p className="text-sm text-muted-foreground">Unlimited dates • Priority matching</p>
-                </div>
-              </div>
-              <Link to="/verity-plus">
-                <Button variant="default" size="sm" className="btn-premium">
-                  $24.99/mo
-                </Button>
-              </Link>
-            </div>
-          </div>
-
-          {/* Primary CTA Card */}
-          <div className="bg-card rounded-2xl shadow-lg p-12">
-            <div className="text-center space-y-6">
-              <Button
-                onClick={handleFindSomeone}
-                disabled={isSearching}
-                size="lg"
-                className="h-16 px-12 text-lg font-semibold btn-premium shadow-premium"
-              >
-                {isSearching ? (
-                  <span className="flex items-center gap-2">
-                    <Heart className="w-5 h-5 animate-heartbeat" fill="currentColor" />
-                    Finding someone real...
-                  </span>
-                ) : (
-                  "Find someone now"
-                )}
-              </Button>
-              
-              <p className="text-sm text-muted-foreground">
-                {isSearching 
-                  ? "Finding humans who are ready to be real..." 
-                  : "Ready when you are."}
-              </p>
-            </div>
-
-            {/* Controls */}
-            <div className="mt-10 pt-8 border-t border-border space-y-6">
-              {/* Show Me Toggle */}
-              <div>
-                <Label className="text-sm font-medium mb-3 block">Show me</Label>
-                <div className="flex gap-2">
-                  <Button
-                    variant={showMe === "women" ? "default" : "outline"}
-                    onClick={() => setShowMe("women")}
-                    className="flex-1"
-                  >
-                    Women
-                  </Button>
-                  <Button
-                    variant={showMe === "men" ? "default" : "outline"}
-                    onClick={() => setShowMe("men")}
-                    className="flex-1"
-                  >
-                    Men
-                  </Button>
-                  <Button
-                    variant={showMe === "everyone" ? "default" : "outline"}
-                    onClick={() => setShowMe("everyone")}
-                    className="flex-1"
-                  >
-                    Everyone
-                  </Button>
-                </div>
-              </div>
-
-              {/* Radius Slider */}
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <Label className="text-sm font-medium">Search radius</Label>
-                  <span className="text-sm font-medium text-primary">
-                    {getRadiusLabel(radius)}
-                  </span>
-                </div>
-                <Slider
-                  value={[radiusOptions.indexOf(radius)]}
-                  onValueChange={(value) => setRadius(radiusOptions[value[0]])}
-                  min={0}
-                  max={radiusOptions.length - 1}
-                  step={1}
-                  className="mb-2"
-                />
-                <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>5km</span>
-                  <span>Anywhere</span>
-                </div>
-              </div>
-            </div>
+      {/* Header */}
+      <div className="border-b border-border bg-card/50 backdrop-blur">
+        <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
+          <h1 className="text-2xl font-bold text-foreground">Discover</h1>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate("/matches")}
+            >
+              <Heart className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate("/verity-plus")}
+            >
+              <Sparkles className="h-5 w-5" />
+            </Button>
           </div>
         </div>
       </div>
 
-      {/* Secondary Navigation */}
-      <div className="border-t border-border bg-card/50 backdrop-blur">
-        <div className="max-w-2xl mx-auto px-4 py-6">
+      {/* Profile Feed */}
+      <div className="flex-1 flex items-center justify-center px-4 py-8">
+        {currentProfile ? (
+          <div className="w-full">
+            <ProfileCard
+              profile={currentProfile}
+              onLike={handleLike}
+              onPass={handlePass}
+            />
+            
+            {/* Profile counter */}
+            <div className="text-center mt-4 text-sm text-muted-foreground">
+              {currentProfileIndex + 1} of {profiles.length}
+              {isLoadingMore && " • Loading more..."}
+            </div>
+          </div>
+        ) : (
+          <div className="text-center">
+            <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto mb-4" />
+            <p className="text-muted-foreground">Loading profiles...</p>
+          </div>
+        )}
+      </div>
+
+      {/* Bottom Navigation */}
+      <div className="border-t border-border bg-card/50 backdrop-blur safe-area-bottom">
+        <div className="max-w-2xl mx-auto px-4 py-4">
           <div className="flex items-center justify-around gap-4">
-            <Link to="/matches">
-              <Button variant="ghost" className="flex-col h-auto py-3 px-6">
-                <Heart className="h-5 w-5 mb-1" />
-                <span className="text-xs">Matches</span>
-              </Button>
-            </Link>
-            <Link to="/upgrade">
-              <Button variant="ghost" className="flex-col h-auto py-3 px-6">
-                <Sparkles className="h-5 w-5 mb-1" />
-                <span className="text-xs">Verity Plus</span>
-              </Button>
-            </Link>
-            <Button 
-              variant="ghost" 
-              className="flex-col h-auto py-3 px-6"
-              onClick={() => setGuidelinesOpen(true)}
+            <Button
+              variant="ghost"
+              className="flex-col h-auto py-2 px-4"
+              onClick={() => navigate("/matches")}
+            >
+              <Heart className="h-5 w-5 mb-1" />
+              <span className="text-xs">Matches</span>
+            </Button>
+            <Button
+              variant="ghost"
+              className="flex-col h-auto py-2 px-4"
+              onClick={() => navigate("/verity-plus")}
+            >
+              <Sparkles className="h-5 w-5 mb-1" />
+              <span className="text-xs">Verity Plus</span>
+            </Button>
+            <Button
+              variant="ghost"
+              className="flex-col h-auto py-2 px-4"
+              onClick={() => {
+                toast({
+                  title: "Community Guidelines",
+                  description: "Be respectful, authentic, and kind to everyone.",
+                });
+              }}
             >
               <Shield className="h-5 w-5 mb-1" />
               <span className="text-xs">Guidelines</span>
@@ -233,52 +324,6 @@ const Main = () => {
           </div>
         </div>
       </div>
-
-      {/* Guidelines Dialog */}
-      <Dialog open={guidelinesOpen} onOpenChange={setGuidelinesOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="text-2xl sm:text-3xl font-bold text-center mb-2">
-              Community Guidelines
-            </DialogTitle>
-            <p className="text-muted-foreground text-center">
-              Verity is a safe space for genuine connections
-            </p>
-          </DialogHeader>
-
-          <div className="space-y-4 mt-6">
-            {guidelines.map((guideline, index) => {
-              const Icon = guideline.icon;
-              return (
-                <div
-                  key={index}
-                  className="flex items-start gap-4 p-4 rounded-lg bg-secondary/50"
-                >
-                  <Icon className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                  <p className="text-sm text-foreground leading-relaxed">
-                    {guideline.text}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="p-4 rounded-lg bg-primary/5 border border-primary/20 mt-6">
-            <p className="text-sm text-foreground text-center">
-              Breaking these guidelines will result in immediate account suspension or permanent ban.
-              We take safety seriously.
-            </p>
-          </div>
-
-          <Button
-            onClick={() => setGuidelinesOpen(false)}
-            size="lg"
-            className="w-full mt-6"
-          >
-            Got it
-          </Button>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
