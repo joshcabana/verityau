@@ -10,6 +10,7 @@ export interface Profile {
   intro_video_url: string | null;
   location: any;
   gender: string;
+  verified: boolean;
 }
 
 export const fetchMatchingProfiles = async (

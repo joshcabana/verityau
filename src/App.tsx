@@ -23,6 +23,7 @@ import ProfileEdit from "./pages/ProfileEdit";
 import VerityDateWaiting from "./pages/VerityDateWaiting";
 import VerityDateCall from "./pages/VerityDateCall";
 import VerityDateFeedback from "./pages/VerityDateFeedback";
+import AdminVerification from "./pages/AdminVerification";
 
 const queryClient = new QueryClient();
 
@@ -54,6 +55,7 @@ const App = () => (
           <Route path="/verity-date/call" element={<ProtectedRoute><VerityDateCall /></ProtectedRoute>} />
           <Route path="/verity-date/feedback" element={<ProtectedRoute><VerityDateFeedback /></ProtectedRoute>} />
           <Route path="/profile/edit" element={<ProtectedRoute><ProfileEdit /></ProtectedRoute>} />
+          <Route path="/admin/verification" element={<ProtectedRoute><AdminVerification /></ProtectedRoute>} />
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

@@ -13,6 +13,7 @@ export interface Match {
     age: number;
     photos: string[];
     bio: string | null;
+    verified: boolean;
   };
   verity_date?: {
     id: string;
@@ -60,7 +61,7 @@ export const fetchUserMatches = async (userId: string): Promise<Match[]> => {
         // Fetch the matched user's profile
         const { data: profile } = await supabase
           .from("profiles")
-          .select("id, user_id, name, age, photos, bio")
+          .select("id, user_id, name, age, photos, bio, verified")
           .eq("user_id", matchedUserId)
           .single();
 
@@ -82,6 +83,7 @@ export const fetchUserMatches = async (userId: string): Promise<Match[]> => {
             age: 0,
             photos: [],
             bio: null,
+            verified: false,
           },
           verity_date: verityDate,
           last_message: {

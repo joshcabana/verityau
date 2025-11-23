@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { MessageCircle, Video, X, Lock } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { Match } from "@/utils/matchHelpers";
+import { VerifiedBadge } from "./VerifiedBadge";
 
 interface MatchCardProps {
   match: Match;
@@ -40,9 +41,12 @@ export const MatchCard = ({
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2 mb-2">
             <div>
-              <h3 className="font-semibold text-lg text-foreground truncate">
-                {profile.name}, {profile.age}
-              </h3>
+              <div className="flex items-center gap-2">
+                <h3 className="font-semibold text-lg text-foreground truncate">
+                  {profile.name}, {profile.age}
+                </h3>
+                {profile.verified && <VerifiedBadge size="sm" />}
+              </div>
               {hasPendingVerityDate && (
                 <Badge variant="default" className="mt-1">
                   <Video className="w-3 h-3 mr-1" />

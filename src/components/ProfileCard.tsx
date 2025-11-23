@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { X, Heart, ChevronLeft, ChevronRight } from "lucide-react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { VerifiedBadge } from "./VerifiedBadge";
 
 interface ProfileCardProps {
   profile: {
@@ -13,6 +14,7 @@ interface ProfileCardProps {
     bio: string | null;
     photos: string[];
     intro_video_url: string | null;
+    verified?: boolean;
   };
   onLike: () => void;
   onPass: () => void;
@@ -126,10 +128,15 @@ export const ProfileCard = ({ profile, onLike, onPass }: ProfileCardProps) => {
                     alt={`${profile.name} - Photo ${index + 1}`}
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-foreground/80 to-transparent p-6">
-                    <h2 className="text-2xl font-bold text-primary-foreground">
-                      {profile.name}, {profile.age}
-                    </h2>
+                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-foreground/80 to-transparent p-6">
+                    <div className="flex items-center gap-2">
+                      <h2 className="text-2xl font-bold text-primary-foreground">
+                        {profile.name}, {profile.age}
+                      </h2>
+                      {profile.verified && (
+                        <VerifiedBadge size="md" className="text-primary-foreground" />
+                      )}
+                    </div>
                     {profile.bio && (
                       <p className="text-sm text-primary-foreground/90 mt-2 line-clamp-2">
                         {profile.bio}
