@@ -141,18 +141,9 @@ const Main = () => {
 
       const result = await likeProfile(user.id, currentProfile.user_id);
 
-      if (result.isMatch) {
-        // Show match notification
-        toast({
-          title: "🎉 It's a match!",
-          description: `You and ${currentProfile.name} liked each other!`,
-          duration: 5000,
-        });
-
-        // Optionally navigate to matches page
-        setTimeout(() => {
-          navigate("/matches");
-        }, 2000);
+      if (result.isMatch && result.matchId) {
+        // Navigate to match success page with confetti
+        navigate(`/match-success?matchId=${result.matchId}`);
       } else {
         toast({
           title: "💕 Like sent!",

@@ -206,6 +206,7 @@ const Matches = () => {
           matchName={selectedMatch.profile.name}
           matchPhoto={selectedMatch.profile.photos?.[0]}
           currentUserId={user?.id || ""}
+          chatUnlocked={selectedMatch.chat_unlocked}
         />
       )}
 

@@ -114,10 +114,13 @@ const VerityDateFeedback = () => {
       if (updatedVerityDate?.user1_feedback && updatedVerityDate?.user2_feedback) {
         // Both provided feedback - check if it's a match
         if (updatedVerityDate.user1_feedback === "yes" && updatedVerityDate.user2_feedback === "yes") {
-          // It's a match! Update the match status
+          // It's a match! Unlock chat
           await supabase
             .from("matches")
-            .update({ both_interested: true })
+            .update({ 
+              both_interested: true,
+              chat_unlocked: true // Unlock chat after successful Verity Date
+            })
             .eq("id", matchId);
 
           // Epic celebration with multiple confetti bursts!

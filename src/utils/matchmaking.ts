@@ -115,6 +115,7 @@ export const likeProfile = async (
           user1: fromUserId,
           user2: toUserId,
           both_interested: true,
+          chat_unlocked: false, // Chat locked until Verity Date
         })
         .select()
         .single();
@@ -130,6 +131,40 @@ export const likeProfile = async (
           });
 
         if (verityDateError) throw verityDateError;
+
+        // Send notifications to both users
+        const { createNotification } = await import("./notifications");
+        
+        // Get both users' profiles for notification
+        const { data: fromProfile } = await supabase
+          .from("profiles")
+          .select("name")
+          .eq("user_id", fromUserId)
+          .single();
+        
+        const { data: toProfile } = await supabase
+          .from("profiles")
+          .select("name")
+          .eq("user_id", toUserId)
+          .single();
+
+        // Notify the user who was liked
+        await createNotification({
+          userId: toUserId,
+          type: "match",
+          title: "🎉 New Match!",
+          message: `You matched with ${fromProfile?.name || "someone"}!`,
+          relatedId: match.id,
+        });
+
+        // Notify the user who liked (they'll see it on success page)
+        await createNotification({
+          userId: fromUserId,
+          type: "match",
+          title: "🎉 It's a Match!",
+          message: `You matched with ${toProfile?.name || "someone"}!`,
+          relatedId: match.id,
+        });
 
         return { isMatch: true, matchId: match.id };
       }

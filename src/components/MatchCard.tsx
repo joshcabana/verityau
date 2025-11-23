@@ -2,7 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { MessageCircle, Video, X } from "lucide-react";
+import { MessageCircle, Video, X, Lock } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { Match } from "@/utils/matchHelpers";
 
@@ -19,7 +19,7 @@ export const MatchCard = ({
   onAcceptVerityDate,
   onUnmatch 
 }: MatchCardProps) => {
-  const { profile, verity_date, last_message, created_at } = match;
+  const { profile, verity_date, last_message, created_at, chat_unlocked } = match;
   const hasPendingVerityDate = verity_date && !verity_date.scheduled_at;
 
   return (
@@ -72,11 +72,15 @@ export const MatchCard = ({
             <Button
               onClick={onOpenChat}
               size="sm"
-              variant="outline"
+              variant={chat_unlocked ? "outline" : "secondary"}
               className="flex-1"
             >
-              <MessageCircle className="w-4 h-4 mr-2" />
-              Message
+              {chat_unlocked ? (
+                <MessageCircle className="w-4 h-4 mr-2" />
+              ) : (
+                <Lock className="w-4 h-4 mr-2" />
+              )}
+              {chat_unlocked ? "Message" : "Locked"}
             </Button>
 
             {hasPendingVerityDate && onAcceptVerityDate && (
