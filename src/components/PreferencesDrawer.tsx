@@ -1,17 +1,22 @@
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
-import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Separator } from "@/components/ui/separator";
-import { ShieldCheck, Clock } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AdvancedFilters } from "./AdvancedFilters";
+
+interface Filters {
+  verifiedOnly: boolean;
+  activeRecently: boolean;
+  heightRange?: [number, number];
+  interests?: string[];
+  values?: string[];
+}
 
 interface PreferencesDrawerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  filters: {
-    verifiedOnly: boolean;
-    activeRecently: boolean;
-  };
-  onFiltersChange: (filters: { verifiedOnly: boolean; activeRecently: boolean }) => void;
+  filters: Filters;
+  onFiltersChange: (filters: Filters) => void;
 }
 
 export const PreferencesDrawer = ({
@@ -20,76 +25,78 @@ export const PreferencesDrawer = ({
   filters,
   onFiltersChange,
 }: PreferencesDrawerProps) => {
-  const handleToggle = (key: keyof typeof filters) => {
+  const handleToggle = (key: "verifiedOnly" | "activeRecently", checked: boolean) => {
     onFiltersChange({
       ...filters,
-      [key]: !filters[key],
+      [key]: checked,
     });
   };
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="h-[400px]">
+      <SheetContent side="bottom" className="h-[80vh] overflow-y-auto">
         <SheetHeader>
           <SheetTitle>Discovery Filters</SheetTitle>
           <SheetDescription>
-            Refine your match preferences
+            Customize who appears in your discovery feed
           </SheetDescription>
         </SheetHeader>
 
-        <div className="mt-6 space-y-6">
-          {/* Verified Only Filter */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-primary/10">
-                <ShieldCheck className="w-5 h-5 text-primary" />
+        <Tabs defaultValue="basic" className="mt-6">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="basic">Basic</TabsTrigger>
+            <TabsTrigger value="advanced">Advanced</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="basic" className="space-y-6 mt-4">
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label htmlFor="verified">Verified Only</Label>
+                <div className="text-sm text-muted-foreground">
+                  Show only profiles with verified badges
+                </div>
               </div>
-              <div className="space-y-1">
-                <Label htmlFor="verified-only" className="text-base font-medium">
-                  Verified Only
-                </Label>
-                <p className="text-sm text-muted-foreground">
-                  Show only verified profiles
-                </p>
-              </div>
+              <Switch
+                id="verified"
+                checked={filters.verifiedOnly}
+                onCheckedChange={(checked) => handleToggle("verifiedOnly", checked)}
+              />
             </div>
-            <Switch
-              id="verified-only"
-              checked={filters.verifiedOnly}
-              onCheckedChange={() => handleToggle("verifiedOnly")}
-            />
-          </div>
 
-          <Separator />
-
-          {/* Active Recently Filter */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-accent/10">
-                <Clock className="w-5 h-5 text-accent" />
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label htmlFor="active">Active Recently</Label>
+                <div className="text-sm text-muted-foreground">
+                  Show only users active in the last 24 hours
+                </div>
               </div>
-              <div className="space-y-1">
-                <Label htmlFor="active-recently" className="text-base font-medium">
-                  Active Recently
-                </Label>
-                <p className="text-sm text-muted-foreground">
-                  Show users active in the last 24 hours
-                </p>
-              </div>
+              <Switch
+                id="active"
+                checked={filters.activeRecently}
+                onCheckedChange={(checked) =>
+                  handleToggle("activeRecently", checked)
+                }
+              />
             </div>
-            <Switch
-              id="active-recently"
-              checked={filters.activeRecently}
-              onCheckedChange={() => handleToggle("activeRecently")}
+          </TabsContent>
+
+          <TabsContent value="advanced" className="mt-4">
+            <AdvancedFilters
+              heightRange={filters.heightRange || [150, 200]}
+              interests={filters.interests || []}
+              values={filters.values || []}
+              onHeightChange={(range) =>
+                onFiltersChange({ ...filters, heightRange: range })
+              }
+              onInterestsChange={(interests) =>
+                onFiltersChange({ ...filters, interests })
+              }
+              onValuesChange={(values) =>
+                onFiltersChange({ ...filters, values })
+              }
             />
-          </div>
-
-          <Separator />
-
-          <p className="text-xs text-muted-foreground text-center pt-4">
-            More filters will be added based on your preferences
-          </p>
-        </div>
+          </TabsContent>
+        </Tabs>
       </SheetContent>
     </Sheet>
   );
