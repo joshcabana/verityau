@@ -14,6 +14,7 @@ interface Message {
   sender_id: string;
   created_at: string;
   read: boolean;
+  match_id: string;
 }
 
 interface ChatProps {
@@ -75,7 +76,11 @@ export const Chat = ({ open, onOpenChange, matchId, matchName, matchPhoto, curre
           filter: `match_id=eq.${matchId}`,
         },
         (payload) => {
-          setMessages((prev) => [...prev, payload.new as Message]);
+          // Only add message if it's for this match
+          const newMessage = payload.new as Message;
+          if (newMessage.match_id === matchId) {
+            setMessages((prev) => [...prev, newMessage]);
+          }
         }
       )
       .subscribe();

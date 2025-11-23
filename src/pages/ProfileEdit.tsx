@@ -56,6 +56,18 @@ export default function ProfileEdit() {
       .single();
 
     if (profile) {
+      // Parse age_range from PostgreSQL int4range format
+      let minAge = 18;
+      let maxAge = 99;
+      
+      if (preferences?.age_range && typeof preferences.age_range === 'string') {
+        const matches = preferences.age_range.match(/\[(\d+),(\d+)\)/);
+        if (matches) {
+          minAge = parseInt(matches[1]);
+          maxAge = parseInt(matches[2]) - 1; // PostgreSQL ranges are exclusive on upper bound
+        }
+      }
+
       setFormData({
         name: profile.name || "",
         age: profile.age || 18,
@@ -64,9 +76,7 @@ export default function ProfileEdit() {
         bio: profile.bio || "",
         interestedIn: preferences?.gender_prefs?.[0] === "men" ? "men" : 
                       preferences?.gender_prefs?.[0] === "women" ? "women" : "everyone",
-        ageRange: preferences?.age_range 
-          ? [preferences.age_range[0], preferences.age_range[1]]
-          : [18, 99],
+        ageRange: [minAge, maxAge],
         radius: preferences?.distance_km || 50,
       });
     }

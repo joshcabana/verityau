@@ -79,7 +79,7 @@ const Matches = () => {
       });
 
       // Navigate to waiting page
-      navigate(`/verity-date/waiting?verityDateId=${match.verity_date.id}`);
+      navigate(`/verity-date/waiting?id=${match.verity_date.id}`);
     } else {
       toast({
         title: "Error",
