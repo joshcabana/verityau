@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSwipeable } from "react-swipeable";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { X, Heart, ChevronLeft, ChevronRight } from "lucide-react";
@@ -19,9 +20,79 @@ interface ProfileCardProps {
 
 export const ProfileCard = ({ profile, onLike, onPass }: ProfileCardProps) => {
   const [videoError, setVideoError] = useState(false);
+  const [swipeOffset, setSwipeOffset] = useState({ x: 0, y: 0 });
+  const [isSwiping, setIsSwiping] = useState(false);
+
+  const handlers = useSwipeable({
+    onSwiping: (eventData) => {
+      setIsSwiping(true);
+      setSwipeOffset({ x: eventData.deltaX, y: eventData.deltaY });
+    },
+    onSwipedLeft: () => {
+      setSwipeOffset({ x: -500, y: 0 });
+      setTimeout(() => {
+        onPass();
+        setSwipeOffset({ x: 0, y: 0 });
+        setIsSwiping(false);
+      }, 300);
+    },
+    onSwipedRight: () => {
+      setSwipeOffset({ x: 500, y: 0 });
+      setTimeout(() => {
+        onLike();
+        setSwipeOffset({ x: 0, y: 0 });
+        setIsSwiping(false);
+      }, 300);
+    },
+    onSwiped: () => {
+      if (Math.abs(swipeOffset.x) < 100) {
+        setSwipeOffset({ x: 0, y: 0 });
+        setIsSwiping(false);
+      }
+    },
+    trackMouse: true,
+    trackTouch: true,
+  });
+
+  const rotation = swipeOffset.x / 20;
+  const opacity = 1 - Math.abs(swipeOffset.x) / 500;
 
   return (
-    <Card className="w-full max-w-md mx-auto overflow-hidden shadow-coral-glow">
+    <div
+      {...handlers}
+      className="relative w-full max-w-md mx-auto touch-none"
+      style={{
+        transform: `translate(${swipeOffset.x}px, ${swipeOffset.y}px) rotate(${rotation}deg)`,
+        opacity: opacity,
+        transition: isSwiping ? "none" : "all 0.3s ease-out",
+        cursor: isSwiping ? "grabbing" : "grab",
+      }}
+    >
+      {/* Swipe Indicators */}
+      {isSwiping && (
+        <>
+          <div
+            className="absolute top-20 left-8 z-20 px-6 py-3 rounded-full border-4 border-primary bg-primary/20 backdrop-blur-sm"
+            style={{
+              opacity: Math.max(0, swipeOffset.x / 150),
+              transform: `scale(${1 + Math.max(0, swipeOffset.x / 300)})`,
+            }}
+          >
+            <Heart className="w-12 h-12 text-primary" fill="currentColor" />
+          </div>
+          <div
+            className="absolute top-20 right-8 z-20 px-6 py-3 rounded-full border-4 border-destructive bg-destructive/20 backdrop-blur-sm"
+            style={{
+              opacity: Math.max(0, -swipeOffset.x / 150),
+              transform: `scale(${1 + Math.max(0, -swipeOffset.x / 300)})`,
+            }}
+          >
+            <X className="w-12 h-12 text-destructive" />
+          </div>
+        </>
+      )}
+
+      <Card className="w-full overflow-hidden shadow-coral-glow">
       {/* Media Carousel */}
       <div className="relative aspect-[3/4] bg-muted">
         <Carousel className="w-full h-full">
@@ -99,5 +170,6 @@ export const ProfileCard = ({ profile, onLike, onPass }: ProfileCardProps) => {
         </Button>
       </div>
     </Card>
+    </div>
   );
 };
