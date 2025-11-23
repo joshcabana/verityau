@@ -211,6 +211,33 @@ export type Database = {
         }
         Relationships: []
       }
+      rate_limits: {
+        Row: {
+          action: string
+          count: number
+          created_at: string | null
+          id: string
+          user_id: string
+          window_start: string
+        }
+        Insert: {
+          action: string
+          count?: number
+          created_at?: string | null
+          id?: string
+          user_id: string
+          window_start?: string
+        }
+        Update: {
+          action?: string
+          count?: number
+          created_at?: string | null
+          id?: string
+          user_id?: string
+          window_start?: string
+        }
+        Relationships: []
+      }
       reports: {
         Row: {
           admin_notes: string | null
@@ -590,6 +617,16 @@ export type Database = {
             }
             Returns: string
           }
+      check_rate_limit: {
+        Args: {
+          p_action: string
+          p_max_requests: number
+          p_user_id: string
+          p_window_minutes?: number
+        }
+        Returns: boolean
+      }
+      cleanup_old_data: { Args: never; Returns: undefined }
       disablelongtransactions: { Args: never; Returns: string }
       dropgeometrycolumn:
         | {
@@ -773,6 +810,31 @@ export type Database = {
               verified: boolean
             }[]
           }
+        | {
+            Args: {
+              age_max: number
+              age_min: number
+              distance_km: number
+              excluded_ids: string[]
+              gender_prefs: string[]
+              user_lat: number
+              user_lon: number
+            }
+            Returns: {
+              age: number
+              bio: string
+              distance_meters: number
+              gender: string
+              id: string
+              intro_video_url: string
+              last_active: string
+              location: unknown
+              name: string
+              photos: string[]
+              user_id: string
+              verified: boolean
+            }[]
+          }
       populate_geometry_columns:
         | { Args: { use_typmod?: boolean }; Returns: string }
         | { Args: { tbl_oid: unknown; use_typmod?: boolean }; Returns: number }
@@ -813,6 +875,14 @@ export type Database = {
       }
       postgis_version: { Args: never; Returns: string }
       postgis_wagyu_version: { Args: never; Returns: string }
+      rate_limited_like: {
+        Args: { p_from_user: string; p_to_user: string }
+        Returns: Json
+      }
+      rate_limited_message: {
+        Args: { p_content: string; p_match_id: string; p_sender_id: string }
+        Returns: Json
+      }
       st_3dclosestpoint: {
         Args: { geom1: unknown; geom2: unknown }
         Returns: unknown
@@ -1395,15 +1465,25 @@ export type Database = {
         Returns: unknown
       }
       unlockrows: { Args: { "": string }; Returns: number }
-      update_verification_status: {
-        Args: {
-          p_profile_id: string
-          p_reason?: string
-          p_reviewer_id: string
-          p_status: string
-        }
-        Returns: boolean
-      }
+      update_verification_status:
+        | {
+            Args: {
+              p_profile_id: string
+              p_reason?: string
+              p_reviewer_id: string
+              p_status: string
+            }
+            Returns: boolean
+          }
+        | {
+            Args: {
+              p_profile_id: string
+              p_reason?: string
+              p_reviewer_id: string
+              p_status: string
+            }
+            Returns: boolean
+          }
       updategeometrysrid: {
         Args: {
           catalogn_name: string
