@@ -1,10 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import StepAgeAndLegal from "@/components/onboarding/StepAgeAndLegal";
 import StepBasics from "@/components/onboarding/StepBasics";
+import StepPhotos from "@/components/onboarding/StepPhotos";
+import StepVideos from "@/components/onboarding/StepVideos";
 import StepPreferences from "@/components/onboarding/StepPreferences";
-import StepCameraAndMic from "@/components/onboarding/StepCameraAndMic";
 import StepGuidelines from "@/components/onboarding/StepGuidelines";
+import { createProfile } from "@/utils/profileCreation";
+import { toast } from "@/hooks/use-toast";
 
 const Onboarding = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -15,24 +19,53 @@ const Onboarding = () => {
     gender: "",
     interestedIn: "",
     city: "",
-    photo: undefined,
+    photo: undefined as File | undefined,
+    introVideo: undefined as File | undefined,
+    verificationVideo: undefined as File | undefined,
     bio: "",
     lookingFor: "",
     ageRange: [18, 50] as [number, number],
     radius: 25,
-    cameraPermission: false,
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
-  const totalSteps = 5;
+  const totalSteps = 7;
 
-  const handleStepComplete = (data: Partial<typeof formData>) => {
-    setFormData((prev) => ({ ...prev, ...data }));
+  const handleStepComplete = async (data: Partial<typeof formData>) => {
+    const updatedData = { ...formData, ...data };
+    setFormData(updatedData);
+    
     if (currentStep < totalSteps) {
       setCurrentStep((prev) => prev + 1);
     } else {
-      // Onboarding complete, navigate to main screen
-      navigate("/main");
+      // Final step - create profile
+      setIsSubmitting(true);
+      
+      const success = await createProfile({
+        dateOfBirth: updatedData.dateOfBirth,
+        name: updatedData.name,
+        gender: updatedData.gender,
+        interestedIn: updatedData.interestedIn,
+        city: updatedData.city,
+        bio: updatedData.bio,
+        lookingFor: updatedData.lookingFor,
+        ageRange: updatedData.ageRange,
+        radius: updatedData.radius,
+        photo: updatedData.photo,
+        introVideo: updatedData.introVideo,
+        verificationVideo: updatedData.verificationVideo,
+      });
+      
+      setIsSubmitting(false);
+      
+      if (success) {
+        toast({
+          title: `Welcome ${updatedData.name}!`,
+          description: "Your profile has been created successfully",
+        });
+        navigate("/main");
+      }
     }
   };
 
@@ -69,21 +102,43 @@ const Onboarding = () => {
             />
           )}
           {currentStep === 3 && (
-            <StepPreferences
+            <StepPhotos
               data={formData}
               onComplete={handleStepComplete}
             />
           )}
           {currentStep === 4 && (
-            <StepCameraAndMic
+            <StepVideos
               data={formData}
               onComplete={handleStepComplete}
             />
           )}
           {currentStep === 5 && (
+            <StepPreferences
+              data={formData}
+              onComplete={handleStepComplete}
+            />
+          )}
+          {currentStep === 6 && (
             <StepGuidelines
               onComplete={handleStepComplete}
             />
+          )}
+          {currentStep === 7 && (
+            <div className="space-y-6 text-center">
+              <h2 className="text-3xl font-bold">Complete Your Profile</h2>
+              <p className="text-muted-foreground">
+                Review your information and create your profile
+              </p>
+              <Button
+                onClick={() => handleStepComplete({})}
+                className="w-full"
+                size="lg"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Creating Profile..." : "Complete & Start Matching"}
+              </Button>
+            </div>
           )}
         </div>
       </div>
