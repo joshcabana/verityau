@@ -5,6 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Heart, Sparkles, Shield, Loader2, RotateCcw, Crown, SlidersHorizontal } from "lucide-react";
 import { ProfileCard } from "@/components/ProfileCard";
 import { PreferencesDrawer } from "@/components/PreferencesDrawer";
+import { VerityDateNotification } from "@/components/VerityDateNotification";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useToast } from "@/hooks/use-toast";
@@ -472,6 +473,9 @@ const Main = () => {
         filters={filters}
         onFiltersChange={handleFiltersChange}
       />
+
+      {/* Verity Date Notifications */}
+      <VerityDateNotification />
     </div>
   );
 };
