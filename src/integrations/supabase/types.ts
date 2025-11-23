@@ -165,6 +165,7 @@ export type Database = {
           gender: string | null
           id: string
           intro_video_url: string | null
+          is_admin: boolean | null
           last_active: string | null
           location: unknown
           looking_for: string[] | null
@@ -181,6 +182,7 @@ export type Database = {
           gender?: string | null
           id?: string
           intro_video_url?: string | null
+          is_admin?: boolean | null
           last_active?: string | null
           location?: unknown
           looking_for?: string[] | null
@@ -197,6 +199,7 @@ export type Database = {
           gender?: string | null
           id?: string
           intro_video_url?: string | null
+          is_admin?: boolean | null
           last_active?: string | null
           location?: unknown
           looking_for?: string[] | null
@@ -297,6 +300,51 @@ export type Database = {
           srtext?: string | null
         }
         Relationships: []
+      }
+      verification_reviews: {
+        Row: {
+          created_at: string | null
+          id: string
+          profile_id: string
+          reason: string | null
+          reviewer_id: string
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          profile_id: string
+          reason?: string | null
+          reviewer_id: string
+          status: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          profile_id?: string
+          reason?: string | null
+          reviewer_id?: string
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "verification_reviews_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "verification_reviews_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       verity_dates: {
         Row: {
@@ -696,6 +744,7 @@ export type Database = {
           name: string
           photos: string[]
           user_id: string
+          verified: boolean
         }[]
       }
       populate_geometry_columns:
@@ -1320,6 +1369,15 @@ export type Database = {
         Returns: unknown
       }
       unlockrows: { Args: { "": string }; Returns: number }
+      update_verification_status: {
+        Args: {
+          p_profile_id: string
+          p_reason?: string
+          p_reviewer_id: string
+          p_status: string
+        }
+        Returns: boolean
+      }
       updategeometrysrid: {
         Args: {
           catalogn_name: string
