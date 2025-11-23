@@ -723,30 +723,56 @@ export type Database = {
       geomfromewkt: { Args: { "": string }; Returns: unknown }
       gettransactionid: { Args: never; Returns: unknown }
       longtransactionsenabled: { Args: never; Returns: boolean }
-      nearby_profiles: {
-        Args: {
-          age_max: number
-          age_min: number
-          distance_km: number
-          excluded_ids: string[]
-          gender_prefs: string[]
-          user_lat: number
-          user_lon: number
-        }
-        Returns: {
-          age: number
-          bio: string
-          distance_meters: number
-          gender: string
-          id: string
-          intro_video_url: string
-          location: unknown
-          name: string
-          photos: string[]
-          user_id: string
-          verified: boolean
-        }[]
-      }
+      nearby_profiles:
+        | {
+            Args: {
+              age_max: number
+              age_min: number
+              distance_km: number
+              excluded_ids: string[]
+              gender_prefs: string[]
+              user_lat: number
+              user_lon: number
+            }
+            Returns: {
+              age: number
+              bio: string
+              distance_meters: number
+              gender: string
+              id: string
+              intro_video_url: string
+              last_active: string
+              location: unknown
+              name: string
+              photos: string[]
+              user_id: string
+              verified: boolean
+            }[]
+          }
+        | {
+            Args: {
+              age_max: number
+              age_min: number
+              distance_km: number
+              excluded_ids: string[]
+              gender_prefs: string[]
+              user_lat: number
+              user_lon: number
+            }
+            Returns: {
+              age: number
+              bio: string
+              distance_meters: number
+              gender: string
+              id: string
+              intro_video_url: string
+              location: unknown
+              name: string
+              photos: string[]
+              user_id: string
+              verified: boolean
+            }[]
+          }
       populate_geometry_columns:
         | { Args: { use_typmod?: boolean }; Returns: string }
         | { Args: { tbl_oid: unknown; use_typmod?: boolean }; Returns: number }
