@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import StepAgeAndLegal from "@/components/onboarding/StepAgeAndLegal";
 import StepBasics from "@/components/onboarding/StepBasics";
 import StepPhotos from "@/components/onboarding/StepPhotos";
+import StepCameraAndMic from "@/components/onboarding/StepCameraAndMic";
 import StepVideos from "@/components/onboarding/StepVideos";
 import StepPreferences from "@/components/onboarding/StepPreferences";
 import StepGuidelines from "@/components/onboarding/StepGuidelines";
@@ -20,6 +21,7 @@ const Onboarding = () => {
     interestedIn: "",
     city: "",
     photo: undefined as File | undefined,
+    cameraPermission: false,
     introVideo: undefined as File | undefined,
     verificationVideo: undefined as File | undefined,
     bio: "",
@@ -30,7 +32,7 @@ const Onboarding = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
-  const totalSteps = 7;
+  const totalSteps = 8;
 
   const handleStepComplete = async (data: Partial<typeof formData>) => {
     const updatedData = { ...formData, ...data };
@@ -108,23 +110,29 @@ const Onboarding = () => {
             />
           )}
           {currentStep === 4 && (
-            <StepVideos
+            <StepCameraAndMic
               data={formData}
               onComplete={handleStepComplete}
             />
           )}
           {currentStep === 5 && (
-            <StepPreferences
+            <StepVideos
               data={formData}
               onComplete={handleStepComplete}
             />
           )}
           {currentStep === 6 && (
-            <StepGuidelines
+            <StepPreferences
+              data={formData}
               onComplete={handleStepComplete}
             />
           )}
           {currentStep === 7 && (
+            <StepGuidelines
+              onComplete={handleStepComplete}
+            />
+          )}
+          {currentStep === 8 && (
             <div className="space-y-6 text-center">
               <h2 className="text-3xl font-bold">Complete Your Profile</h2>
               <p className="text-muted-foreground">

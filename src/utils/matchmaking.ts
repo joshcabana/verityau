@@ -33,6 +33,18 @@ export const fetchMatchingProfiles = async (
       throw new Error("User location not found");
     }
 
+    // Parse location to extract coordinates
+    // Location is stored as "POINT(longitude latitude)"
+    const locationStr = String(currentUserProfile.location);
+    const locationMatch = locationStr.match(/POINT\(([^ ]+) ([^ ]+)\)/);
+    if (!locationMatch) {
+      console.error("Invalid location format");
+      return [];
+    }
+
+    const userLon = parseFloat(locationMatch[1]);
+    const userLat = parseFloat(locationMatch[2]);
+
     // Get users already seen (liked or passed)
     const { data: alreadySeen } = await supabase
       .from("seen_profiles")
@@ -42,30 +54,23 @@ export const fetchMatchingProfiles = async (
     const excludedUserIds = alreadySeen?.map((seen) => seen.seen_user_id) || [];
     excludedUserIds.push(userId); // Exclude self
 
-    // Query matching profiles with ordering
-    let query = supabase
-      .from("profiles")
-      .select("*")
-      .eq("verified", true)
-      .not("user_id", "in", `(${excludedUserIds.join(",")})`)
-      .gte("age", preferences.age_range[0])
-      .lte("age", preferences.age_range[1])
-      .order("last_active", { ascending: false })
-      .limit(limit);
+    // Use PostGIS RPC function for distance-based filtering
+    const { data: profiles, error } = await supabase.rpc("nearby_profiles", {
+      user_lat: userLat,
+      user_lon: userLon,
+      distance_km: preferences.distance_km,
+      gender_prefs: preferences.gender_prefs,
+      age_min: preferences.age_range[0],
+      age_max: preferences.age_range[1],
+      excluded_ids: excludedUserIds,
+    });
 
-    // Filter by gender preferences
-    if (preferences.gender_prefs.length > 0 && !preferences.gender_prefs.includes("everyone")) {
-      query = query.in("gender", preferences.gender_prefs);
+    if (error) {
+      console.error("Error fetching nearby profiles:", error);
+      return [];
     }
 
-    // Note: Distance filtering would require PostGIS functions
-    // For now, we'll fetch profiles and can add distance filtering via RPC later
-
-    const { data: profiles, error } = await query;
-
-    if (error) throw error;
-
-    return profiles || [];
+    return (profiles || []).slice(0, limit);
   } catch (error) {
     console.error("Error fetching matching profiles:", error);
     return [];
