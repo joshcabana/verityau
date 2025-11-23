@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { geocodeCity, coordinatesToPostGIS } from "./geocoding";
 
 export interface OnboardingData {
   dateOfBirth?: Date;
@@ -70,10 +71,20 @@ export async function createProfile(data: OnboardingData): Promise<boolean> {
       ? new Date().getFullYear() - data.dateOfBirth.getFullYear()
       : null;
 
+    // Geocode the city to get coordinates
+    let locationString = "POINT(0 0)"; // Fallback
+    const coords = await geocodeCity(data.city);
+    if (coords) {
+      locationString = coordinatesToPostGIS(coords);
+      console.log(`Geocoded ${data.city} to:`, coords);
+    } else {
+      console.warn(`Failed to geocode ${data.city}, using fallback location`);
+    }
+
     // Upload photo
     let photoUrl: string | null = null;
     if (data.photo) {
-      photoUrl = await uploadFile(data.photo, "profile-photos", "main");
+      photoUrl = await uploadFile(data.photo, "photos", "main");
       if (!photoUrl) return false;
     }
 
@@ -107,7 +118,7 @@ export async function createProfile(data: OnboardingData): Promise<boolean> {
       intro_video_url: introVideoUrl,
       verification_video_url: verificationVideoUrl,
       verified: !!verificationVideoUrl, // Set verified if verification video uploaded
-      location: `POINT(0 0)`, // Placeholder - should be actual coordinates
+      location: locationString,
     });
 
     if (profileError) {

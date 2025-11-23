@@ -113,18 +113,24 @@ export const unmatchUser = async (matchId: string): Promise<boolean> => {
 
 export const acceptVerityDate = async (verityDateId: string): Promise<boolean> => {
   try {
-    // Update the Verity Date with a scheduled time (e.g., now + 1 hour)
-    const scheduledTime = new Date();
-    scheduledTime.setHours(scheduledTime.getHours() + 1);
+    // Get the auth token
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      console.error("No active session");
+      return false;
+    }
 
-    const { error } = await supabase
-      .from("verity_dates")
-      .update({ 
-        scheduled_at: scheduledTime.toISOString(),
-      })
-      .eq("id", verityDateId);
+    // Call the edge function to create the Daily.co room
+    const { data, error } = await supabase.functions.invoke("create-daily-room", {
+      body: { verityDateId },
+    });
 
-    if (error) throw error;
+    if (error) {
+      console.error("Error creating Daily.co room:", error);
+      return false;
+    }
+
+    console.log("Daily.co room created:", data);
     return true;
   } catch (error) {
     console.error("Error accepting Verity Date:", error);
