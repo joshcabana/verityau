@@ -52,14 +52,14 @@ export default function AdminVerification() {
     }
 
     try {
-      // Check if user has admin role using secure function
-      const { data: hasAdminRole, error: roleError } = await supabase
-        .rpc("has_role", {
-          _user_id: user.id,
-          _role: "admin",
-        });
+      // Check if user is admin
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("is_admin")
+        .eq("user_id", user.id)
+        .single();
 
-      if (roleError || !hasAdminRole) {
+      if (!profile?.is_admin) {
         toast.error("Access denied. Admin privileges required.");
         navigate("/main");
         return;
